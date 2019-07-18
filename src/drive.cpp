@@ -22,6 +22,11 @@ float prev_inches_traveled_right;
 float prev_inches_traveled_back;
 vector position;
 
+float nearestangle(float target_angle, float reference_angle)
+{
+  return roundf(((reference_angle-target_angle) / (2*pi)) *  (2 * pi) + target_angle);
+}
+
 pros::task_t tracking_task;
 
 //-------------------------------TRACKING VALUES------------------------------------------------------------------------------------------------------------------
@@ -808,6 +813,8 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
     int initial_millis = pros::millis();
 
     do {
+      target = nearestangle(target,orientation);
+
           encoder_avg = orientation;
           error = (target * pi/180) - encoder_avg;
           derivative = (error - last_error)*kd;
@@ -856,6 +863,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
       // drive_right.move_velocity(0);
       // drive_right_b.move_velocity(0);
       turn_set(0);
+      printf("Degrees Turned: %f\n", orientation);
 
  }
 
@@ -902,6 +910,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         proportional = error_p*Kp;
 
 
+
         //pros::lcd::print(6, "target_x %f\n", target_x);
         //pros::lcd::print(7, "error_p %f\n", error_p);
 
@@ -935,18 +944,17 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
  }
 
 
- void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int timeout)
+ void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, bool reverse , int timeout)
  {
     vector error;
 
     //TURN VALUES
-    float kp_tu = 1; //6
+    float kp_tu = 4; //6
     float proportional_tu;//, derivative_t, integral_t
     float final_power_tu;
     //TURN VALUES
     //DRIVE VALUES
-    float kp_d = 3; //0.2
-
+    float kp_d = 4; //0.2
     float proportional_d;//, derivative_d
     float final_power_d;
     //DRIVE VALUES
@@ -978,21 +986,23 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
     float target_orientation;
     float line_point_angle;
 
+    printf("Moving to %f %f from %f %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y);
+
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
 
          while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis()))
          {
-           		angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
+            angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
 
-           		rotation_vector.x = position.x - ending_point_x;
-           		rotation_vector.y = position.y - ending_point_y;
+            rotation_vector.x = position.x - ending_point_x;
+            rotation_vector.y = position.y - ending_point_y;
 
-           		rotated_main_line.x = (rotation_vector.x * cosf(angle_main_line)) - (rotation_vector.y * sinf(angle_main_line));
-           		rotated_main_line.y = (rotation_vector.x * sinf(angle_main_line)) + (rotation_vector.y * cosf(angle_main_line));
+            rotated_main_line.x = (rotation_vector.x * cosf(angle_main_line)) - (rotation_vector.y * sinf(angle_main_line));
+            rotated_main_line.y = (rotation_vector.x * sinf(angle_main_line)) + (rotation_vector.y * cosf(angle_main_line));
 
-               line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
-         		   target_orientation = angle_main_line + line_point_angle;
+            line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
+            target_orientation = angle_main_line + line_point_angle;
     //------------------------------------------------------------math--------------------------------------------------------
 
         error.x = ending_point_x - position.x;		//wheel size is 4.17 inches
@@ -1011,14 +1021,46 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         // error.y = ending_point_y - position.y;
 
 
-        magnitude = sqrt(powf(error.x,2) + powf(error.y,2));
-
+        magnitude = sqrt(powf(error.x,2) + powf(error.y,2)); //output is in inches because error.x and error.y are in inches
 
         error_d = magnitude;
         proportional_d = error_d * kp_d;
         final_power_d = proportional_d;
+
+        if (reverse)
+        {
+          final_power_d = -final_power_d;
+          target_orientation += pi;
+        }
+
         pros::lcd::print(1, "final_power_d %f\n", final_power_d);
         pros::lcd::print(2, "angle_to_turn %f\n", target_orientation);
+
+        printf("back_encoder %d\n", back_encoder.get_value());
+        printf(" \n");
+        printf("position.x %f\n", position.x);
+        printf(" \n");
+        printf("position.y %f\n", position.y);
+        printf(" \n");
+        printf("final_power_tu %f\n", final_power_tu);
+        printf(" \n");
+        printf("final_power_d %f\n", final_power_d);
+        printf(" \n");
+        printf("angle_to_turn %f\n", target_orientation);
+        printf(" \n");
+        printf("angle_main_line %f\n", angle_main_line);
+        printf(" \n");
+        printf("line_point_angle %f\n", line_point_angle);
+        printf(" \n");
+        printf("error.x %f\n", error.x);
+        printf(" \n");
+        printf("error.y %f\n", error.y);
+        printf(" \n");
+        printf("magnitude %f\n", magnitude);
+        printf(" \n");
+        printf("--------------------------------------------------------------------------------------\n");
+        printf(" \n");
+
 
         // if (abs(error_tu) > 0.174533)
         // {
@@ -1030,29 +1072,104 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         // final_power_d = proportional_d;
         // }
 
-        if (abs(error_tu) > 0.0872665) //0.174533
+        if (abs(error_tu) > 0.0174533) //0.174533
         {
         final_power_d *= 1.046774844 - 0.268 * abs(error_tu); //test for smooth thing
         }
 
-        left_drive_set(final_power_d + final_power_tu);
-        right_drive_set(final_power_d - final_power_tu);
+        left_drive_set(final_power_d - final_power_tu);
+        right_drive_set(final_power_d + final_power_tu);
 
         if (timer_turn == true){
         net_timer = pros::millis() + timeout;
         }
 
-        if (fabs(error_d) < 0.0523599)//0.0349066
-        {   //if less than 2 degrees // ticks_to_deg = 3.18627451      (2*3.18627451) * (pi/180)
+        if (fabs(error_d) < 0.0349066)//0.0349066     error_d
+        {
         timer_turn = false;
         }
 
 
-pros::delay(20);
+        pros::delay(20);
           }
           drive_set(0);		//set drive to 0 power
+          printf("driving done\n");
 
           }
+
+
+    void position_drive_forward(float target_y, bool reverse, int timeout)
+    {
+    vector error;
+
+    //DRIVE VALUES
+    float kp_d = 3; //0.2
+    float proportional_d;//, derivative_d
+    float final_power_d;
+    //DRIVE VALUES
+
+    float encoder_avg;
+    int last_error = 0;
+
+
+    int max_speed = 100; //90
+    float max_error = 0.001f;
+    bool timer_drive = true;
+    unsigned int net_timer;
+
+    int failsafe = 2000;    //varible value
+    int initial_millis = pros::millis();
+    bool timer_turn = true;
+
+    float error_d;
+
+    printf("Moving to %f\n", target_y);
+
+    while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis()))
+    {
+
+    error.y = target_y - position.y;
+    proportional_d = error.y * kp_d;
+    final_power_d = proportional_d;
+
+    if (reverse)
+    {
+    final_power_d = -final_power_d;
+    }
+    pros::lcd::print(1, "final_power_d %f\n", final_power_d);
+
+    printf("back_encoder %d\n", back_encoder.get_value());
+    printf(" \n");
+    printf("position.x %f\n", position.x);
+    printf(" \n");
+    printf("position.y %f\n", position.y);
+    printf(" \n");
+    printf("final_power_d %f\n", final_power_d);
+    printf(" \n");
+    printf("error.y %f\n", error.y);
+    printf(" \n");
+    printf("--------------------------------------------------------------------------------------\n");
+    printf(" \n");
+
+    left_drive_set(final_power_d);
+    right_drive_set(final_power_d);
+
+    if (timer_turn == true){
+    net_timer = pros::millis() + timeout;
+    }
+
+    if (fabs(error.y) < 2)//0.0349066     error_d
+    {
+    timer_turn = false;
+    }
+
+
+    pros::delay(20);
+    }
+    drive_set(0);		//set drive to 0 power
+    printf("driving done\n");
+
+    }
 
 
 

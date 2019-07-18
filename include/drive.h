@@ -30,6 +30,11 @@ struct polar
   float theta;
 };
 
+template <typename T> int sgn(T val)
+{
+  return (T(0) < val) - (val < T(0));
+}
+
 void drive_line_up (int speed, int run_time_drive);
 
 void drive_pid(float target, unsigned int timeout = 150, int max_speed = 100);
@@ -46,13 +51,17 @@ void turn_pid_encoder_average(double target, unsigned int timeout);
 
 //--------------------------------------POSITION-------------------------------------------------------
 
+float nearestangle(float target_angle, float reference_angle);
+
 void tracking_update(void*ignore);
 
 void position_turn(float target, int timeout, float kp);
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int timeout);
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, bool reverse , int timeout);
+
+void position_drive_forward(float target_y, bool reverse, int timeout);
 
 void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y);
 

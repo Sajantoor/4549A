@@ -39,7 +39,10 @@ void autonomous()
 //position_turn(90,450, 80);
 //position_face_point3(35,10, 300);
 //position_drive(0,0,0,40,300);
-position_drive(0,0,0,-40,300);
+
+
+position_drive(0,0,0,25,false,300);
+position_drive(0,0,0,0,true,300);
 //
 //pros::lcd::print(7, "position.x %f\n", position.x);//pros::lcd::print(6, "position.x %f\n", position.x);
 

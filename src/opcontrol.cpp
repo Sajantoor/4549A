@@ -150,7 +150,6 @@ if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1)
 else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
 {
 	position_turn(-90,450, 80);
-
 }
 else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT))
 {
