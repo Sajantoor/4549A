@@ -41,8 +41,8 @@ void autonomous()
 //position_drive(0,0,0,40,300);
 
 
-position_drive(0,0,0,25,false,300);
-position_drive(0,0,0,0,true,300);
+position_drive(0,0,0,-25,-100,0.5,300);
+//position_drive(position.x,position.y,0,0,-100,0.5,300);
 //
 //pros::lcd::print(7, "position.x %f\n", position.x);//pros::lcd::print(6, "position.x %f\n", position.x);
 

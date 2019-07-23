@@ -41,6 +41,28 @@ vector polar_to_vector(polar p)
 return{p.r * sin(p.theta),p.r * cos(p.theta)};
 }
 
+void vectorToPolar(vector& vector, polar& polar)
+{
+	if (vector.x || vector.y)
+	{
+		polar.r = sqrt(vector.x * vector.x + vector.y * vector.y);
+		polar.theta = atan2(vector.y, vector.x);
+	}
+	else
+		polar.r = polar.theta = 0;
+}
+
+void polarToVector(polar& polar, vector& vector)
+{
+	if (polar.r)
+	{
+		vector.x = polar.r * cos(polar.theta);
+		vector.y = polar.r * sin(polar.theta);
+	}
+	else
+		vector.x = vector.y = 0;
+}
+
 
 void tracking_update(void*ignore)
 {
@@ -944,10 +966,11 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
  }
 
 
- void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, bool reverse , int timeout)
+ void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float max_speed, float max_error, int timeout)
  {
     vector error;
-
+    vector positionErr;
+    polar positionErrPolar;
     //TURN VALUES
     float kp_tu = 4; //6
     float proportional_tu;//, derivative_t, integral_t
@@ -963,8 +986,8 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
     int last_error = 0;
 
 
-    int max_speed = 100; //90
-    float max_error = 0.001f;
+    //int max_speed = 100; //90
+    //float max_error = 0.001f;
     bool timer_drive = true;
     unsigned int net_timer;
 
@@ -985,6 +1008,12 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
     float line_ahead_point = 0.5;
     float target_orientation;
     float line_point_angle;
+    float line_angle;
+    float correction;
+    float finalpower;
+    float err_angle;
+    float err_x;
+    float correctA;
 
     printf("Moving to %f %f from %f %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y);
 
@@ -993,27 +1022,76 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
 
          while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis()))
          {
-            angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
+            angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);                                                                             /*The angle of the line that we are following relative to the y-axis (the return value is in radians)*/
+            line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);                                                         /*The direction between the start and end points of the path (the return value is in radians)*/
+            // rotation_vector.x = position.x - ending_point_x;
+            // rotation_vector.y = position.y - ending_point_y;
+            //
+            // rotated_main_line.x = (rotation_vector.x * cosf(angle_main_line)) - (rotation_vector.y * sinf(angle_main_line));
+            // rotated_main_line.y = (rotation_vector.x * sinf(angle_main_line)) + (rotation_vector.y * cosf(angle_main_line));
+            //
+            // line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
+            // target_orientation = angle_main_line + line_point_angle;
+          positionErr.x = position.x - ending_point_x;                                                                                                  /* The difference between our current position and our ending poisition or the target in the x-axis (The return value is in inches)*/
+          positionErr.y = position.y - ending_point_y;
+          vectorToPolar(positionErr, positionErrPolar);
+          positionErrPolar.theta += line_angle;
+          polarToVector(positionErrPolar, positionErr);
 
-            rotation_vector.x = position.x - ending_point_x;
-            rotation_vector.y = position.y - ending_point_y;
+                                                                                                            /* The difference between our current position and our ending poisition or the target in the y-axis (The return value is in inches)*/
 
-            rotated_main_line.x = (rotation_vector.x * cosf(angle_main_line)) - (rotation_vector.y * sinf(angle_main_line));
-            rotated_main_line.y = (rotation_vector.x * sinf(angle_main_line)) + (rotation_vector.y * cosf(angle_main_line));
+            if (max_error)
+            		{
+          			err_angle = orientation - line_angle;                                                                                                    /* The difference between our current orientation and our "target orientation" (the return value is in radians)*/
+          			err_x = positionErr.x + positionErr.y * tan(err_angle);                                                                 /* Calculation of how far off we will be if we continue on our current trajectory (The return value is in inches)*/
+          			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);                                                              /* Calculation of the direction to the target from our current position*/
+          			if (max_speed < 0)                                                                                                                       /* If the max speed is set to a negative number (less then 0)*/
+          				correctA += pi;                                                                                                                        /* Add 180 degrees or pi (radians) to correctA*/
+          			correction = fabs(err_x) > max_error ? 4.0 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //8.0             /* Calculation of the correction value but the correction value is only calculated if the bot is going to end up more off than we're allowed to be if our current trajectory continues*/
+            		}
 
-            line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
-            target_orientation = angle_main_line + line_point_angle;
+
     //------------------------------------------------------------math--------------------------------------------------------
 
-        error.x = ending_point_x - position.x;		//wheel size is 4.17 inches
-        error.y = ending_point_y - position.y;
+        // error.x = ending_point_x - position.x;
+        // error.y = ending_point_y - position.y;
+        //
+        // encoder_avg = orientation;
+        // error_tu = target_orientation - encoder_avg;
+        // last_error = error_tu;
+        // proportional_tu = error_tu * kp_tu;
 
-        encoder_avg = orientation;
-        error_tu = target_orientation - encoder_avg;
-        last_error = error_tu;
-        proportional_tu = error_tu * kp_tu;
+      finalpower = round(-127.0 / 40.0 * positionErr.y) * sgn(max_speed); //40                                                                          /* The calculation of the final power (-127/40 is basically kp (120 is the most amount of power and it means that until we are 40 inches away from the target give full power))*/
 
-        final_power_tu = proportional_tu;
+      // if (finalpower > max_speed)
+      // {
+      //   finalpower = max_speed;
+      // }
+      //
+      // if (finalpower < -max_speed)
+      // {
+      //   finalpower = -max_speed;
+      // }
+
+
+      switch (sgn(correction))                                                                                                                            /* The cases start here, they are basically to change final power depended on the sgn of correction, the way sgn works is if the value of correction is positive it will return a value of 1, if the value of correction is negative it will return a value of -1 and if it is 0 then it will return a value of 0*/
+        		{
+      		case 0:                                                                                                                                         /* If the sgn returns a value of 0 then that means we are going straight and theres no need to correct*/
+              left_drive_set(finalpower);
+              right_drive_set(finalpower);
+        			break;
+      		case 1:                                                                                                                                         /* If the sgn returns a value of 1 then that means we are curving to the left and we have to slow down the right side*/
+              left_drive_set(finalpower);
+              right_drive_set(finalpower * exp(-correction));
+        			break;
+      		case -1:                                                                                                                                        /* If the sgn returns a value of -1 then that means we are curving to the right and we have to slow down the left side*/
+              left_drive_set(finalpower * exp(correction));
+              right_drive_set(finalpower);
+        			break;
+        		}
+
+
+        // final_power_tu = proportional_tu;
 
         //------------------------------DRIVE PART------------------------------------------------
         //
@@ -1021,17 +1099,17 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         // error.y = ending_point_y - position.y;
 
 
-        magnitude = sqrt(powf(error.x,2) + powf(error.y,2)); //output is in inches because error.x and error.y are in inches
-
-        error_d = magnitude;
-        proportional_d = error_d * kp_d;
-        final_power_d = proportional_d;
-
-        if (reverse)
-        {
-          final_power_d = -final_power_d;
-          target_orientation += pi;
-        }
+        // magnitude = sqrt(powf(error.x,2) + powf(error.y,2)); //output is in inches because error.x and error.y are in inches
+        //
+        // error_d = magnitude;
+        // proportional_d = error_d * kp_d;
+        // final_power_d = proportional_d;
+        //
+        // if (reverse)
+        // {
+        //   final_power_d = -final_power_d;
+        //   target_orientation += pi;
+        // }
 
         pros::lcd::print(1, "final_power_d %f\n", final_power_d);
         pros::lcd::print(2, "angle_to_turn %f\n", target_orientation);
@@ -1042,21 +1120,31 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         printf(" \n");
         printf("position.y %f\n", position.y);
         printf(" \n");
-        printf("final_power_tu %f\n", final_power_tu);
+        printf("final_power %f\n", finalpower);
         printf(" \n");
-        printf("final_power_d %f\n", final_power_d);
+        printf("err_angle %f\n", err_angle);
         printf(" \n");
-        printf("angle_to_turn %f\n", target_orientation);
+        printf("err_x %f\n", err_x);
         printf(" \n");
         printf("angle_main_line %f\n", angle_main_line);
         printf(" \n");
-        printf("line_point_angle %f\n", line_point_angle);
+        printf("line_angle %f\n", line_angle);
         printf(" \n");
-        printf("error.x %f\n", error.x);
+        printf("positionErr.x %f\n", positionErr.x);
         printf(" \n");
-        printf("error.y %f\n", error.y);
+        printf("positionErr.y %f\n", positionErr.y);
         printf(" \n");
-        printf("magnitude %f\n", magnitude);
+        printf("correctA %f\n", correctA);
+        printf(" \n");
+        printf("correction %f\n", correction);
+        printf(" \n");
+        printf("max_error %f\n", max_error);
+        printf(" \n");
+        printf("orientation %f\n", orientation);
+        printf(" \n");
+        printf("sgn(max_speed) %d\n", sgn(max_speed));
+        printf(" \n");
+        printf("Moving to %f %f from %f %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y);
         printf(" \n");
         printf("--------------------------------------------------------------------------------------\n");
         printf(" \n");
@@ -1072,24 +1160,22 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         // final_power_d = proportional_d;
         // }
 
-        if (abs(error_tu) > 0.0174533) //0.174533
-        {
-        final_power_d *= 1.046774844 - 0.268 * abs(error_tu); //test for smooth thing
-        }
-
-        left_drive_set(final_power_d - final_power_tu);
-        right_drive_set(final_power_d + final_power_tu);
-
+        // if (abs(error_tu) > 0.0174533) //0.174533
+        // {
+        // final_power_d *= 1.046774844 - 0.268 * abs(error_tu); //test for smooth thing
+        // }
+        //
+        // left_drive_set(final_power_d - final_power_tu);
+        // right_drive_set(final_power_d + final_power_tu);
+        //
         if (timer_turn == true){
         net_timer = pros::millis() + timeout;
         }
 
-        if (fabs(error_d) < 0.0349066)//0.0349066     error_d
+        if (fabs(positionErr.y) < 1)//0.0349066     error_d
         {
         timer_turn = false;
         }
-
-
         pros::delay(20);
           }
           drive_set(0);		//set drive to 0 power
