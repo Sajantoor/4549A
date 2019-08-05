@@ -4,6 +4,8 @@
 #include "motor_sensor_init.h"
 #include "stacker.h"
 #include "ritam_drive.h"
+#include "all_used.h"
+
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -37,12 +39,13 @@ void autonomous()
 //position_turn(90,500,78);
 // pros::delay(2000);
 //position_turn(90,450, 80);
-//position_face_point3(35,10, 300);
+position_face_point(35,10, 300);
 //position_drive(0,0,0,40,300);
 
 
-position_drive(0,0,0,20,100,0.05,300);
-//position_drive(0,0,0,-25,-100,0.5,300);
+//position_drive(0, 0, 15, 40, 0, 100, 1, 100);
+// pros::delay(10000);
+// position_drive(0,-20,0,0,100,90,0.05,100);
 //position_drive(0,25,0,-10,-100,0.05,300);
 //
 //pros::lcd::print(7, "position.x %f\n", position.x);//pros::lcd::print(6, "position.x %f\n", position.x);

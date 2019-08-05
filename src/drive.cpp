@@ -3,6 +3,7 @@
 #include "motor_setup.h"
 #include "motor_sensor_init.h"
 #include "math.h"
+#include "all_used.h"
 //#include "ritam_drive.h"
 
 using namespace pros::literals;
@@ -22,12 +23,13 @@ float prev_inches_traveled_right;
 float prev_inches_traveled_back;
 vector position;
 
-float nearestangle(float target_angle, float reference_angle)
+pros::task_t tracking_task;
+
+template <typename T> int sgn(T val)
 {
-  return roundf(((reference_angle-target_angle) / (2*pi)) *  (2 * pi) + target_angle);
+  return (T(0) < val) - (val < T(0));
 }
 
-pros::task_t tracking_task;
 
 //-------------------------------TRACKING VALUES------------------------------------------------------------------------------------------------------------------
 
@@ -63,7 +65,6 @@ void polarToVector(polar& polar, vector& vector)
 		vector.x = vector.y = 0;
 }
 
-
 void tracking_update(void*ignore)
 {
 
@@ -79,7 +80,7 @@ void tracking_update(void*ignore)
     float degrees_to_rad_back = (pi/180) * degrees_encoder_back; //gives back values in radians
 
 
-    const float wheel_radius = 1.375;
+    const float wheel_radius = 1.4545; //1.375
 
     float inches_traveled_left = degrees_to_rad_left * wheel_radius; //gives back values in inches
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
@@ -835,7 +836,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
     int initial_millis = pros::millis();
 
     do {
-      target = nearestangle(target,orientation);
+      //target = nearestangle(target,orientation);
 
           encoder_avg = orientation;
           error = (target * pi/180) - encoder_avg;
@@ -865,7 +866,10 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
           // drive_right_b.move_velocity(-final_power);
 
           pros::lcd::print(2, "final_power %f\n", final_power);
-
+          printf("position.x %f\n", position.x);
+          printf(" \n");
+          printf("position.y %f\n", position.y);
+          printf(" \n");
 
           if (timer_turn == true){
           net_timer = pros::millis() + timeout;
@@ -966,7 +970,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
  }
 
 
- void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float max_speed, float max_error, int timeout)
+ void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int timeout)
  {
     vector error;
     vector positionErr;
@@ -991,7 +995,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
     bool timer_drive = true;
     unsigned int net_timer;
 
-    int failsafe = 2000;    //varible value
+    int failsafe = 3500;    //2000
     int initial_millis = pros::millis();
     int direction_face;
     bool timer_turn = true;
@@ -1015,12 +1019,14 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
     float err_x;
     float correctA;
 
+    int last = startpower;
+
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
 
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
 
-         while(true)//(pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis())
+         while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis()))
          {
             angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
             line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
@@ -1047,7 +1053,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
           			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
           			if (max_speed < 0)
           				correctA += pi;
-          			correction = fabs(err_x) > max_error ? 5.0 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //8.0
+          			correction = fabs(err_x) > max_error ? 5.7* (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
             		}
 
 
@@ -1061,7 +1067,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         // last_error = error_tu;
         // proportional_tu = error_tu * kp_tu;
 
-      finalpower = round(-127.0 / 30 * positionErr.y) * sgn(max_speed); //40
+      finalpower = round(-127.0 / 38.0 * positionErr.y) * sgn(max_speed); //38
 
       // if (finalpower > max_speed)
       // {
@@ -1072,7 +1078,12 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
       // {
       //   finalpower = -max_speed;
       // }
-
+          limit_to_val_set(finalpower, abs(max_speed));
+    			if (finalpower * sgn(max_speed) < 30) //30
+    				finalpower = 30 * sgn(max_speed);
+    			int delta = finalpower - last;
+    			limit_to_val_set(delta, 5);
+    			finalpower = last += delta;
 
       switch (sgn(correction))
         		{
@@ -1148,7 +1159,13 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         printf(" \n");
         printf("exp(correction) %f \n", exp(correction));
         printf(" \n");
-        printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
+        printf("last finalpower %d \n", last);
+        printf(" \n");
+        printf("delta %d \n", delta);
+        printf(" \n");
+        printf("Moving to %f , %f from %f , %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
+        printf(" \n");
+        printf("Moved to %f %f from %f %f at %f  || %f.x , %f.y , %f\n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed, position.x, position.y, orientation);
         printf(" \n");
         printf("--------------------------------------------------------------------------------------\n");
         printf(" \n");
@@ -1172,21 +1189,21 @@ void turn_pid_encoder_average(double target, unsigned int timeout){ //makn encod
         // left_drive_set(final_power_d - final_power_tu);
         // right_drive_set(final_power_d + final_power_tu);
         //
-        // if (timer_turn == true){
-        // net_timer = pros::millis() + timeout;
-        // }
-        //
-        // if (fabs(positionErr.y) < 0.3) //test needed  && fabs(err_angle) < 0.0349066
-        // {
-        // timer_turn = false;
-        // }
-        // pros::delay(20);
-        //   }
-        //   drive_set(0);		//set drive to 0 power
-        //   printf("driving done\n");
-        //
+        if (timer_turn == true){
+        net_timer = pros::millis() + timeout;
+        }
+
+        if (fabs(positionErr.y) < 1) //test needed  && fabs(err_angle) < 0.0349066
+        {
+        timer_turn = false;
+        }
+        pros::delay(20);
+          }
+          drive_set(0);		//set drive to 0 power
+        printf("driving done\n");
+
          }
-      }
+
 
 
     void position_drive_forward(float target_y, bool reverse, int timeout)

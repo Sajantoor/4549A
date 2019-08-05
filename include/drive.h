@@ -30,10 +30,6 @@ struct polar
   float theta;
 };
 
-template <typename T> int sgn(T val)
-{
-  return (T(0) < val) - (val < T(0));
-}
 
 void drive_line_up (int speed, int run_time_drive);
 
@@ -59,7 +55,7 @@ void position_turn(float target, int timeout, float kp);
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float max_speed, float max_error, int timeout);
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int timeout);
 
 void position_drive_forward(float target_y, bool reverse, int timeout);
 

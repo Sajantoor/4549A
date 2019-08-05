@@ -3,6 +3,8 @@
 #include "stacker.h"
 #include "motor_sensor_init.h"
 #include "drive.h"
+#include "all_used.h"
+
 
 /**
  * Runs the operator control code. This function will be started in its own task
