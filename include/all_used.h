@@ -10,6 +10,8 @@
 
 #define limit_to_val_set(input, val) input = limit_to_val(input, val)
 
+void full_position_reset();
+
 float flmod(float x, float y); // Floating point mod operation
 float degToRad(float degrees); // Convert degrees to radians
 float radToDeg(float radians); // Convert radians to degrees

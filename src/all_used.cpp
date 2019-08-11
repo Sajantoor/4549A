@@ -2,6 +2,16 @@
 #include "all_used.h"
 #include "drive.h"
 #include "math.h"
+#include "motor_setup.h"
+
+void full_position_reset()
+{
+  beginning_orientation = 0;
+  reset_drive_encoders();
+  prev_inches_traveled_left = 0;
+  prev_inches_traveled_right = 0;
+  position = {0,0};
+}
 
 float nearestangle(float target_angle, float reference_angle)
 {

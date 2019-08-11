@@ -38,12 +38,4 @@ extern pros::ADIEncoder right_encoder;
 extern pros::ADIEncoder back_encoder;
 
 
-
-// extern pros::ADIPort potentiometer (pot_port, pros::E_ADI_ANALOG_IN);
-// extern pros::ADIGyro gyro (gyro_port, 0.9192647);
-// extern pros::ADIEncoder left_encoder(top_port,bottom_port,false);
-// extern pros::ADIEncoder right_encoder(top_port_right,bottom_port_right,true);
-
-
-
 #endif

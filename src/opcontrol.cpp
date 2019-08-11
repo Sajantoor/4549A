@@ -1,50 +1,26 @@
 #include "main.h"
 #include "motor_setup.h"
-#include "stacker.h"
 #include "motor_sensor_init.h"
 #include "drive.h"
 #include "all_used.h"
 
-
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
 void opcontrol() {
 	pros::lcd::initialize();
-	reset_drive_encoders();
 
-	left_encoder.reset();
-	right_encoder.reset();
-	back_encoder.reset();
-
+full_position_reset();
 
 	pros::ADIPort potentiometer (pot_port, pros::E_ADI_ANALOG_IN);
 
 	stacker.tare_position();
 
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
-position = {0,0};
 
 	while (true) {
-		//pros::lcd::print(6, "left_encoder %d\n", left_encoder.get_value());
-    //pros::lcd::print(7, "right_encoder %d\n", right_encoder.get_value());
-		//pros::lcd::print(6, "position.x %f\n", position.x);
-printf("back_encoder %d\n", back_encoder.get_value());
-float line_angle = nearestangle(0.4636,0);
-printf("nearest angle %f \n", line_angle);
 
-		//AUTO SELECTOR
-		//tracking_update(); //commented again by RITAM
+		printf("back_encoder %d\n", back_encoder.get_value());
+		float line_angle = nearestangle(0.4636,0);
+		printf("nearest angle %f \n", line_angle);
+
 		pros::lcd::print(1, "encoder_left %d\n", left_encoder.get_value());
 	  pros::lcd::print(2, "encoder_right %d\n", right_encoder.get_value());
 
@@ -54,11 +30,9 @@ printf("nearest angle %f \n", line_angle);
 		pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
 		pros::lcd::print(7, "encoder_back %d\n", back_encoder.get_value());
 
-
-
 		printf("radian value left %f\n", degrees_to_rad_left);
 		printf("radian value left %f\n", degrees_to_rad_right);
-		//pros::lcd::print(6, "radian value right %f\n", right_encoder.get_value());
+
 
 		if((potentiometer.get_value()) < 400){
 			pros::lcd::print(3, "red back stack and park");
@@ -128,22 +102,8 @@ printf("nearest angle %f \n", line_angle);
 //LOADER
 			if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
 	    {
-	      //loader.move(120);
-				reset_drive_encoders();
-
-				left_encoder.reset();
-				right_encoder.reset();
-				back_encoder.reset();
-position = {0,0};
+					full_position_reset();
 	    }
-	    // else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
-	    // {
-	    // //loader.move(-120);
-	    // }
-	    // else
-	    // {
-	    // loader.move(0);
-	    // }
 //LOADER
 
 //STACKER
@@ -165,15 +125,12 @@ else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT))
 }
 else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
 {
-stack(4800,100);
 }
 else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X))
 {
-	stack(500,50);
 }
 else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_B))
 {
-stack(4500,100);
 }
 
 //STACKER

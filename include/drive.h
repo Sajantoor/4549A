@@ -68,8 +68,6 @@ void position_face_point(float target_x, float target_y , int timeout);
 
 void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int timeout);
 
-void position_drive_forward(float target_y, bool reverse, int timeout);
-
 void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y);
 
 extern pros::task_t tracking_task;
