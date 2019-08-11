@@ -40,6 +40,9 @@ position = {0,0};
     //pros::lcd::print(7, "right_encoder %d\n", right_encoder.get_value());
 		//pros::lcd::print(6, "position.x %f\n", position.x);
 printf("back_encoder %d\n", back_encoder.get_value());
+float line_angle = nearestangle(0.4636,0);
+printf("nearest angle %f \n", line_angle);
+
 		//AUTO SELECTOR
 		//tracking_update(); //commented again by RITAM
 		pros::lcd::print(1, "encoder_left %d\n", left_encoder.get_value());
@@ -48,7 +51,7 @@ printf("back_encoder %d\n", back_encoder.get_value());
 		pros::lcd::print(4, "position,x %f\n", position.x);
 	  pros::lcd::print(5, "position.y %f\n", position.y);
 
-		pros::lcd::print(6, "orientation %f\n", orientation);
+		pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
 		pros::lcd::print(7, "encoder_back %d\n", back_encoder.get_value());
 
 
@@ -147,11 +150,11 @@ position = {0,0};
 
 if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1)
 {
-	position_turn(90,450, 100);
+	//position_turn(90,450, 100);
 }
 else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
 {
-	position_turn(-90,450, 80);
+	//position_turn(-90,450, 80);
 }
 else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT))
 {

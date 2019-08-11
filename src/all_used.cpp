@@ -5,7 +5,7 @@
 
 float nearestangle(float target_angle, float reference_angle)
 {
-  return round(((reference_angle-target_angle) / (2*pi)) *  (2 * pi) + target_angle);
+  return round((reference_angle-target_angle) / (2 * pi)) *  (2 * pi) + target_angle;
 }
 
 float flmod(float x, float y)

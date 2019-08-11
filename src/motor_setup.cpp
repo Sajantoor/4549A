@@ -35,3 +35,9 @@ void reset_drive_encoders()
   left_encoder.reset();
   right_encoder.reset();
 }
+
+void set_drive(int right_speed, int left_speed)
+{
+right_drive_set(right_speed);
+left_drive_set(left_speed);
+}

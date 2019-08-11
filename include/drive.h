@@ -30,6 +30,13 @@ struct polar
   float theta;
 };
 
+typedef enum turnDir
+{
+	cw,
+	ccw,
+	ch
+} tTurnDir;
+
 
 void drive_line_up (int speed, int run_time_drive);
 
@@ -51,7 +58,11 @@ float nearestangle(float target_angle, float reference_angle);
 
 void tracking_update(void*ignore);
 
-void position_turn(float target, int timeout, float kp);
+void position_turn(float target, int timeout);
+
+void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int coast_power, float stop_offset_deg);
+
+void position_face_point2(float target_x, float target_y, tTurnDir turnDir, float ratio_full, float coast_power, float offset, float stopOffsetDeg);
 
 void position_face_point(float target_x, float target_y , int timeout);
 

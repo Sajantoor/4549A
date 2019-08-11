@@ -56,3 +56,20 @@ If the sgn returns a value of 1 then that means we are curving to the left and w
 13. https://github.com/Sajantoor/4549A/blob/master/src/drive.cpp#L1087
 
 If the sgn returns a value of -1 then that means we are curving to the right and we have to slow down the left side
+
+
+#PARAMETERS VALUES FOR TURN
+
+position_turn2:
+
+45 degree turn: (0.785, cw, 0.04, 35, 8.65); or (-0.785, ccw, 0.04, 35, 8.65);
+
+90 degree turn: (0.5*pi, cw, 0.17, 35, 7.3); or (-0.5*pi, ccw, 0.17, 35, 7.3);
+
+10 degree turn: (0.05*pi, cw, 0, 35, 6.5); or (-0.05*pi, ccw, 0, 35, 6.5);
+
+20 degree turn:
+
+30 degree turn:
+
+40 degree turn:
