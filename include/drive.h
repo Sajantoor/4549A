@@ -30,6 +30,20 @@ struct polar
   float theta;
 };
 
+typedef struct _vel
+{
+	float a;
+	float y;
+	float x;
+	unsigned long lstChecked;
+	float lstPosA;
+	float lstPosY;
+	float lstPosX;
+} sVel; // Velocity of the robot
+
+extern sVel velocity;
+
+
 typedef enum turnDir
 {
 	cw,
@@ -58,6 +72,8 @@ float nearestangle(float target_angle, float reference_angle);
 
 void tracking_update(void*ignore);
 
+void tracking_velocity(void*ignore);
+
 void position_turn(float target, int timeout);
 
 void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int coast_power, float stop_offset_deg);
@@ -71,5 +87,6 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y);
 
 extern pros::task_t tracking_task;
+extern pros::task_t velocity_task;
 
 #endif

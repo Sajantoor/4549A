@@ -17,13 +17,16 @@ void autonomous()
 //position_face_point(35,10, 300);
 //position_drive(0,0,0,40,300);
 //position_face_point2(71, 20, cw, 0, 35, 0, 30);
-/*
+
 position_drive(0, 0, 0, 20, 0, 100, 1, 100);
-position_turn2(-0.5*pi, ccw, 0.17, 35, 7.3);
-position_turn2(0, cw, 0.17, 35, 7.3);
-position_drive(0, 20, 0, 0, 50, -100, 1, 100);
-*/
-position_drive(0, 0, 0, 20, 0, 100, 1, 100);
+// position_turn2(-0.5*pi, ccw, 0.17, 35, 7.3);
+// position_turn2(0, cw, 0.17, 35, 7.3);
+position_drive(0, 20, 0, 0, 0, -100, 1, 100);
+
+//position_drive(0, 0, 0, 20, 0, 100, 1, 100);
+
+//position_drive(position.x, position.y, 0, 0, 0, 100, 1, 100);
+
 
 //position_turn2(degToRad(20), cw, 0.005, 35, 8);
 

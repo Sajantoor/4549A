@@ -2,6 +2,7 @@
 #include "motor_sensor_init.h"
 #include "drive.h"
 #include "all_used.h"
+#include "lcd.h"
 
 
 
@@ -12,46 +13,53 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
+	//pros::lcd::initialize();
 
-pros::lcd::print(0, "initialized");
+//pros::lcd::print(0, "initialized");
 
 gyro.reset();
 
 pros::task_t tracking_task = pros::c::task_create(tracking_update, (void*)NULL, TASK_PRIORITY_DEFAULT,
 														TASK_STACK_DEPTH_DEFAULT, "TRACKING TASK");
 
+pros::task_t velocity_task = pros::c::task_create(tracking_velocity, (void*)NULL, TASK_PRIORITY_DEFAULT,
+														TASK_STACK_DEPTH_DEFAULT, "VELOCITY TASK");
+
+pros::task_t auto_selecter_task = pros::c::task_create(auto_selecter, (void*)NULL, TASK_PRIORITY_DEFAULT,
+										TASK_STACK_DEPTH_DEFAULT, "AUTO SELECTER TASK");
+
+
 if((potentiometer.get_value()) < 400){
-	pros::lcd::print(3, "red back stack and park");
+	//pros::lcd::print(3, "red back stack and park");
 }
 
 else if((500 < potentiometer.get_value()) && (potentiometer.get_value() < 900)){
-	pros::lcd::print(3, "red back cap");
+	//pros::lcd::print(3, "red back cap");
 }
 
  else if((1000 < potentiometer.get_value()) && (potentiometer.get_value() < 1400)){
-	 pros::lcd::print(3, "red front park");
+	 //pros::lcd::print(3, "red front park");
  }
 
 else if((1500 < potentiometer.get_value()) && (potentiometer.get_value() < 1800)){
-	pros::lcd::print(3, "blue front park");
+	//pros::lcd::print(3, "blue front park");
 }
 
 //blue
 else if((1900 < potentiometer.get_value()) && (potentiometer.get_value() < 2400)){
-	pros::lcd::print(3, "blue back cap");
+	//pros::lcd::print(3, "blue back cap");
 }
 
 else if((2500 < potentiometer.get_value()) && (potentiometer.get_value() < 3000)){
-	pros::lcd::print(3, "blue stack park");
+	//pros::lcd::print(3, "blue stack park");
 }
 
 else if((3100 < potentiometer.get_value()) && (potentiometer.get_value() < 3400)){
-	pros::lcd::print(3, "skills");
+	//pros::lcd::print(3, "skills");
 }
 
 else if((3500 < potentiometer.get_value()) && (potentiometer.get_value() < 4095)){
-	pros::lcd::print(3, "testing");
+	//pros::lcd::print(3, "testing");
 }
 
 }

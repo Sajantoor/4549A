@@ -21,6 +21,8 @@ float prev_inches_traveled_left;
 float prev_inches_traveled_right;
 float prev_inches_traveled_back;
 vector position;
+sVel velocity;
+
 
 pros::task_t tracking_task;
 
@@ -132,8 +134,31 @@ void tracking_update(void*ignore)
     prev_inches_traveled_back = inches_traveled_back;
 
     pros::delay(10);
+  }
+}
 
-    //return orientation;
+void tracking_velocity(void*ignore)
+{
+  while(true)
+  {
+	unsigned long curTime = pros::millis();
+	long passed = curTime - velocity.lstChecked;
+	if (passed > 40)
+	 {
+		float posA = orientation;
+		float posY = position.y;
+		float posX = position.x;
+		velocity.a = ((posA - velocity.lstPosA) * 1000.0) / passed;
+		velocity.y = ((posY - velocity.lstPosY) * 1000.0) / passed;
+		velocity.x = ((posX - velocity.lstPosX) * 1000.0) / passed;
+
+		velocity.lstPosA = posA;
+		velocity.lstPosY = posY;
+		velocity.lstPosX = posX;
+		velocity.lstChecked = curTime;
+	 }
+
+   pros::delay(10);
   }
 }
 //------------------------------------------------------------------------------------------------------------------
@@ -917,13 +942,13 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
       			if (max_speed < 0)
       				correctA += pi;
-      			correction = fabs(err_x) > max_error ? 5.7 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+      			correction = fabs(err_x) > max_error ? 4 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
             printf(" \n");
         		}
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-            finalpower = round(-127.0 / 30.0 * positionErr.y) * sgn(max_speed); //38
+            finalpower = round(-127.0 / 45.0 * positionErr.y) * sgn(max_speed); //38
 
             limit_to_val_set(finalpower, abs(max_speed));
       			if (finalpower * sgn(max_speed) < 30) //30
@@ -1005,7 +1030,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         net_timer = pros::millis() + timeout;
         }
 
-        if (magnPosvector < 0.5)
+        if (magnPosvector < 0.5)//0.5
         {
         timer_turn = false;
         }
@@ -1015,14 +1040,14 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         if(max_speed < 0)
         {
           drive_set(20);
-          pros::delay(125);
+          pros::delay(100);
           drive_set(0);
         }
 
         else if(max_speed > 0)
         {
           drive_set(-20);
-          pros::delay(125);
+          pros::delay(100);
           drive_set(0);
         }
 

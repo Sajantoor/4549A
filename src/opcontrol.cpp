@@ -21,50 +21,57 @@ full_position_reset();
 		float line_angle = nearestangle(0.4636,0);
 		printf("nearest angle %f \n", line_angle);
 
-		pros::lcd::print(1, "encoder_left %d\n", left_encoder.get_value());
-	  pros::lcd::print(2, "encoder_right %d\n", right_encoder.get_value());
+		//pros::lcd::print(1, "encoder_left %d\n", left_encoder.get_value());
+	  //pros::lcd::print(5, "velocity.a %f\n", velocity.a);
 
-		pros::lcd::print(4, "position,x %f\n", position.x);
-	  pros::lcd::print(5, "position.y %f\n", position.y);
+		//pros::lcd::print(3, "position,x %f\n", position.x);
+	  //pros::lcd::print(4, "position.y %f\n", position.y);
 
-		pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
-		pros::lcd::print(7, "encoder_back %d\n", back_encoder.get_value());
+		//pros::lcd::print(6, "velocity.x %f\n", velocity.x);
+		//pros::lcd::print(7, "velocity.y %f\n", velocity.y);
+
+		// //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
+		// //pros::lcd::print(7, "encoder_back %d\n", back_encoder.get_value());
 
 		printf("radian value left %f\n", degrees_to_rad_left);
 		printf("radian value left %f\n", degrees_to_rad_right);
 
+		printf("velocity.x %f\n", velocity.x);
+		printf("velocity.y %f\n", velocity.y);
+		printf("velocity.a %f\n", velocity.a);
+
 
 		if((potentiometer.get_value()) < 400){
-			pros::lcd::print(3, "red back stack and park");
+			//pros::lcd::print(3, "red back stack and park");
 		}
 
 		else if((500 < potentiometer.get_value()) && (potentiometer.get_value() < 900)){
-			pros::lcd::print(3, "red back cap");
+			//pros::lcd::print(3, "red back cap");
 		}
 
 		 else if((1000 < potentiometer.get_value()) && (potentiometer.get_value() < 1400)){
-			 pros::lcd::print(3, "red front park");
+			 //pros::lcd::print(3, "red front park");
 		 }
 
 		else if((1500 < potentiometer.get_value()) && (potentiometer.get_value() < 1800)){
-			pros::lcd::print(3, "blue front park");
+			//pros::lcd::print(3, "blue front park");
 		}
 
 		//blue
 		else if((1900 < potentiometer.get_value()) && (potentiometer.get_value() < 2400)){
-			pros::lcd::print(3, "blue back cap");
+			//pros::lcd::print(3, "blue back cap");
 		}
 
 		else if((2500 < potentiometer.get_value()) && (potentiometer.get_value() < 3000)){
-			pros::lcd::print(3, "blue stack park");
+			//pros::lcd::print(3, "blue stack park");
 		}
 
 		else if((3100 < potentiometer.get_value()) && (potentiometer.get_value() < 3400)){
-			pros::lcd::print(3, "skills");
+			//pros::lcd::print(3, "skills");
 		}
 
 		else if((3500 < potentiometer.get_value()) && (potentiometer.get_value() < 4095)){
-			pros::lcd::print(3, "testing");
+			//pros::lcd::print(3, "testing");
 		}
 
 //AUTO SELECTOR
