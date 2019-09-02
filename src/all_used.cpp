@@ -3,14 +3,23 @@
 #include "drive.h"
 #include "math.h"
 #include "motor_setup.h"
+#include "motor_sensor_init.h"
 
 void full_position_reset()
 {
   beginning_orientation = 0;
-  reset_drive_encoders();
+  drive_left.tare_position();
+  drive_left_b.tare_position();
+  drive_right.tare_position();
+  drive_right_b.tare_position();
+  left_encoder.reset();
+  right_encoder.reset();
+  back_encoder.reset();
   prev_inches_traveled_left = 0;
   prev_inches_traveled_right = 0;
-  position = {0,0};
+  position.y = 0;
+  position.x = 0;
+  orientation = 0;
 }
 
 float nearestangle(float target_angle, float reference_angle)

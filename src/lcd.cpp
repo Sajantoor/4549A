@@ -41,6 +41,10 @@ lv_obj_t * encoder_back_label = lv_label_create(scr4, NULL);
 lv_obj_t * position_x_label = lv_label_create(scr4, NULL);
 lv_obj_t * position_y_label = lv_label_create(scr4, NULL);
 lv_obj_t * orientation_label = lv_label_create(scr4, NULL);
+lv_obj_t * switcher_label = lv_label_create(scr4, NULL);
+
+lv_obj_t * reset = lv_btn_create (scr4, NULL);
+lv_obj_t * reset_label = lv_label_create(reset, NULL);
 
 lv_style_t red_button_style;
 lv_style_t blue_button_style;
@@ -126,6 +130,17 @@ switcher = 11;
 return LV_RES_OK;
 }
 
+static lv_res_t reset_values (lv_obj_t * btn)
+{
+  left_encoder.reset();
+  right_encoder.reset();
+  back_encoder.reset();
+  beginning_orientation = 0;
+  prev_inches_traveled_left = 0;
+  prev_inches_traveled_right = 0;
+  position = {0,0};
+return LV_RES_OK;
+}
 //--------------------------------------------------------------
 
 
@@ -314,6 +329,17 @@ auto o = orientationL.str();
 lv_label_set_text(orientation_label, o.c_str());
 lv_obj_align(orientation_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 132);
 
+std::ostringstream switcherV;
+switcherV << "Switcher: " << std::setprecision(3) << switcher;
+auto s = switcherV.str();
+lv_label_set_text(switcher_label, s.c_str());
+lv_obj_align(switcher_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 154);
+
+lv_obj_set_size(reset, 75, 75);
+lv_obj_align(reset, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -13, -85);
+lv_label_set_text(reset_label, "RESET");
+lv_btn_set_style(reset, LV_BTN_STYLE_REL, &home_button_style);
+
 //HOME
 lv_style_copy(&home_button_style, &lv_style_plain);
 home_button_style.body.main_color = LV_COLOR_MAKE(0, 0, 0);
@@ -327,7 +353,9 @@ lv_label_set_text(home_button_label_values, "HOME");
 lv_btn_set_style(home_button_values, LV_BTN_STYLE_REL, &home_button_style);
 lv_btn_set_action(home_button_values, LV_BTN_ACTION_CLICK, home_screen);
 
-pros::delay(20);
+lv_btn_set_action(reset, LV_BTN_ACTION_CLICK, reset_values);
+
+pros::delay(5);
 }
 });
 return LV_RES_OK;   /*The button is not deleted*/

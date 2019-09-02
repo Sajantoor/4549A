@@ -120,7 +120,7 @@ void tracking_update(void*ignore)
     position.y += global_offset.y;
 
 
-  //  pros::lcd::print(5, "change_in_angle %f\n", change_in_angle);
+  //  //pros::lcd::print(5, "change_in_angle %f\n", change_in_angle);
   // pros::lcd::print(0, "orientation %f\n", orientation);
   // pros::lcd::print(1, "position.x %f\n", position.x);
   // pros::lcd::print(2, "position.y %f\n", position.y);
@@ -391,7 +391,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float 
     printf("correction drive %f\n", correction_drive);
     printf("correction_turn = %1f\n", correction_turn);
 
-    pros::lcd::print(0, "correction drive %f", correction_drive);
+    //pros::lcd::print(0, "correction drive %f", correction_drive);
   }
 
 //-------------------------------------POSITION PIDS--------------------------------------------------------------------
@@ -427,8 +427,8 @@ void position_turn(float target, int timeout)
           integral = error + integral;
           proportional = error*kp;
 
-          pros::lcd::print(0, "orientation %f\n", orientation);
-          pros::lcd::print(1, "error %f\n", error);
+          //pros::lcd::print(0, "orientation %f\n", orientation);
+          //pros::lcd::print(1, "error %f\n", error);
 
 
           if (fabs(error) > (degToRad(22))){ integral = 0; }
@@ -443,7 +443,7 @@ void position_turn(float target, int timeout)
 
           turn_set(final_power);
 
-          pros::lcd::print(2, "final_power %f\n", final_power);
+          //pros::lcd::print(2, "final_power %f\n", final_power);
           printf("position.x %f\n", position.x);
           printf(" \n");
           printf("position.y %f\n", position.y);
@@ -552,11 +552,11 @@ set_drive(0,0);
     printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
     printf(" \n");
     printf("Turning to %f\n", radToDeg(target_angle));
-    pros::lcd::print(6,"orientation %f\n", orientation);
+    //pros::lcd::print(6,"orientation %f\n", orientation);
     printf("DONE \n");
     printf("--------------------------------------------------------------------------------------\n");
     printf(" \n");
-    pros::lcd::print(7," Moving to %f at %f \n", target_angle,radToDeg(orientation));
+    //pros::lcd::print(7," Moving to %f at %f \n", target_angle,radToDeg(orientation));
 
 		break;
 
@@ -602,7 +602,7 @@ set_drive(0,0);
     printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
     printf(" \n");
     printf("Turning to %f\n", radToDeg(target_angle));
-    pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
+    //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
     printf("--------------------------------------------------------------------------------------\n");
     printf(" \n");
     printf("done \n");
@@ -678,7 +678,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
       printf("Moving to %f at %f \n", target, radToDeg(orientation));
       printf(" \n");
       printf("Turning to %f\n", radToDeg(target));
-      pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
+      //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
       printf("--------------------------------------------------------------------------------------\n");
       printf(" \n");
       printf("done \n");
@@ -774,7 +774,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
       printf("Moving to %f at %f \n", target, radToDeg(orientation));
       printf(" \n");
       printf("Turning to %f\n", radToDeg(target));
-      pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
+      //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
       printf("--------------------------------------------------------------------------------------\n");
       printf(" \n");
       printf("done \n");
@@ -834,7 +834,7 @@ void position_face_point(float target_x, float target_y,int timeout)
 
         final_power = proportional + derivative + (integral * ki);
 
-        pros::lcd::print(6, "final_power %f\n", final_power);
+        //pros::lcd::print(6, "final_power %f\n", final_power);
 
         turn_set(final_power);
 
@@ -929,7 +929,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
             angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
             line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
             line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
-            magnPosvector = sqrtf(line_length);
+            magnPosvector = sqrt(line_length);
 
             vectorToPolar(positionErr, positionErrPolar);
             positionErrPolar.theta += angle_main_line;
@@ -942,13 +942,13 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
       			if (max_speed < 0)
       				correctA += pi;
-      			correction = fabs(err_x) > max_error ? 4 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+      			correction = fabs(err_x) > max_error ? 0.2 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
             printf(" \n");
         		}
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-            finalpower = round(-127.0 / 45.0 * positionErr.y) * sgn(max_speed); //38
+            finalpower = round(-127.0 / 38 * positionErr.y) * sgn(max_speed); //38
 
             limit_to_val_set(finalpower, abs(max_speed));
       			if (finalpower * sgn(max_speed) < 30) //30
@@ -1019,6 +1019,10 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         printf(" \n");
         printf("positionErrPolar %f\n", positionErrPolar.theta);
         printf(" \n");
+        printf("Line Angle %f\n", radToDeg(line_angle));
+        printf(" \n");
+        printf("angle_main_line %f\n", radToDeg(angle_main_line));
+        printf(" \n");
         printf("Moving to %f , %f from %f , %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
         printf(" \n");
         printf("Moved to %f %f from %f %f at %f  || %f.x , %f.y , %f\n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed, position.x, position.y, radToDeg(orientation));
@@ -1030,7 +1034,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         net_timer = pros::millis() + timeout;
         }
 
-        if (magnPosvector < 0.5)//0.5
+        if (magnPosvector < 1)//0.5
         {
         timer_turn = false;
         }
@@ -1120,7 +1124,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 //         if (cross_product > -10)
 //         {
 //         // printf("Right Of Line");
-//         pros::lcd::print(1, "RIGHT OF LINE");
+//         //pros::lcd::print(1, "RIGHT OF LINE");
 //
 //         }
 //
@@ -1182,14 +1186,14 @@ while (true)
       line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
 		  target_orientation = angle_main_line + line_point_angle;
 
-      pros::lcd::print(2, "delta_main_line.x %f\n", delta_main_line.x);
-      pros::lcd::print(3, "delta_main_line.y %f\n", delta_main_line.y);
+      //pros::lcd::print(2, "delta_main_line.x %f\n", delta_main_line.x);
+      //pros::lcd::print(3, "delta_main_line.y %f\n", delta_main_line.y);
 
-      pros::lcd::print(4, "angle_main_line %f\n", angle_main_line);
+      //pros::lcd::print(4, "angle_main_line %f\n", angle_main_line);
 
-      pros::lcd::print(5, "orientation %f\n", orientation);
-      pros::lcd::print(6, "rotation_vector.y %f\n", rotation_vector.y);
-      pros::lcd::print(7, " target_orientation %f\n", target_orientation);
+      //pros::lcd::print(5, "orientation %f\n", orientation);
+      //pros::lcd::print(6, "rotation_vector.y %f\n", rotation_vector.y);
+      //pros::lcd::print(7, " target_orientation %f\n", target_orientation);
 
       pros::delay(10);
 }

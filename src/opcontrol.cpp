@@ -5,7 +5,7 @@
 #include "all_used.h"
 
 void opcontrol() {
-	pros::lcd::initialize();
+	//pros::lcd::initialize();
 
 full_position_reset();
 
