@@ -885,28 +885,17 @@ void position_face_point(float target_x, float target_y,int timeout)
             printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
  }
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int timeout)
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop)
  {
     vector error;
     vector positionErr;
-    polar positionErrPolar;
-    float magnPosvector;
-
-    float encoder_avg;
-    int last_error = 0;
-
-    bool timer_drive = true;
-    unsigned int net_timer;
-
-    int failsafe = 3500;    //2000
-    int initial_millis = pros::millis();
-    int direction_face;
-    bool timer_turn = true;
-
     vector rotation_vector;
     vector delta_main_line;
-    float angle_main_line;
     vector rotated_main_line;
+    polar positionErrPolar;
+
+    float magnPosvector;
+    float angle_main_line;
     float line_ahead_point = 0.5;
     float line_point_angle;
     float line_angle;
@@ -922,7 +911,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
 
-   while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis()))
+   do
     {
             positionErr.x = position.x - ending_point_x;
             positionErr.y = position.y - ending_point_y;
@@ -942,13 +931,13 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
       			if (max_speed < 0)
       				correctA += pi;
-      			correction = fabs(err_x) > max_error ? 0.2 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+      			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
             printf(" \n");
         		}
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-            finalpower = round(-127.0 / 38 * positionErr.y) * sgn(max_speed); //38
+            finalpower = round(-127.0 / 30 * positionErr.y) * sgn(max_speed); //38
 
             limit_to_val_set(finalpower, abs(max_speed));
       			if (finalpower * sgn(max_speed) < 30) //30
@@ -1030,16 +1019,19 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         printf("--------------------------------------------------------------------------------------\n");
         printf(" \n");
 
-        if (timer_turn == true){
-        net_timer = pros::millis() + timeout;
-        }
+      } while (positionErr.y < -early_stop);
 
-        if (magnPosvector < 1)//0.5
-        {
-        timer_turn = false;
-        }
-        pros::delay(20);
-        }
+      set_drive(10, 10);
+
+      do {
+        positionErr.x = position.x - ending_point_x;
+        positionErr.y = position.y - ending_point_y;
+
+        vectorToPolar(positionErr, positionErrPolar);
+        positionErrPolar.theta += angle_main_line;
+        polarToVector(positionErrPolar, positionErr);
+
+      } while(positionErr.y < -early_stop);
 
         if(max_speed < 0)
         {

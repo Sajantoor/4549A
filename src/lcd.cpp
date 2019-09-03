@@ -138,7 +138,10 @@ static lv_res_t reset_values (lv_obj_t * btn)
   beginning_orientation = 0;
   prev_inches_traveled_left = 0;
   prev_inches_traveled_right = 0;
-  position = {0,0};
+  prev_inches_traveled_back = 0;
+  position.y = 0;
+  position.x = 0;
+  orientation = 0;
 return LV_RES_OK;
 }
 //--------------------------------------------------------------

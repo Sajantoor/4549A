@@ -7,7 +7,6 @@
 
 void full_position_reset()
 {
-  beginning_orientation = 0;
   drive_left.tare_position();
   drive_left_b.tare_position();
   drive_right.tare_position();
@@ -17,6 +16,8 @@ void full_position_reset()
   back_encoder.reset();
   prev_inches_traveled_left = 0;
   prev_inches_traveled_right = 0;
+  prev_inches_traveled_back = 0;
+  beginning_orientation = 0;
   position.y = 0;
   position.x = 0;
   orientation = 0;

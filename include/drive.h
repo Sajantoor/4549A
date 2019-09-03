@@ -16,6 +16,7 @@ extern float degrees_to_rad_right;
 extern float beginning_orientation;
 extern float prev_inches_traveled_left;
 extern float prev_inches_traveled_right;
+extern float prev_inches_traveled_back;
 extern float orientation;
 struct vector
 {
@@ -82,7 +83,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int timeout);
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop);
 
 void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y);
 
