@@ -894,6 +894,9 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     vector rotated_main_line;
     polar positionErrPolar;
 
+    int initial_millis = pros::millis();
+    int failsafe = 3000;
+
     float magnPosvector;
     float angle_main_line;
     float line_ahead_point = 0.5;
@@ -1019,7 +1022,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         printf("--------------------------------------------------------------------------------------\n");
         printf(" \n");
 
-      } while (positionErr.y < -early_stop);
+      } while (positionErr.y < -early_stop && (initial_millis + failsafe) < pros::millis());
 
       set_drive(10, 10);
 
