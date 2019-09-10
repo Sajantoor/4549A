@@ -41,61 +41,41 @@ full_position_reset();
 		printf("velocity.a %f\n", velocity.a);
 
 
-		if ((potentiometer.get_value()) < 400) {
-			//pros::lcd::print(3, "red back stack and park");
-		}
-
-		else if ((500 < potentiometer.get_value()) && (potentiometer.get_value() < 900)) {
-			//pros::lcd::print(3, "red back cap");
-		}
-
-		 else if ((1000 < potentiometer.get_value()) && (potentiometer.get_value() < 1400)) {
-			 //pros::lcd::print(3, "red front park");
-		 }
-
-		else if ((1500 < potentiometer.get_value()) && (potentiometer.get_value() < 1800)) {
-			//pros::lcd::print(3, "blue front park");
-		}
-
-		//blue
-		else if ((1900 < potentiometer.get_value()) && (potentiometer.get_value() < 2400)) {
-			//pros::lcd::print(3, "blue back cap");
-		}
-
-		else if ((2500 < potentiometer.get_value()) && (potentiometer.get_value() < 3000)) {
-			//pros::lcd::print(3, "blue stack park");
-		}
-
-		else if ((3100 < potentiometer.get_value()) && (potentiometer.get_value() < 3400)) {
-			//pros::lcd::print(3, "skills");
-		}
-
-		else if ((3500 < potentiometer.get_value()) && (potentiometer.get_value() < 4095)) {
-			//pros::lcd::print(3, "testing");
-		}
 
 //AUTO SELECTOR
 
 
 //DRIVE
-		if(controller.get_digital (pros::E_CONTROLLER_DIGITAL_L1) == 1 && controller.get_digital (pros::E_CONTROLLER_DIGITAL_L2) == 1) {
+		if(controller.get_digital (pros::E_CONTROLLER_DIGITAL_L1) == 1 && controller.get_digital (pros::E_CONTROLLER_DIGITAL_L2) == 1)
+	{
 		int drive_left = (controller.get_analog(ANALOG_LEFT_Y)*0.5);
 		int drive_left_b = (controller.get_analog(ANALOG_LEFT_Y)*0.5);
 		int drive_right = (controller.get_analog(ANALOG_RIGHT_Y)*0.5);
 		int drive_right_b = (controller.get_analog(ANALOG_RIGHT_Y)*0.5);
-  } else {
-     if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) < 15) {
+  }
+	else
+	{
+	    if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) < 15)
+			{
 			   left_drive_set(0);
-      } else {
-        left_drive_set(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) );
       }
 
-      if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)) < 15) {
-      right_drive_set(0);
-      } else {
-        right_drive_set(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) );
+
+			else
+			{
+        left_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),3))/ powf(127,2));
       }
-    }
+
+      if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)) < 15)
+			{
+      right_drive_set(0);
+      }
+
+			else
+			{
+        right_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y),3))/ powf(127,2));
+      }
+  }
 //DRIVE
 
 //LOADER
