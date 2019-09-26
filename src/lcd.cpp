@@ -374,7 +374,7 @@ lv_btn_set_action(reset, LV_BTN_ACTION_CLICK, reset_values);
 
 pros::delay(5);
 }
-});
+},nullptr,"name");
 return LV_RES_OK;   /*The button is not deleted*/
 }
 //-------------------------------------------------------------
