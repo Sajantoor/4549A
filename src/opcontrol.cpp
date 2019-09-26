@@ -124,7 +124,7 @@ if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 	angler.move(0);
 	angler.tare_position();
 }
-//ANGLER AND PUNCH
+//ANGLER AND PUNC
 		pros::delay(20);
 	}
 }
