@@ -140,7 +140,7 @@ void tracking_update(void*ignore)
 void tracking_velocity(void*ignore)
 {
   while(true)
-  {
+{
 	unsigned long curTime = pros::millis();
 	long passed = curTime - velocity.lstChecked;
 	if (passed > 40)
@@ -934,13 +934,13 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
       			if (max_speed < 0)
       				correctA += pi;
-      			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+      			correction = fabs(err_x) > max_error ? 6 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
             printf(" \n");
         		}
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-            finalpower = round(-127.0 / 30 * positionErr.y) * sgn(max_speed); //38
+            finalpower = round(-127.0 / 40 * positionErr.y) * sgn(max_speed); //38
 
             limit_to_val_set(finalpower, abs(max_speed));
       			if (finalpower * sgn(max_speed) < 30) //30
@@ -1022,7 +1022,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         printf("--------------------------------------------------------------------------------------\n");
         printf(" \n");
 
-      } while (positionErr.y < -early_stop && (initial_millis + failsafe) < pros::millis());
+      } while (positionErr.y < -early_stop /*&& (initial_millis + failsafe) < pros::millis()*/);
 
       set_drive(10, 10);
 

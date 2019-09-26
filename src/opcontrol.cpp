@@ -41,136 +41,90 @@ full_position_reset();
 		printf("velocity.a %f\n", velocity.a);
 
 
-		if((potentiometer.get_value()) < 400){
-			//pros::lcd::print(3, "red back stack and park");
-		}
-
-		else if((500 < potentiometer.get_value()) && (potentiometer.get_value() < 900)){
-			//pros::lcd::print(3, "red back cap");
-		}
-
-		 else if((1000 < potentiometer.get_value()) && (potentiometer.get_value() < 1400)){
-			 //pros::lcd::print(3, "red front park");
-		 }
-
-		else if((1500 < potentiometer.get_value()) && (potentiometer.get_value() < 1800)){
-			//pros::lcd::print(3, "blue front park");
-		}
-
-		//blue
-		else if((1900 < potentiometer.get_value()) && (potentiometer.get_value() < 2400)){
-			//pros::lcd::print(3, "blue back cap");
-		}
-
-		else if((2500 < potentiometer.get_value()) && (potentiometer.get_value() < 3000)){
-			//pros::lcd::print(3, "blue stack park");
-		}
-
-		else if((3100 < potentiometer.get_value()) && (potentiometer.get_value() < 3400)){
-			//pros::lcd::print(3, "skills");
-		}
-
-		else if((3500 < potentiometer.get_value()) && (potentiometer.get_value() < 4095)){
-			//pros::lcd::print(3, "testing");
-		}
 
 //AUTO SELECTOR
 
 
 //DRIVE
 		if(controller.get_digital (pros::E_CONTROLLER_DIGITAL_L1) == 1 && controller.get_digital (pros::E_CONTROLLER_DIGITAL_L2) == 1)
-  {
+	{
 		int drive_left = (controller.get_analog(ANALOG_LEFT_Y)*0.5);
 		int drive_left_b = (controller.get_analog(ANALOG_LEFT_Y)*0.5);
 		int drive_right = (controller.get_analog(ANALOG_RIGHT_Y)*0.5);
 		int drive_right_b = (controller.get_analog(ANALOG_RIGHT_Y)*0.5);
   }
-  else
-  {
-       if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) < 15)
-       {
-      left_drive_set(0);
-        }
-        else
-        {
-          left_drive_set(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) );
-        }
-        if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)) < 15)
-        {
-        right_drive_set(0);
-        }
-        else
-        {
-          right_drive_set(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) );
-        }
+	else
+	{
+	    if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) < 15)
+			{
+			   left_drive_set(0);
       }
+
+
+			else
+			{
+        left_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),3))/ powf(127,2));
+      }
+
+      if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)) < 15)
+			{
+      right_drive_set(0);
+      }
+
+			else
+			{
+        right_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y),3))/ powf(127,2));
+      }
+  }
 //DRIVE
 
 //LOADER
-			if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
-	    {
-					full_position_reset();
-	    }
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			full_position_reset();
+    }
 //LOADER
 
 //STACKER
 
-if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1)
-{
+if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1) {
 	//position_turn(90,450, 100);
-}
-else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
-{
+} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 	//position_turn(-90,450, 80);
-}
-else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT))
-{
+} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 	stacker.move(-60);
 	pros::delay(250);
 	stacker.move(0);
 	stacker.tare_position();
+} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+	// code?
+} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+ // code?
+} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+ // code?
 }
-else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
-{
-}
-else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X))
-{
-}
-else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_B))
-{
-}
-
-//STACKER
-
 
 //ANGELER
-
-if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
-{
-		puncher.tare_position();
-	angler.move_absolute(950,200);
-	if((angler.get_position() > 930 && (angler.get_position() < 980))){
-	puncher.move_relative(-1820,100);
-}
-}
-else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
-{
+if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 	puncher.tare_position();
-	angler.move_absolute(340,200);
-if((angler.get_position()> 320 && (angler.get_position() < 400))){
-	puncher.move_relative(-1820,100);
-}
-}
-else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A))
-{
-angler.move(-30);
-pros::delay(350);
-angler.move(0);
-angler.tare_position();
-}
+	angler.move_absolute(950,200);
 
+	if ((angler.get_position() > 930 && (angler.get_position() < 980))) {
+		puncher.move_relative(-1820,100);
+	}
+} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+		puncher.tare_position();
+		angler.move_absolute(340,200);
+
+	if ((angler.get_position()> 320 && (angler.get_position() < 400))) {
+		puncher.move_relative(-1820,100);
+	}
+} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+	angler.move(-30);
+	pros::delay(350);
+	angler.move(0);
+	angler.tare_position();
+}
 //ANGLER AND PUNCH
-
 		pros::delay(20);
 	}
 }

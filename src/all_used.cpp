@@ -5,8 +5,7 @@
 #include "motor_setup.h"
 #include "motor_sensor_init.h"
 
-void full_position_reset()
-{
+void full_position_reset() {
   drive_left.tare_position();
   drive_left_b.tare_position();
   drive_right.tare_position();
@@ -23,23 +22,19 @@ void full_position_reset()
   orientation = 0;
 }
 
-float nearestangle(float target_angle, float reference_angle)
-{
+float nearestangle(float target_angle, float reference_angle) {
   return round((reference_angle-target_angle) / (2 * pi)) *  (2 * pi) + target_angle;
 }
 
-float flmod(float x, float y)
-{
+float flmod(float x, float y) {
 	int q = floor(x / y);
 	return x - (float)q * y;
 }
 
-float degToRad(float degrees)
-{
+float degToRad(float degrees) {
 	return degrees * pi / 180;
 }
 
-float radToDeg(float radians)
-{
+float radToDeg(float radians) {
 	return radians * 180 / pi;
 }
