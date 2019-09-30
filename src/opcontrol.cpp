@@ -3,6 +3,7 @@
 #include "motor_sensor_init.h"
 #include "drive.h"
 #include "all_used.h"
+#include "lift.h"
 
 void opcontrol() {
 	//pros::lcd::initialize();
@@ -10,8 +11,6 @@ void opcontrol() {
 full_position_reset();
 
 	pros::ADIPort potentiometer (pot_port, pros::E_ADI_ANALOG_IN);
-
-	stacker.tare_position();
 
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 
@@ -76,55 +75,12 @@ full_position_reset();
         right_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y),3))/ powf(127,2));
       }
   }
-//DRIVE
 
-//LOADER
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			full_position_reset();
-    }
-//LOADER
-
-//STACKER
-
-if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1) {
-	//position_turn(90,450, 100);
-} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-	//position_turn(-90,450, 80);
-} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-	stacker.move(-60);
-	pros::delay(250);
-	stacker.move(0);
-	stacker.tare_position();
-} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-	// code?
-} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
- // code?
-} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
- // code?
-}
-
-//ANGELER
-if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-	puncher.tare_position();
-	angler.move_absolute(950,200);
-
-	if ((angler.get_position() > 930 && (angler.get_position() < 980))) {
-		puncher.move_relative(-1820,100);
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) == 1)
+	{
+		lift_target = 200;
 	}
-} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-		puncher.tare_position();
-		angler.move_absolute(340,200);
 
-	if ((angler.get_position()> 320 && (angler.get_position() < 400))) {
-		puncher.move_relative(-1820,100);
-	}
-} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
-	angler.move(-30);
-	pros::delay(350);
-	angler.move(0);
-	angler.tare_position();
-}
-//ANGLER AND PUNC
-		pros::delay(20);
+			pros::delay(20);
 	}
 }

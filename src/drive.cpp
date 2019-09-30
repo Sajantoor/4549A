@@ -4,6 +4,8 @@
 #include "motor_sensor_init.h"
 #include "math.h"
 #include "all_used.h"
+#include "lift.h"
+
 
 using namespace pros::literals;
 

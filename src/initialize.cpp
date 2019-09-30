@@ -3,6 +3,7 @@
 #include "drive.h"
 #include "all_used.h"
 #include "lcd.h"
+#include "lift.h"
 
 
 
@@ -27,6 +28,9 @@ void initialize()  {
 
 	pros::task_t auto_selecter_task = pros::c::task_create(auto_selecter, (void*)NULL, TASK_PRIORITY_DEFAULT,
 											TASK_STACK_DEPTH_DEFAULT, "AUTO SELECTER TASK");
+
+	pros::task_t lift_task = pros::c::task_create(lift, (void*)NULL, TASK_PRIORITY_DEFAULT,
+											TASK_STACK_DEPTH_DEFAULT, "LIFT TASK");
 
 
 	if ((potentiometer.get_value()) < 400) {

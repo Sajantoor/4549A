@@ -4,6 +4,8 @@
 #include "math.h"
 #include "motor_setup.h"
 #include "motor_sensor_init.h"
+#include "lift.h"
+
 
 void full_position_reset() {
   drive_left.tare_position();

@@ -1,5 +1,5 @@
 #ifndef MOTOR_SETUP_INIT_H
-
+#define MOTOR_SETUP_INIT_H
 #include "main.h"
 
 #define DRIVE_LEFT 20
@@ -7,10 +7,10 @@
 #define DRIVE_RIGHT 11
 #define DRIVE_RIGHT_B 13
 
-#define LOADER 7
+#define LOADER_RIGHT 7
+#define LOADER_LEFT 5
 #define ANGLER 10
-#define STACKER 8
-#define PUNCHER 5
+#define ARM 11
 
 
 
@@ -18,10 +18,11 @@ extern pros::Motor drive_left;
 extern pros::Motor drive_left_b;
 extern pros::Motor drive_right;
 extern pros::Motor drive_right_b;
-extern pros::Motor puncher;
-extern pros::Motor loader;
+extern pros::Motor arm;
+extern pros::Motor loader_left;
+extern pros::Motor loader_right;
 extern pros::Motor angler;
-extern pros::Motor stacker;
+
 #define pot_port 1
 #define gyro_port 2
 #define top_port_back 3
