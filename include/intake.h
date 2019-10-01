@@ -2,6 +2,11 @@
 #define INTAKE_H
 #include "main.h"
 
-void intake(int speed, int run_time);
+extern int speed;
+extern int run_time;
+
+extern pros::task_t lift_task;
+
+void intake(void *ignore);
 
 #endif
