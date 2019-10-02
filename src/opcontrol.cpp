@@ -78,7 +78,7 @@ full_position_reset();
 
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) == 1)
 	{
-		lift_target = 200;
+		//lift_target = 200;
 	}
 
 			pros::delay(20);

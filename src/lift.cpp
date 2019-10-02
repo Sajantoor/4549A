@@ -10,8 +10,6 @@ int lift_target;
 
 void lift(void *ignore)
 {
- while (true)
- {
     float Kp = 0.45;  //TESTING NEEDED
     float Kd = 0.7;		//TESTING NEEDED
     float Ki = 0.25;    //TESTING NEEDED
@@ -80,4 +78,4 @@ arm.move(0);
 // printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
 }
 
-    }
+    
