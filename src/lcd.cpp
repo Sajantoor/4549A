@@ -2,6 +2,7 @@
 #include "pros/apix.h"
 #include <sstream>
 #include <iomanip>
+#include "display/lv_conf.h"
 #include "lcd.h"
 #include "motor_setup.h"
 #include "motor_sensor_init.h"
@@ -318,13 +319,13 @@ lv_label_set_text(orientation_label, o.c_str());
 lv_obj_align(orientation_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 132);
 
 std::ostringstream vel_x;
-orientationL << "Velocity.x: " << std::setprecision(3) << velocity.x;
+vel_x << "Velocity.x: " << std::setprecision(3) << velocity.x;
 auto vx = vel_x.str();
 lv_label_set_text(velocity_x_label, vx.c_str());
 lv_obj_align(velocity_x_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 154);
 
 std::ostringstream vel_y;
-orientationL << "Velocity.y: " << std::setprecision(3) << velocity.y;
+vel_y << "Velocity.y: " << std::setprecision(3) << velocity.y;
 auto vy = vel_x.str();
 lv_label_set_text(velocity_y_label, vy.c_str());
 lv_obj_align(velocity_y_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 176);
@@ -339,7 +340,7 @@ std::ostringstream potentiometerV;
 potentiometerV << "Potentiometer: " << std::setprecision(3) << potentiometer.get_value();
 auto pv = potentiometerV.str();
 lv_label_set_text(potentiometer_label, pv.c_str());
-lv_obj_align(potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 198);
+lv_obj_align(potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 220);
 
 
 lv_obj_set_size(reset, 75, 75);
