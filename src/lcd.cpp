@@ -10,6 +10,7 @@
 
 //ALL DECLARATIONS OF BUTTONS_____________________________________
 int switcher;
+//test comment
 
 lv_obj_t * scr1  = lv_obj_create(NULL, NULL);
 lv_obj_t * scr2  = lv_obj_create(NULL, NULL);
