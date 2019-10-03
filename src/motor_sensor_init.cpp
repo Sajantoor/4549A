@@ -12,8 +12,8 @@ pros::Motor loader_left(LOADER_LEFT, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCOD
 pros::Motor angler(ANGLER, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor arm(ARM, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
 
-pros::ADIPort potentiometer (pot_port, pros::E_ADI_ANALOG_IN);
-pros::ADIGyro gyro (gyro_port, 0.9192647);
+pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
+pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 pros::ADIEncoder left_encoder(top_port,bottom_port,false);
 pros::ADIEncoder right_encoder(top_port_right,bottom_port_right,false);
 pros::ADIEncoder back_encoder(top_port_back,bottom_port_back,true);

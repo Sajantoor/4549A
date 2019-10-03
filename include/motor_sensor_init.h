@@ -2,15 +2,15 @@
 #define MOTOR_SETUP_INIT_H
 #include "main.h"
 
-#define DRIVE_LEFT 20
-#define DRIVE_LEFT_B 18
-#define DRIVE_RIGHT 11
-#define DRIVE_RIGHT_B 13
+#define DRIVE_LEFT 9
+#define DRIVE_LEFT_B 2
+#define DRIVE_RIGHT 3
+#define DRIVE_RIGHT_B 1
 
-#define LOADER_RIGHT 7
-#define LOADER_LEFT 5
-#define ANGLER 10
-#define ARM 11
+#define LOADER_RIGHT 12
+#define LOADER_LEFT 20
+#define ANGLER 11
+#define ARM 10
 
 
 
@@ -23,8 +23,8 @@ extern pros::Motor loader_left;
 extern pros::Motor loader_right;
 extern pros::Motor angler;
 
-#define pot_port 1
-#define gyro_port 2
+#define pot_port_arm 1
+#define pot_port_angler 2
 #define top_port_back 3
 #define bottom_port_back 4
 #define top_port_right 5
@@ -32,8 +32,8 @@ extern pros::Motor angler;
 #define top_port 7
 #define bottom_port 8
 
-extern pros::ADIPort potentiometer;
-extern pros::ADIGyro gyro;
+extern pros::ADIPort potentiometer_arm;
+extern pros::ADIPort potentiometer_angler;
 extern pros::ADIEncoder left_encoder;
 extern pros::ADIEncoder right_encoder;
 extern pros::ADIEncoder back_encoder;

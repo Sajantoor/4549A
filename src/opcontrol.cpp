@@ -4,13 +4,15 @@
 #include "drive.h"
 #include "all_used.h"
 #include "lift.h"
+#include "angler.h"
 
 void opcontrol() {
 	//pros::lcd::initialize();
 
 full_position_reset();
 
-	pros::ADIPort potentiometer (pot_port, pros::E_ADI_ANALOG_IN);
+	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
+	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 
@@ -81,6 +83,17 @@ full_position_reset();
 		//lift_target = 200;
 	}
 
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1)
+	{
+		angler_pid(150);
+		drive_line_up(70, 1000);
+		angler_pid(50);
+	}
+	else
+	{
+		arm.move(0);
+		drive_set(0);
+	}
 			pros::delay(20);
 	}
 }

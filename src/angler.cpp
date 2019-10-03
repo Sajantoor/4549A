@@ -1,14 +1,10 @@
 #include "main.h"
+#include "angler.h"
 #include "motor_sensor_init.h"
 #include "motor_setup.h"
-#include "lift.h"
 
-//global variabless
-pros::task_t lift_task;
 
-int lift_target;
-
-void lift(void *ignore)
+void angler_pid(int target)
 {
     float Kp = 0.45;  //TESTING NEEDED
     float Kd = 0.7;		//TESTING NEEDED
@@ -22,7 +18,7 @@ void lift(void *ignore)
 
     int timeout = 100;
 
-    int max_speed = 110; //90
+    int max_speed = 60; //90
 
     int failsafe = 2000;    //2000
     int initial_millis = pros::millis();
@@ -37,8 +33,8 @@ void lift(void *ignore)
 
       while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis())){
 
-        encoder_avg = potentiometer_arm.get_value();
-        error = lift_target - encoder_avg;
+        encoder_avg = potentiometer_angler.get_value();
+        error = target - encoder_avg;
 
 
         derivative = (error - last_error)*Kd;
@@ -56,7 +52,7 @@ void lift(void *ignore)
             }
 
 
-        arm.move(final_power);
+        angler.move(final_power);
 
 
         if (timer_turn == true)
@@ -73,7 +69,7 @@ void lift(void *ignore)
         pros::delay(20); //20
 
   }
-arm.move(0);
+angler.move(0);
 //     printf("correction turn %f\n", correction_turn);
 // printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
 }

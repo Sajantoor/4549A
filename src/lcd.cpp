@@ -389,7 +389,7 @@ return LV_RES_OK;   /*The button is not deleted*/
   blue_button_style.text.color = LV_COLOR_MAKE(0, 0, 0);
 
   lv_style_copy(&skills_button_style, &lv_style_plain);
-  skills_button_style.body.main_color = LV_COLOR_MAKE(0, 0, 200);
+  skills_button_style.body.main_color = LV_COLOR_MAKE(153, 0, 255);
   skills_button_style.body.grad_color = LV_COLOR_MAKE(200, 0, 0);
   skills_button_style.body.radius = LV_RADIUS_CIRCLE;
   skills_button_style.text.color = LV_COLOR_MAKE(0, 0, 0);
