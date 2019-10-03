@@ -38,12 +38,12 @@ template <typename T> int sgn(T val)
 
 polar vector_to_polar(vector v)
 {
-return{sqrt(powf(v.x,2) + powf(v.y,2)), atan2f(v.x,v.y)};
+  return{sqrt(powf(v.x,2) + powf(v.y,2)), atan2f(v.x,v.y)};
 }
 
 vector polar_to_vector(polar p)
 {
-return{p.r * sin(p.theta),p.r * cos(p.theta)};
+  return{p.r * sin(p.theta),p.r * cos(p.theta)};
 }
 
 void vectorToPolar(vector& vector, polar& polar)
@@ -71,7 +71,7 @@ void polarToVector(polar& polar, vector& vector)
 void tracking_update(void*ignore)
 {
 
-  while(true){
+  while(true) {
     // float ticks_to_degs = 3.18627451;
     //float pi = 3.1415926535;
     float degrees_encoder_left = (left_encoder.get_value());//* ticks_to_degs
@@ -82,13 +82,11 @@ void tracking_update(void*ignore)
     float degrees_to_rad_right = (pi/180) * degrees_encoder_right; //gives back values in radians
     float degrees_to_rad_back = (pi/180) * degrees_encoder_back; //gives back values in radians
 
-
     const float wheel_radius = 1.4545; //1.375
 
     float inches_traveled_left = degrees_to_rad_left * wheel_radius; //gives back values in inches
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
-
 
     const float distance_between_centre = 6.553329;//6.553329
     //CORDINATES facing the enemies side is 𝜃r = 0
@@ -167,9 +165,9 @@ void tracking_velocity(void*ignore)
 
 void drive_line_up (int speed, int run_time_drive)
 {
-drive_set(speed);
-pros::delay(run_time_drive);
-drive_set(0);
+  drive_set(speed);
+  pros::delay(run_time_drive);
+  drive_set(0);
 }
 
 void turn_pid_encoder_average(double target, unsigned int timeout)
