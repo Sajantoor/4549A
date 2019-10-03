@@ -73,9 +73,7 @@ void lift(void *ignore)
         pros::delay(20); //20
 
   }
-arm.move(0);
+  arm.move(0);
 //     printf("correction turn %f\n", correction_turn);
 // printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
 }
-
-    

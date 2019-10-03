@@ -4,7 +4,7 @@
 #include "ritam_drive.h"
 
 
-typedef struct pid_terms{
+typedef struct pid_terms {
   float Kp;
   float Kd;
   float Ki;

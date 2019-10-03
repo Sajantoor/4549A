@@ -76,7 +76,7 @@ full_position_reset();
       }
   }
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) == 1)
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A))
 	{
 		//lift_target = 200;
 	}
