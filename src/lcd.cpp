@@ -337,7 +337,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_obj_align(switcher_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 198);
 
     std::ostringstream potentiometerV;
-    potentiometerV << "Potentiometer: " << std::setprecision(3) << potentiometer.get_value();
+    potentiometerV << "Potentiometer: " << std::setprecision(3) << potentiometer_arm.get_value();
     auto pv = potentiometerV.str();
     lv_label_set_text(potentiometer_label, pv.c_str());
     lv_obj_align(potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 220);
