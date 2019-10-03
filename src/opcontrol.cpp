@@ -8,6 +8,8 @@
 
 void opcontrol() {
 	//pros::lcd::initialize();
+//arm.move_absolute(800,120);
+//arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
 full_position_reset();
 
@@ -78,22 +80,42 @@ full_position_reset();
       }
   }
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A))
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 1)
 	{
-		//lift_target = 200;
+		loader_left.move(-127);
+		loader_right.move(127);
+	}
+	else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) == 1)
+	{
+		loader_left.move(127);
+		loader_right.move(-127);
+	}
+	else
+	{
+		loader_left.move(0);
+		loader_right.move(0);
 	}
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1)
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B) == 1)
 	{
-		angler_pid(150);
-		drive_line_up(70, 1000);
-		angler_pid(50);
+		arm.move(127);
 	}
 	else
 	{
 		arm.move(0);
-		drive_set(0);
 	}
+
+	// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1)
+	// {
+	// 	angler_pid(150);
+	// 	drive_line_up(70, 1000);
+	// 	angler_pid(50);
+	// }
+	// else
+	// {
+	// 	arm.move(0);
+	// 	drive_set(0);
+	// }
 			pros::delay(20);
 	}
 }

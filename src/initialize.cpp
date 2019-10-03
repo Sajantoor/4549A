@@ -19,7 +19,6 @@ void initialize()  {
 
 	//pros::lcd::print(0, "initialized");
 
-	gyro.reset();
 
 	pros::task_t tracking_task = pros::c::task_create(tracking_update, (void*)NULL, TASK_PRIORITY_DEFAULT,
 															TASK_STACK_DEPTH_DEFAULT, "TRACKING TASK");

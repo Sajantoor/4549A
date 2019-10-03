@@ -10,7 +10,7 @@ pros::Motor drive_right_b(DRIVE_RIGHT_B, MOTOR_GEARSET_18, true, pros::E_MOTOR_E
 pros::Motor loader_right(LOADER_RIGHT, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor loader_left(LOADER_LEFT, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor angler(ANGLER, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor arm(ARM, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor arm(ARM, MOTOR_GEARSET_6, false, pros::E_MOTOR_ENCODER_COUNTS);
 
 pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
