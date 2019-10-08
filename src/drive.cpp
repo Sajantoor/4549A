@@ -124,23 +124,23 @@ void tracking_update(void*ignore) {
 
 void tracking_velocity(void*ignore) {
   while(true) {
-	unsigned long curTime = pros::millis();
-	long passed = curTime - velocity.lstChecked;
+  	unsigned long curTime = pros::millis();
+  	long passed = curTime - velocity.lstChecked;
 
-	if (passed > 40) {
-		float posA = orientation;
-		float posY = position.y;
-		float posX = position.x;
-		velocity.a = ((posA - velocity.lstPosA) * 1000.0) / passed;
-		velocity.y = ((posY - velocity.lstPosY) * 1000.0) / passed;
-		velocity.x = ((posX - velocity.lstPosX) * 1000.0) / passed;
-		velocity.lstPosA = posA;
-		velocity.lstPosY = posY;
-		velocity.lstPosX = posX;
-		velocity.lstChecked = curTime;
-	 }
+  	if (passed > 40) {
+  		float posA = orientation;
+  		float posY = position.y;
+  		float posX = position.x;
+  		velocity.a = ((posA - velocity.lstPosA) * 1000.0) / passed;
+  		velocity.y = ((posY - velocity.lstPosY) * 1000.0) / passed;
+  		velocity.x = ((posX - velocity.lstPosX) * 1000.0) / passed;
+  		velocity.lstPosA = posA;
+  		velocity.lstPosY = posY;
+  		velocity.lstPosX = posX;
+  		velocity.lstChecked = curTime;
+  	 }
 
-   pros::delay(10);
+    pros::delay(10);
   }
 }
 //------------------------------------------------------------------------------------------------------------------
@@ -164,20 +164,14 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
   bool timer_turn = true;
   net_timer = pros::millis() + timeout;
 
-  while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())){
+  while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
     float encoder_avg = (left_encoder.get_value() - right_encoder.get_value()) / 2;
-    float calc_power = pid_calc(&turn_pid, target, encoder_avg);
-    float final_power = power_limit(turn_pid.max_power, calc_power);
-
+    float final_power = pid_calc(&turn_pid, target, encoder_avg);
     turn_set(final_power);
 
-
-    if (timer_turn == true){
-      net_timer = pros::millis() + timeout;
-    }
+    if (timer_turn == true) net_timer = pros::millis() + timeout;
 
     pros::delay(20); //20
-
   }
 
   turn_set(0);
@@ -190,31 +184,12 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
 
 }
 
-void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float Kp_C)
-{
-
-    //reset_drive_encoders();			reset encoder values
-
-  if (pros::competition::is_autonomous()){
+void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float Kp_C) {
+  if (pros::competition::is_autonomous()) {
 
     int failsafe = 2500;    //varible value
     int initial_millis = pros::millis();
-
-    float Kp = 0.5; //0.2
-    float Kd = 0.8;		//0.27
-    float Ki = 0; //0
-    //unsigned int timeout = 200;
-    float error;
-    float last_error;
-    float final_power;
-
-    float proportional;
-    float integral;
-    float derivative;
-
-    int integral_limit = 50;
-    unsigned int net_timer;
-    //float Kp_C = 0.4; //0.4
+    pid_values drive_pid(0.5, 0.8, 0, 50, 100, 110);
     double error_c;
     int direction;
 

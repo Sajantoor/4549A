@@ -16,13 +16,13 @@ void angler_pid(float target) {
 
   while ((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis())) {
     float encoder_avg = potentiometer_angler.get_value();
-    float calc_power = pid_calc(&angler_pid, target, encoder_avg);
-    float final_power = power_limit(angler_pid.max_power, calc_power);
+    float final_power = pid_calc(&angler_pid, target, encoder_avg);
 
     angler.move(final_power);
     if (timer_turn == true) net_timer = pros::millis() + timeout;
     // if less than 2
     if (fabs(angler_pid.error) < 2) timer_turn = false;
+
     pros::delay(20); //20
   }
 
