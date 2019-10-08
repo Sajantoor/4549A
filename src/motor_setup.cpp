@@ -2,26 +2,26 @@
 #include "motor_setup.h"
 #include "motor_sensor_init.h"
 
-void drive_set (int speed) {
+void drive_set(int speed) {
   drive_left.move(speed);
   drive_left_b.move(speed);
   drive_right.move(speed);
   drive_right_b.move(speed);
 }
 
-void turn_set (int speed) {
+void turn_set(int speed) {
   drive_left.move(speed);
   drive_left_b.move(speed);
   drive_right.move(-speed);
   drive_right_b.move(-speed);
 }
 
-void left_drive_set (int speed) {
+void left_drive_set(int speed) {
   drive_left.move(speed);
   drive_left_b.move(speed);
 }
 
-void right_drive_set (int speed) {
+void right_drive_set(int speed) {
   drive_right.move(speed);
   drive_right_b.move(speed);
 }
@@ -35,7 +35,7 @@ void reset_drive_encoders() {
   right_encoder.reset();
 }
 
-void set_drive (int right_speed, int left_speed) {
+void set_drive(int right_speed, int left_speed) {
   right_drive_set(right_speed);
   left_drive_set(left_speed);
 }

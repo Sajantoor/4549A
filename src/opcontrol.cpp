@@ -11,15 +11,12 @@ void opcontrol() {
 //arm.move_absolute(800,120);
 //arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-full_position_reset();
-
+	full_position_reset();
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
-
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 
 	while (true) {
-
 		printf("back_encoder %d\n", back_encoder.get_value());
 		float line_angle = nearestangle(0.4636,0);
 		printf("nearest angle %f \n", line_angle);
@@ -43,79 +40,57 @@ full_position_reset();
 		printf("velocity.y %f\n", velocity.y);
 		printf("velocity.a %f\n", velocity.a);
 
-
-
-//AUTO SELECTOR
-
-
 //DRIVE
-		if(controller.get_digital (pros::E_CONTROLLER_DIGITAL_L1) == 1 && controller.get_digital (pros::E_CONTROLLER_DIGITAL_L2) == 1)
-	{
-		int drive_left = (controller.get_analog(ANALOG_LEFT_Y)*0.5);
-		int drive_left_b = (controller.get_analog(ANALOG_LEFT_Y)*0.5);
-		int drive_right = (controller.get_analog(ANALOG_RIGHT_Y)*0.5);
-		int drive_right_b = (controller.get_analog(ANALOG_RIGHT_Y)*0.5);
-  }
-	else
-	{
-	    if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) < 15)
-			{
-			   left_drive_set(0);
-      }
 
-
-			else
-			{
-        left_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),3))/ powf(127,2));
-      }
-
-      if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)) < 15)
-			{
-      right_drive_set(0);
-      }
-
-			else
-			{
-        right_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y),3))/ powf(127,2));
-      }
+// slow down when buttons are pressed, for precise control
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+		int drive_left = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
+		int drive_left_b = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
+		int drive_right = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
+		int drive_right_b = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
   }
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 1)
-	{
+	// controller deadzone detection for both sticks
+	if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) < 15) {
+		 left_drive_set(0);
+	} else {
+		// slew rate calculation
+		left_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2));
+	}
+
+	if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)) < 15) {
+		right_drive_set(0);
+	} else {
+		// slew rate calculation
+		right_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
+	}
+
+	// loader
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 		loader_left.move(-127);
 		loader_right.move(127);
-	}
-	else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) == 1)
-	{
+	} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 		loader_left.move(127);
 		loader_right.move(-127);
-	}
-	else
-	{
+	} else {
 		loader_left.move(0);
 		loader_right.move(0);
 	}
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B) == 1)
-	{
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
 		arm.move(127);
-	}
-	else
-	{
+	} else {
 		arm.move(0);
 	}
 
-	// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1)
-	// {
+	// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1) {
 	// 	angler_pid(150);
 	// 	drive_line_up(70, 1000);
 	// 	angler_pid(50);
-	// }
-	// else
-	// {
+	// } else {
 	// 	arm.move(0);
 	// 	drive_set(0);
 	// }
-			pros::delay(20);
+		pros::delay(20);
 	}
 }

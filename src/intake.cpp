@@ -3,12 +3,11 @@
 #include "motor_setup.h"
 #include "motor_sensor_init.h"
 
-
 int speed;
 int run_time;
 pros::task_t loader_task;
-void intake(void *ignore)
-{
+
+void intake(void *ignore) {
   // while(true)
   // {
   loader_right.move(speed);

@@ -5,6 +5,7 @@
 #include "math.h"
 #include "all_used.h"
 #include "lift.h"
+#include "pid.h"
 
 
 using namespace pros::literals;
@@ -36,41 +37,29 @@ template <typename T> int sgn(T val)
 
 //-------------------------------TRACKING VALUES------------------------------------------------------------------------------------------------------------------
 
-polar vector_to_polar(vector v)
-{
+polar vector_to_polar(vector v) {
   return{sqrt(powf(v.x,2) + powf(v.y,2)), atan2f(v.x,v.y)};
 }
 
-vector polar_to_vector(polar p)
-{
+vector polar_to_vector(polar p) {
   return{p.r * sin(p.theta),p.r * cos(p.theta)};
 }
 
-void vectorToPolar(vector& vector, polar& polar)
-{
-	if (vector.x || vector.y)
-	{
+void vectorToPolar(vector& vector, polar& polar) {
+	if (vector.x || vector.y) {
 		polar.r = sqrt(vector.x * vector.x + vector.y * vector.y);
 		polar.theta = atan2(vector.y, vector.x);
-	}
-	else
-		polar.r = polar.theta = 0;
+	} else polar.r = polar.theta = 0;
 }
 
-void polarToVector(polar& polar, vector& vector)
-{
-	if (polar.r)
-	{
+void polarToVector(polar& polar, vector& vector) {
+	if (polar.r) {
 		vector.x = polar.r * cos(polar.theta);
 		vector.y = polar.r * sin(polar.theta);
-	}
-	else
-		vector.x = vector.y = 0;
+	} else vector.x = vector.y = 0;
 }
 
-void tracking_update(void*ignore)
-{
-
+void tracking_update(void*ignore) {
   while(true) {
     // float ticks_to_degs = 3.18627451;
     //float pi = 3.1415926535;
@@ -99,12 +88,9 @@ void tracking_update(void*ignore)
 
     vector local_offset;
 
-    if (change_in_angle == 0)
-    {
+    if (change_in_angle == 0) {
      local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
-    }
-    else
-    {
+    } else {
       local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 3.6377953f),
       2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
     }
@@ -128,30 +114,26 @@ void tracking_update(void*ignore)
   //pros::lcd::print(5, "change_left%f\n", inches_traveled_left - prev_inches_traveled_left);
   // pros::lcd::print(6, "change_right%f\n", inches_traveled_right- prev_inches_traveled_right);
  //pros::lcd::print(7, "change_in_angle %f\n", change_in_angle);
-    orientation = new_absolute_orientation;//gives back value in radians
+    orientation = new_absolute_orientation; //gives back value in radians
     prev_inches_traveled_left = inches_traveled_left;
     prev_inches_traveled_right = inches_traveled_right;
     prev_inches_traveled_back = inches_traveled_back;
-
     pros::delay(10);
   }
 }
 
-void tracking_velocity(void*ignore)
-{
-  while(true)
-{
+void tracking_velocity(void*ignore) {
+  while(true) {
 	unsigned long curTime = pros::millis();
 	long passed = curTime - velocity.lstChecked;
-	if (passed > 40)
-	 {
+
+	if (passed > 40) {
 		float posA = orientation;
 		float posY = position.y;
 		float posX = position.x;
 		velocity.a = ((posA - velocity.lstPosA) * 1000.0) / passed;
 		velocity.y = ((posY - velocity.lstPosY) * 1000.0) / passed;
 		velocity.x = ((posX - velocity.lstPosX) * 1000.0) / passed;
-
 		velocity.lstPosA = posA;
 		velocity.lstPosY = posY;
 		velocity.lstPosX = posX;
@@ -163,103 +145,50 @@ void tracking_velocity(void*ignore)
 }
 //------------------------------------------------------------------------------------------------------------------
 
-void drive_line_up (int speed, int run_time_drive)
-{
+void drive_line_up (int speed, int run_time_drive) {
   drive_set(speed);
   pros::delay(run_time_drive);
   drive_set(0);
 }
 
-void turn_pid_encoder_average(double target, unsigned int timeout)
-{
-
+void turn_pid_encoder_average(double target, unsigned int timeout) {
+  int ticks_to_deg = 3;
+  pid_values turn_pid(0.45, 0.7, 0.25, 30, 30*ticks_to_deg, 110);
   drive_distance_correction = 0;
   reset_drive_encoders();
 
-  int ticks_to_deg = 3;
   degrees_flag = target*ticks_to_deg;
-
-  float Kp = 0.45;  //0.45
-  float Kd = 0.7;		//0.7
-  float Ki = 0.25;    //0.25
-  float proportional, integral, derivative;
-
-  float error;
-  int last_error = 0;
-  float final_power;
-  float encoder_avg;
-
-  int max_speed = 110; //90
-
   int failsafe = 2000;    //2000
   int initial_millis = pros::millis();
-
-  int integral_limit = 30;
   unsigned int net_timer;
-
   bool timer_turn = true;
-
-
   net_timer = pros::millis() + timeout;
 
-    while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis())){
+  while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())){
+    float encoder_avg = (left_encoder.get_value() - right_encoder.get_value()) / 2;
+    float calc_power = pid_calc(&turn_pid, target, encoder_avg);
+    float final_power = power_limit(turn_pid.max_power, calc_power);
 
-      encoder_avg = (left_encoder.get_value() - right_encoder.get_value())/2;
-      error = (target*ticks_to_deg - correction_turn) - encoder_avg;
-
-
-      derivative = (error - last_error)*Kd;
-      last_error = error;
-      integral = (error + integral)*Ki;
-      proportional = error*Kp;
-
-      // start integral when target is less than 30 degrees
-        if (fabs(error) > (30*ticks_to_deg)){ integral = 0; }
-
-        if (integral > integral_limit){ integral = integral_limit; }
-
-        if (-integral < -integral_limit){ integral = -integral_limit; }
+    turn_set(final_power);
 
 
-      final_power = proportional + derivative + integral;
+    if (timer_turn == true){
+      net_timer = pros::millis() + timeout;
+    }
 
-          if (final_power > max_speed){
-            final_power = max_speed;
-          }
-
-          if (final_power < -max_speed){
-            final_power = -max_speed;
-          }
-
-
-      turn_set(final_power);
-
-
-      if (timer_turn == true){
-        net_timer = pros::millis() + timeout;
-      }
-
-      if (fabs(error) < 2*ticks_to_deg){   //if less than 2 degrees
-        integral = 0;
-        //printf("timer starts \n");
-        timer_turn = false;
-      }
-
-
-      pros::delay(20); //20
-
-}
-  turn_set(0);
-
-    correction_drive = (correction_turn + (left_encoder.get_value() - right_encoder.get_value())/2 - degrees_flag);
-    prev_correction_turn = correction_turn;
-    correction_turn = ((left_encoder.get_value() - right_encoder.get_value())/2 - degrees_flag + prev_correction_turn);///ticks_to_deg;
-
-    error = 0;
-    printf("correction turn %f\n", correction_turn);
-    printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
+    pros::delay(20); //20
 
   }
+
+  turn_set(0);
+  correction_drive = (correction_turn + (left_encoder.get_value() - right_encoder.get_value())/2 - degrees_flag);
+  prev_correction_turn = correction_turn;
+  correction_turn = ((left_encoder.get_value() - right_encoder.get_value())/2 - degrees_flag + prev_correction_turn);///ticks_to_deg;
+  turn_pid.error = 0;
+  printf("correction turn %f\n", correction_turn);
+  printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
+
+}
 
 void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float Kp_C)
 {
