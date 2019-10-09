@@ -13,6 +13,7 @@ void autonomous() {
 
   if (switcher == 11) {
 
+
     //position_drive(0,0,0,40,250);
     //position_turn(90,500,78);
     // pros::delay(2000);
@@ -21,7 +22,6 @@ void autonomous() {
     //position_drive(0,0,0,40,300);
     //position_face_point2(71, 20, cw, 0, 35, 0, 30);
     //pros::delay(5000);
-    position_drive(0, 0, 20, 20, 0, 100, 1, 0);
     //lift_target = 200;
     // position_turn2(-0.5*pi, ccw, 0.17, 35, 7.3);
     // position_turn2(0, cw, 0.17, 35, 7.3);

@@ -77,20 +77,32 @@ void opcontrol() {
 		loader_right.move(0);
 	}
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-		arm.move(127);
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+		angler_pid(1382, true);
+		pros::delay(20);
+		angler_pid(2300, true);
 	} else {
-		arm.move(0);
+		angler.move(0);
 	}
 
-	// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP) == 1) {
-	// 	angler_pid(150);
-	// 	drive_line_up(70, 1000);
-	// 	angler_pid(50);
-	// } else {
-	// 	arm.move(0);
-	// 	drive_set(0);
-	// }
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+		angler_pid(2100, true);
+		lift_target = 2100;
+		pros::delay(20);
+		lift_target = 1840;
+	} else {
+		angler.move(0);
+	}
+
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+		angler_pid(1382, true);
+		lift_target = 4030;
+		pros::delay(20);
+		lift_target = 1840;
+	} else {
+		angler.move(0);
+	}
+
 		pros::delay(20);
 	}
 }

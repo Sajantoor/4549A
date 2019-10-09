@@ -2,5 +2,6 @@
 #define ANGLER_H
 #include "main.h"
 
-void angler_pid(int target);
+void angler_pid(float target, bool notAuto);
+
 #endif
