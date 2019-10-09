@@ -1,6 +1,10 @@
+#define PID_H
+#include "main.h"
+
 // pid value data struct
 typedef struct pid_values {
    float Kp, Kd, Ki, integral_limit, error, last_error, power, integral_active_zone, calc_power;
+   float integral, derivative, proportional;
    int max_power;
    // constructor
    pid_values(float Kp, float Kd, float Ki, float integral_limit, float integral_active_zone, int max_power):

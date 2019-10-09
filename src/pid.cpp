@@ -35,9 +35,9 @@ float pid_calc(pid_values *pid, float target, float sensor) {
 
    // BUG: Comment this out if this doesn't work
    //
-   // if (fabs(pid->error) > pid->integral_active_zone) {
-   //   integral = 0;
-   // }
+   if (fabs(pid->error) > pid->integral_active_zone) {
+     integral = 0;
+   }
 
    // calculates power then returns power as max power
    pid->calc_power = (proportional*pid->Kp) + (integral*pid->Ki) + (derivative*pid->Kd);

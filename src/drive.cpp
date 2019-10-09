@@ -181,7 +181,6 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
   turn_pid.error = 0;
   printf("correction turn %f\n", correction_turn);
   printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
-
 }
 
 void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float Kp_C) {
@@ -189,121 +188,67 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float 
 
     int failsafe = 2500;    //varible value
     int initial_millis = pros::millis();
-    pid_values drive_pid(0.5, 0.8, 0, 50, 100, 110);
+    pid_values drive_pid(0.5, 0.8, 0, 50, (12/(4*pi)), 110);
+
     double error_c;
     int direction;
-
     float left;
     float right;
-
-    //motor_set_zero_position(DRIVE_LEFT, 0);
-
     int encoder_average;
     int average_left;
     int average_right;
-
-    //int max_speed = 110;
-
     bool timer_drive = true;			//used to exit out of piD loop after robot reaches error
-
-    net_timer = pros::millis() + timeout; //just to initialize net_timer at first
+    float net_timer = pros::millis() + timeout; //just to initialize net_timer at first
 
       if(target > 0){direction = 1;}
       else if (target < 0){direction = -1;}
 
-      	while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis())){
-
-          encoder_average = (right_encoder.get_value() + left_encoder.get_value())/2;
-
-      		error = ((target)/(4*pi) * 360)  - drive_distance_correction - encoder_average;		//wheel size is 4.17 inches
-
-      		derivative = (error - last_error)*Kd;
-      		last_error = error;
-      		proportional = error*Kp;
-          integral = (error + integral)*Ki;
-
-          if (integral > integral_limit){
-            integral = integral_limit;
-          }
-
-          if (-integral < -integral_limit){
-            integral = -integral_limit;
-          }
-
-          if(fabs(error) > (12/(4*pi))){
-            integral = 0;
-          }
-
-          final_power = proportional + derivative + integral;
-
-            if (final_power > max_speed){
-              final_power = max_speed;
-            }
-
-            if (final_power < -max_speed){
-              final_power = -max_speed;
-            }
-
-          //error_c = correction_drive + gyro.get_value();
-        //  printf("error_c value: %5f\n", error_c);
-        //  printf("gyro %5f\n", gyro.get_value());
-
+      while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+        encoder_average = (right_encoder.get_value() + left_encoder.get_value()) / 2;
+        float final_power = pid_calc(&drive_pid, target, encoder_average);
         error_c = (left_encoder.get_value() - right_encoder.get_value());
 
-        if(fabs(error) > (0.1/(4*pi) * 360)){
-
+        if (fabs(drive_pid.error) > (0.1/(4*pi) * 360)) {
             error_c = error_c + correction_drive;
-
             left_drive_set(final_power - error_c*Kp_C);
             right_drive_set(final_power + error_c*Kp_C);
+        } else if (fabs(drive_pid.error) < (1/(4*pi) * 360)) {	//less than 1 inches
+      			timer_drive = false;		//start timer to to exit piD loop
+            drive_pid.integral = 0;
+      	} else if (timer_drive) {
+      		net_timer = pros::millis() + timeout;
+      	} else {
+          left_drive_set(final_power);
+          right_drive_set(final_power);
         }
 
-
-          else {
-            left_drive_set(final_power);
-            right_drive_set(final_power);
-          }
-
-      		if (fabs(error) < (1/(4*pi) * 360)){	//less than 1 inches
-      			timer_drive = false;		//start timer to to exit piD loop
-            integral = 0;
-      		}
-
-      		else if (timer_drive){
-      			net_timer = pros::millis() + timeout;
-      		}
-
-    		pros::delay(20);
-
+    	pros::delay(20);
     }
-
   }
 
-  	drive_set(0);		//set drive to 0 power
+  drive_set(0);		//set drive to 0 power
 
-  //  printf("encoder avg: %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
-  //  pros::lcd::print(7, "encoder avg %d", (left_encoder.get_value() + right_encoder.get_value())/2);
+//  printf("encoder avg: %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
+//  pros::lcd::print(7, "encoder avg %d", (left_encoder.get_value() + right_encoder.get_value())/2);
 
 
-    correction_turn = ((left_encoder.get_value() - right_encoder.get_value())/2 + correction_drive);///ticks_to_deg;
-    prev_correction_drive = correction_drive;
-    correction_drive = (left_encoder.get_value() - right_encoder.get_value()) + prev_correction_drive;
+  correction_turn = ((left_encoder.get_value() - right_encoder.get_value())/2 + correction_drive);///ticks_to_deg;
+  prev_correction_drive = correction_drive;
+  correction_drive = (left_encoder.get_value() - right_encoder.get_value()) + prev_correction_drive;
 
-    drive_distance_correction = ((left_encoder.get_value() + right_encoder.get_value())/2)
-                    - ((target)/(4*pi) * 360) + drive_distance_correction;
+  drive_distance_correction = ((left_encoder.get_value() + right_encoder.get_value())/2)
+                  - ((target)/(4*pi) * 360) + drive_distance_correction;
 
-    printf("correction drive %f\n", correction_drive);
-    printf("correction_turn = %1f\n", correction_turn);
+  printf("correction drive %f\n", correction_drive);
+  printf("correction_turn = %1f\n", correction_turn);
 
-    //pros::lcd::print(0, "correction drive %f", correction_drive);
-  }
+  //pros::lcd::print(0, "correction drive %f", correction_drive);
+}
 
 //-------------------------------------POSITION PIDS--------------------------------------------------------------------
 
 
-void position_turn(float target, int timeout)
- {
-
+void position_turn(float target, int timeout) {
     float kp = 61;
     float kd = 0;
     float ki = 0;
@@ -323,247 +268,135 @@ void position_turn(float target, int timeout)
     int failsafe = 2000;
     int initial_millis = pros::millis();
 
-    do {
-          encoder_avg = orientation;
-          error = degToRad(target) - encoder_avg;
-          derivative = (error - last_error)*kd;
-          last_error = error;
-          integral = error + integral;
-          proportional = error*kp;
+    while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+      encoder_avg = orientation;
+      error = degToRad(target) - encoder_avg;
+      derivative = (error - last_error)*kd;
+      last_error = error;
+      integral = error + integral;
+      proportional = error*kp;
 
-          //pros::lcd::print(0, "orientation %f\n", orientation);
-          //pros::lcd::print(1, "error %f\n", error);
-
-
-          if (fabs(error) > (degToRad(22))){ integral = 0; }
-
-          if (integral > integral_limit){ integral = integral_limit; }
-
-          if (-integral < -integral_limit){ integral = -integral_limit; }
+      //pros::lcd::print(0, "orientation %f\n", orientation);
+      //pros::lcd::print(1, "error %f\n", error);
 
 
-          final_power = proportional + derivative + (integral * ki);
+      if (fabs(error) > (degToRad(22))) integral = 0;
+      if (integral > integral_limit) integral = integral_limit;
+      if (-integral < -integral_limit) integral = -integral_limit;
 
+      final_power = proportional + derivative + (integral * ki);
+      turn_set(final_power);
 
-          turn_set(final_power);
+      //pros::lcd::print(2, "final_power %f\n", final_power);
+      printf("position.x %f\n", position.x);
+      printf(" \n");
+      printf("position.y %f\n", position.y);
+      printf(" \n");
 
-          //pros::lcd::print(2, "final_power %f\n", final_power);
-          printf("position.x %f\n", position.x);
-          printf(" \n");
-          printf("position.y %f\n", position.y);
-          printf(" \n");
+      if (timer_turn == true) {
+        net_timer = pros::millis() + timeout;
+      }
 
-          if (timer_turn == true){
-          net_timer = pros::millis() + timeout;
-          }
-
-          if (fabs(error) < degToRad(1))
-          {
-          timer_turn = false;
-          }
-
-          pros::delay(20); //20
-
-        }
-
-      while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis()));
-
-          if(final_power > 0)
-          {
-            set_drive(20,-20);
-            pros::delay(110);
-            drive_set(0);
-          }
-
-          else if(final_power < 0)
-          {
-            set_drive(-20,20);
-            pros::delay(110);
-            drive_set(0);
-          }
-
-          else
-          {
-            set_drive(0,0);
-          }
-
-      printf("target %f\n", degToRad(target));
-      printf("Degrees Turned from: %f to %f\n", error, orientation);
-      printf("Degrees Turned from:%f to %f\n", radToDeg(error), radToDeg(orientation));
-
- }
-
-void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int coast_power, float stop_offset_deg)
-{
-
-   printf("Turning to %f\n", radToDeg(target_angle));
-
-   float endFull;
-
-   if (turnDir == ch)
-  {
-   	if (fmod(target_angle - orientation, pi * 2) > pi)
-    {
-      turnDir = ccw;
+      if (fabs(error) < degToRad(1)){
+        timer_turn = false;
+      }
+      pros::delay(20);
     }
 
-    else
-    {
+  if (final_power > 0) {
+    set_drive(20,-20);
+    pros::delay(110);
+    drive_set(0);
+  } else if (final_power < 0) {
+    set_drive(-20,20);
+    pros::delay(110);
+    drive_set(0);
+  } else {
+    set_drive(0,0);
+  }
+
+  printf("target %f\n", degToRad(target));
+  printf("Degrees Turned from: %f to %f\n", error, orientation);
+  printf("Degrees Turned from:%f to %f\n", radToDeg(error), radToDeg(orientation));
+ }
+
+void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int coast_power, float stop_offset_deg) {
+  printf("Turning to %f\n", radToDeg(target_angle));
+  float endFull;
+
+  if (turnDir == ch) {
+   	if (fmod(target_angle - orientation, pi * 2) > pi) {
+      turnDir = ccw;
+    } else {
       turnDir = cw;
     }
   }
 
-  switch (turnDir)
-	{
-	case cw:
+  switch (turnDir) {
+	   case cw:
+    	target_angle = orientation + flmod(target_angle - orientation, pi * 2);
+    	endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
+      set_drive(-80,80);
 
-		target_angle = orientation + flmod(target_angle - orientation, pi * 2);
+      while (orientation < endFull) {
+        pros::delay(10);
+      }
 
-		endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
+      set_drive(-coast_power, coast_power);
 
-    set_drive(-80,80);
+  	  while (orientation < target_angle - degToRad(stop_offset_deg)) {
+        pros::delay(10);
+  	  }
 
-  while (orientation < endFull)
-		{
-      pros::delay(10);
-    }
+      set_drive(20,-20);
+      pros::delay(150);
+      set_drive(0,0);
 
-    set_drive(-coast_power, coast_power);
-
-		while (orientation < target_angle - degToRad(stop_offset_deg))
-		{
-      pros::delay(10);
-		}
-
-set_drive(20,-20);
-pros::delay(150);
-set_drive(0,0);
-
-    printf("done \n");
-    printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-    printf("ENTERED SECOND STAGE \n");
-    printf(" \n");
-    printf("position.x %f\n", position.x);
-    printf(" \n");
-    printf("position.y %f\n", position.y);
-    printf(" \n");
-    printf("target_angle %f\n", target_angle);
-    printf(" \n");
-    printf("endFull %f\n", endFull);
-    printf(" \n");
-    printf("orientation %f\n", orientation);
-    printf(" \n");
-    printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-    printf(" \n");
-    printf("Turning to %f\n", radToDeg(target_angle));
-    //pros::lcd::print(6,"orientation %f\n", orientation);
-    printf("DONE \n");
-    printf("--------------------------------------------------------------------------------------\n");
-    printf(" \n");
-    //pros::lcd::print(7," Moving to %f at %f \n", target_angle,radToDeg(orientation));
-
-		break;
+      printf("done \n");
+      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
+      printf("ENTERED SECOND STAGE \n");
+      printf(" \n");
+      printf("position.x %f\n", position.x);
+      printf(" \n");
+      printf("position.y %f\n", position.y);
+      printf(" \n");
+      printf("target_angle %f\n", target_angle);
+      printf(" \n");
+      printf("endFull %f\n", endFull);
+      printf(" \n");
+      printf("orientation %f\n", orientation);
+      printf(" \n");
+      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
+      printf(" \n");
+      printf("Turning to %f\n", radToDeg(target_angle));
+      //pros::lcd::print(6,"orientation %f\n", orientation);
+      printf("DONE \n");
+      printf("--------------------------------------------------------------------------------------\n");
+      printf(" \n");
+      //pros::lcd::print(7," Moving to %f at %f \n", target_angle,radToDeg(orientation));
+      break;
 
 //GOING COUNTER CLOCKWISE
 
-	case ccw:
-
-		target_angle = orientation - flmod(orientation - target_angle, pi * 2);
-
-		endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
-
-    set_drive(80, -80);
-
-		while (orientation > endFull)
-		{
-      pros::delay(10);
-		}
-
-    set_drive(coast_power, -coast_power);
-
-		while (orientation > target_angle + degToRad(stop_offset_deg))
-		{
-      pros::delay(10);
-		}
-    set_drive(-20,20);
-    pros::delay(150);
-
-    set_drive(0, 0);
-
-    printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-    printf("FINISHED TURNING \n");
-    printf(" \n");
-    printf("position.x %f\n", position.x);
-    printf(" \n");
-    printf("position.y %f\n", position.y);
-    printf(" \n");
-    printf("orientation %f\n", orientation);
-    printf(" \n");
-    printf("target_angle %f\n", target_angle);
-    printf(" \n");
-    printf("endFull %f\n", endFull);
-    printf(" \n");
-    printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-    printf(" \n");
-    printf("Turning to %f\n", radToDeg(target_angle));
-    //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
-    printf("--------------------------------------------------------------------------------------\n");
-    printf(" \n");
-    printf("done \n");
-
-    break;
-
-    default:
-    break;
- }
-
-
-}
-
-void position_face_point2(float target_x, float target_y, tTurnDir turnDir, float ratio_full, float coast_power, float offset, float stopOffsetDeg)
- {
-
-	float endFull, target;
-
-  	if (turnDir == ch)
-    {
-  		if (fmod(atan2(target_x - position.x, target_y - position.y) + offset - orientation, pi * 2) > pi)
-      {
-      turnDir = ccw;
-      }
-      else
-      {
-      turnDir = cw;
-      }
-    }
-
-  	switch (turnDir)
-  	{
-  	case cw:
-
-    	target = orientation + flmod(atan2(target_x - position.x, target_y - position.y) + offset - orientation, pi * 2);
-
-      endFull = orientation * (1 - ratio_full) + target * ratio_full;
-
-  		set_drive(-80, 80);
-  		while (orientation < endFull)
-  		{
-  			pros::delay(10);
+  	case ccw:
+  		target_angle = orientation - flmod(orientation - target_angle, pi * 2);
+  		endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
+      set_drive(80, -80);
+  		while (orientation > endFull) {
+        pros::delay(10);
   		}
 
-  		set_drive(-coast_power, coast_power);
-
-  		while (orientation < nearestangle(atan2(target_x - position.x, target_y - position.y) + offset, target) - degToRad(stopOffsetDeg) /*&& (velSafety? NOT_SAFETY(power, turnToTargetNewAlg) : 1 )*/)
-  		{
-  			pros::delay(10);
+      set_drive(coast_power, -coast_power);
+  		while (orientation > target_angle + degToRad(stop_offset_deg)) {
+        pros::delay(10);
   		}
 
-			set_drive(20, -20);
-			pros::delay(150);
-  		set_drive(0, 0);
+      set_drive(-20,20);
+      pros::delay(150);
+      set_drive(0, 0);
 
-      printf("Moving to %f at %f \n", target, radToDeg(orientation));
-      printf("ENTERED SECOND STAGE \n");
+      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
+      printf("FINISHED TURNING \n");
       printf(" \n");
       printf("position.x %f\n", position.x);
       printf(" \n");
@@ -571,36 +404,91 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
       printf(" \n");
       printf("orientation %f\n", orientation);
       printf(" \n");
-      printf("target_x %f\n", target_x);
-      printf(" \n");
-      printf("target_y %f\n", target_y);
-      printf(" \n");
-      printf("target %f\n", target);
+      printf("target_angle %f\n", target_angle);
       printf(" \n");
       printf("endFull %f\n", endFull);
       printf(" \n");
-      printf("Moving to %f at %f \n", target, radToDeg(orientation));
+      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
       printf(" \n");
-      printf("Turning to %f\n", radToDeg(target));
+      printf("Turning to %f\n", radToDeg(target_angle));
       //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
       printf("--------------------------------------------------------------------------------------\n");
       printf(" \n");
       printf("done \n");
 
-  		break;
+      break;
+
+      default:
+      break;
+    }
+}
+
+void position_face_point2(float target_x, float target_y, tTurnDir turnDir, float ratio_full, float coast_power, float offset, float stopOffsetDeg) {
+	float endFull, target;
+  	if (turnDir == ch) {
+  		if (fmod(atan2(target_x - position.x, target_y - position.y) + offset - orientation, pi * 2) > pi) {
+        turnDir = ccw;
+      } else {
+        turnDir = cw;
+      }
+    }
+
+    switch (turnDir) {
+    	case cw:
+      	target = orientation + flmod(atan2(target_x - position.x, target_y - position.y) + offset - orientation, pi * 2);
+        endFull = orientation * (1 - ratio_full) + target * ratio_full;
+
+    		set_drive(-80, 80);
+    		while (orientation < endFull) {
+    			pros::delay(10);
+    		}
+
+    		set_drive(-coast_power, coast_power);
+
+    		while (orientation < nearestangle(atan2(target_x - position.x, target_y - position.y) + offset, target) - degToRad(stopOffsetDeg) /*&& (velSafety? NOT_SAFETY(power, turnToTargetNewAlg) : 1 )*/) {
+    			pros::delay(10);
+    		}
+
+    		set_drive(20, -20);
+    		pros::delay(150);
+    		set_drive(0, 0);
+
+        printf("Moving to %f at %f \n", target, radToDeg(orientation));
+        printf("ENTERED SECOND STAGE \n");
+        printf(" \n");
+        printf("position.x %f\n", position.x);
+        printf(" \n");
+        printf("position.y %f\n", position.y);
+        printf(" \n");
+        printf("orientation %f\n", orientation);
+        printf(" \n");
+        printf("target_x %f\n", target_x);
+        printf(" \n");
+        printf("target_y %f\n", target_y);
+        printf(" \n");
+        printf("target %f\n", target);
+        printf(" \n");
+        printf("endFull %f\n", endFull);
+        printf(" \n");
+        printf("Moving to %f at %f \n", target, radToDeg(orientation));
+        printf(" \n");
+        printf("Turning to %f\n", radToDeg(target));
+        //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
+        printf("--------------------------------------------------------------------------------------\n");
+        printf(" \n");
+        printf("done \n");
+
+    		break;
 
 
   	case ccw:
-
-  		target = orientation - fmod(orientation - atan2(target_x - position.x, target_y - position.y) - offset, pi * 2);
-
+      target = orientation - fmod(orientation - atan2(target_x - position.x, target_y - position.y) - offset, pi * 2);
       endFull = orientation * (1 - ratio_full) + (target) * ratio_full;
   	//	if (LOGS) writeDebugStreamLine("%f %f", radToDeg(target), radToDeg(endFull));
 
   		set_drive(80, -80);
 
-  		while (orientation > endFull /*&& (velSafety? NOT_SAFETY(power, turnToTargetNewAlg) : 1 )*/)
-  		{
+  		while (orientation > endFull /*&& (velSafety? NOT_SAFETY(power, turnToTargetNewAlg) : 1 )*/) {
         printf("FIRST STAGE \n");
         printf(" \n");
         printf("position.x %f\n", position.x);
@@ -626,8 +514,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
   		set_drive(coast_power, -coast_power);
 
-      while (orientation > nearestangle(atan2(target_x - position.x, target_y - position.y) + offset, target) + degToRad(stopOffsetDeg))
-  		{
+      while (orientation > nearestangle(atan2(target_x - position.x, target_y - position.y) + offset, target) + degToRad(stopOffsetDeg)) {
         printf("SECOND STAGE \n");
         printf(" \n");
         printf("position.x %f\n", position.x);
@@ -689,8 +576,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
   	}
 }
 
-void position_face_point(float target_x, float target_y,int timeout)
- {
+void position_face_point(float target_x, float target_y,int timeout) {
     vector error;
     float Kp = 77; //0.2
 
@@ -715,82 +601,68 @@ void position_face_point(float target_x, float target_y,int timeout)
     float encoder_average;
     float error_p;
 
-      do {
-        error.x = target_x - position.x;
-        error.y = target_y - position.y;
+    while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+      error.x = target_x - position.x;
+      error.y = target_y - position.y;
 
-        direction_face = atan2f(error.y , error.x);
+      direction_face = atan2f(error.y , error.x);
 
-        encoder_avg = orientation;
-        error_p = direction_face - encoder_avg;
-        derivative = (error_p - last_error)*kd;
-        last_error = error_p;
-        integral = (error_p + integral);
-        proportional = error_p*Kp;
+      encoder_avg = orientation;
+      error_p = direction_face - encoder_avg;
+      derivative = (error_p - last_error)*kd;
+      last_error = error_p;
+      integral = (error_p + integral);
+      proportional = error_p*Kp;
 
-        // start integral when target is less than 22 degrees
-        if (fabs(error_p) > degToRad(22)){ integral = 0; }
+      // start integral when target is less than 22 degrees
+      if (fabs(error_p) > degToRad(22)){ integral = 0; }
 
-        if (integral > integral_limit){ integral = integral_limit; }
+      if (integral > integral_limit){ integral = integral_limit; }
 
-        if (-integral < -integral_limit){ integral = -integral_limit; }
+      if (-integral < -integral_limit){ integral = -integral_limit; }
 
 
-        final_power = proportional + derivative + (integral * ki);
+      final_power = proportional + derivative + (integral * ki);
 
-        //pros::lcd::print(6, "final_power %f\n", final_power);
+      //pros::lcd::print(6, "final_power %f\n", final_power);
 
-        turn_set(final_power);
+      turn_set(final_power);
 
-        printf("direction_face %f\n", direction_face);
-        printf(" \n");
-        printf("error_p %f\n", error_p);
-        printf(" \n");
+      printf("direction_face %f\n", direction_face);
+      printf(" \n");
+      printf("error_p %f\n", error_p);
+      printf(" \n");
 
-        if (timer_turn == true){
+      if (timer_turn == true) {
         net_timer = pros::millis() + timeout;
-        }
+      }
 
-        if (fabs(error_p) < degToRad(1))
-        {
+      if (fabs(error_p) < degToRad(1)) {
         timer_turn = false;
-        }
+      }
+      pros::delay(20);
+  }
 
-        pros::delay(20);
+   if (final_power > 0) {
+     set_drive(20,-20);
+     pros::delay(95);
+     drive_set(0);
+   }  else if (final_power < 0) {
+     set_drive(-20,20);
+     pros::delay(95);
+     drive_set(0);
+   } else {
+     set_drive(0,0);
+   }
 
-        }
+   turn_set(0);
+    printf("target %f\n", radToDeg(direction_face));
+    printf("target radians %f\n", direction_face);
+    printf("Degrees Turned from: %f to %f\n", error_p, orientation);
+    printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
+}
 
-     while((pros::millis() < net_timer) && pros::competition::is_autonomous() && ((initial_millis + failsafe) > pros::millis()));
-
-       if(final_power > 0)
-       {
-         set_drive(20,-20);
-         pros::delay(95);
-         drive_set(0);
-       }
-
-       else if(final_power < 0)
-       {
-         set_drive(-20,20);
-         pros::delay(95);
-         drive_set(0);
-       }
-
-       else
-       {
-         set_drive(0,0);
-       }
-
-      turn_set(0);
-
-            printf("target %f\n", radToDeg(direction_face));
-            printf("target radians %f\n", direction_face);
-            printf("Degrees Turned from: %f to %f\n", error_p, orientation);
-            printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
- }
-
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop)
- {
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop) {
     vector error;
     vector positionErr;
     vector rotation_vector;
@@ -813,61 +685,57 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     float correctA;
     int last = startpower;
     float line_length;
-
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
 
-   do
-    {
-            positionErr.x = position.x - ending_point_x;
-            positionErr.y = position.y - ending_point_y;
-            angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
-            line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
-            line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
-            magnPosvector = sqrt(line_length);
+    do {
+      positionErr.x = position.x - ending_point_x;
+      positionErr.y = position.y - ending_point_y;
+      angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
+      line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
+      line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
+      magnPosvector = sqrt(line_length);
 
-            vectorToPolar(positionErr, positionErrPolar);
-            positionErrPolar.theta += angle_main_line;
-            polarToVector(positionErrPolar, positionErr);
+      vectorToPolar(positionErr, positionErrPolar);
+      positionErrPolar.theta += angle_main_line;
+      polarToVector(positionErrPolar, positionErr);
 
-        if (max_error)
-        		{
-      			err_angle = orientation - line_angle;
-      			err_x = positionErr.x + positionErr.y * tan(err_angle);
-      			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
-      			if (max_speed < 0)
-      				correctA += pi;
-      			correction = fabs(err_x) > max_error ? 6 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
-            printf(" \n");
-        		}
+      if (max_error) {
+  			err_angle = orientation - line_angle;
+  			err_x = positionErr.x + positionErr.y * tan(err_angle);
+  			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
+  			if (max_speed < 0)
+  				correctA += pi;
+  			correction = fabs(err_x) > max_error ? 6 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+        printf(" \n");
+      }
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-            finalpower = round(-127.0 / 40 * positionErr.y) * sgn(max_speed); //38
+      finalpower = round(-127.0 / 40 * positionErr.y) * sgn(max_speed); //38
 
-            limit_to_val_set(finalpower, abs(max_speed));
-      			if (finalpower * sgn(max_speed) < 30) //30
-      				finalpower = 30 * sgn(max_speed);
-      			int delta = finalpower - last;
-      			limit_to_val_set(delta, 5);
-      			finalpower = last += delta;
+      limit_to_val_set(finalpower, abs(max_speed));
+			if (finalpower * sgn(max_speed) < 30) //30
+				finalpower = 30 * sgn(max_speed);
+			int delta = finalpower - last;
+			limit_to_val_set(delta, 5);
+			finalpower = last += delta;
 
-        switch (sgn(correction))
-          		{
-        		case 0:
-                left_drive_set(finalpower);
-                right_drive_set(finalpower);
-          			break;
-        		case 1:
-                left_drive_set(finalpower);
-                right_drive_set(finalpower * exp(-correction));
-          			break;
-        		case -1:
-                left_drive_set(finalpower * exp(correction));
-                right_drive_set(finalpower);
-          			break;
-          		}
+      switch (sgn(correction)) {
+    		case 0:
+            left_drive_set(finalpower);
+            right_drive_set(finalpower);
+      			break;
+    		case 1:
+            left_drive_set(finalpower);
+            right_drive_set(finalpower * exp(-correction));
+      			break;
+    		case -1:
+            left_drive_set(finalpower * exp(correction));
+            right_drive_set(finalpower);
+      			break;
+        }
 
         printf("back_encoder %d\n", back_encoder.get_value());
         printf(" \n");
@@ -930,41 +798,31 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
       set_drive(10, 10);
 
-      do {
-        positionErr.x = position.x - ending_point_x;
-        positionErr.y = position.y - ending_point_y;
+    do {
+      positionErr.x = position.x - ending_point_x;
+      positionErr.y = position.y - ending_point_y;
 
-        vectorToPolar(positionErr, positionErrPolar);
-        positionErrPolar.theta += angle_main_line;
-        polarToVector(positionErrPolar, positionErr);
+      vectorToPolar(positionErr, positionErrPolar);
+      positionErrPolar.theta += angle_main_line;
+      polarToVector(positionErrPolar, positionErr);
 
-      } while(positionErr.y < -early_stop);
+    } while(positionErr.y < -early_stop);
 
-        if(max_speed < 0)
-        {
-          drive_set(20);
-          pros::delay(100);
-          drive_set(0);
-        }
+    if (max_speed < 0) {
+      drive_set(20);
+      pros::delay(100);
+      drive_set(0);
+    } else if (max_speed > 0) {
+      drive_set(-20);
+      pros::delay(100);
+      drive_set(0);
+    } else {
+      drive_set(0);
+    }
+    printf("driving done\n");
+}
 
-        else if(max_speed > 0)
-        {
-          drive_set(-20);
-          pros::delay(100);
-          drive_set(0);
-        }
-
-        else
-        {
-          drive_set(0);
-        }
-
-        printf("driving done\n");
-
-  }
-
- void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y)
- {
+ void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y) {
 
 // //main line is the line created from the starting point to the ending point
 // //offset line is the line created from the starting point and the current position
@@ -1060,30 +918,29 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 //
 //  }
 
-while (true)
-{
-  vector rotation_vector;
-  vector delta_main_line;
-  float angle_main_line;
-  vector rotated_main_line;
-  float line_ahead_point = 0.5;
-  float target_orientation;
-  float line_point_angle;
+  while (true) {
+    vector rotation_vector;
+    vector delta_main_line;
+    float angle_main_line;
+    vector rotated_main_line;
+    float line_ahead_point = 0.5;
+    float target_orientation;
+    float line_point_angle;
 
 
-  delta_main_line.x = ending_point_x - starting_point_x;
-  		delta_main_line.y = ending_point_y - starting_point_y;
+    delta_main_line.x = ending_point_x - starting_point_x;
+  	delta_main_line.y = ending_point_y - starting_point_y;
 
-  		angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
+  	angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
 
-  		rotation_vector.x = position.x - ending_point_x;
-  		rotation_vector.y = position.y - ending_point_y;
+  	rotation_vector.x = position.x - ending_point_x;
+  	rotation_vector.y = position.y - ending_point_y;
 
-  		rotated_main_line.x = (rotation_vector.x * cosf(angle_main_line)) - (rotation_vector.y * sinf(angle_main_line));
-  		rotated_main_line.y = (rotation_vector.x * sinf(angle_main_line)) + (rotation_vector.y * cosf(angle_main_line));
+  	rotated_main_line.x = (rotation_vector.x * cosf(angle_main_line)) - (rotation_vector.y * sinf(angle_main_line));
+  	rotated_main_line.y = (rotation_vector.x * sinf(angle_main_line)) + (rotation_vector.y * cosf(angle_main_line));
 
-      line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
-		  target_orientation = angle_main_line + line_point_angle;
+    line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
+    target_orientation = angle_main_line + line_point_angle;
 
       //pros::lcd::print(2, "delta_main_line.x %f\n", delta_main_line.x);
       //pros::lcd::print(3, "delta_main_line.y %f\n", delta_main_line.y);
@@ -1094,6 +951,6 @@ while (true)
       //pros::lcd::print(6, "rotation_vector.y %f\n", rotation_vector.y);
       //pros::lcd::print(7, " target_orientation %f\n", target_orientation);
 
-      pros::delay(10);
+    pros::delay(10);
+  }
 }
- }

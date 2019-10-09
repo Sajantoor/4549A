@@ -19,16 +19,16 @@ void lift(float target) {
   net_timer = pros::millis() + timeout;
 
   while (pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
-      float encoder_avg = potentiometer_arm.get_value();
-      float calc_power = pid_calc(&lift_pid, target, encoder_avg);
-      float final_power = power_limit(lift_pid.max_power, calc_power);
-      arm.move(final_power);
+    float encoder_avg = potentiometer_arm.get_value();
+    float calc_power = pid_calc(&lift_pid, target, encoder_avg);
+    float final_power = power_limit(lift_pid.max_power, calc_power);
+    arm.move(final_power);
 
-      if (timer_turn == true) net_timer = pros::millis() + timeout;
+    if (timer_turn == true) net_timer = pros::millis() + timeout;
 
-      if (fabs(lift_pid.error) < 2) timer_turn = false;
+    if (fabs(lift_pid.error) < 2) timer_turn = false;
 
-      pros::delay(20);
+    pros::delay(20);
   }
   arm.move(0);
 }
