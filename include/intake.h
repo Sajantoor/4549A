@@ -5,7 +5,7 @@
 extern int speed;
 extern int run_time;
 
-extern pros::task_t lift_task;
+extern pros::task_t loader_task;
 
 void intake(void *ignore);
 

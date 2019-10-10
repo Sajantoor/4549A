@@ -113,14 +113,14 @@ void opcontrol() {
 	}
 
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-		angler_pid(1382, true);
-	 	lift(4030);
-		pros::delay(20);
- 		lift(1840);
+		// angler_pid(1382, true);
+		// lift(2600);
+	 	// lift(4030);
+		// pros::delay(20);
+ 		// lift(1840);
 	} else {
 		angler.move(0);
 	}
-
 		pros::delay(20);
 	}
 }

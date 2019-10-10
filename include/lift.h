@@ -2,10 +2,12 @@
 #define LIFT_H
 #include "main.h"
 
-//extern float lift_target;
+extern float lift_val;
+extern bool liftTask;
 
 void lift(float lift_target);
-//extern pros::task_t lift_task;
+void lift_task_t(void*ignore);
+extern pros::task_t lift_task;
 
 
 #endif

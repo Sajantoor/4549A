@@ -5,9 +5,15 @@
 #include "pid.h"
 
 //global variabless
-//pros::task_t lift_task;
+pros::task_t lift_task;
+float lift_val;
+bool liftTask;
 
-//float lift_target;
+void lift_task_t(void*ignore) {
+  while (true) {
+    
+  }
+}
 
 void lift(float lift_target) {
   // while (true) {
