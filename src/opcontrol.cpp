@@ -17,9 +17,12 @@ void opcontrol() {
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 
 	while (true) {
-		printf("back_encoder %d\n", back_encoder.get_value());
-		float line_angle = nearestangle(0.4636,0);
-		printf("nearest angle %f \n", line_angle);
+		printf("Back Encoder %d\n", back_encoder.get_value());
+		printf("Right Encoder: %d\n", right_encoder.get_value());
+		printf("Left Encoder %d\n", left_encoder.get_value());
+
+		// float line_angle = nearestangle(0.4636,0);
+		// printf("nearest angle %f \n", line_angle);
 
 		//pros::lcd::print(1, "encoder_left %d\n", left_encoder.get_value());
 	  //pros::lcd::print(5, "velocity.a %f\n", velocity.a);
@@ -33,12 +36,12 @@ void opcontrol() {
 		// //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
 		// //pros::lcd::print(7, "encoder_back %d\n", back_encoder.get_value());
 
-		printf("radian value left %f\n", degrees_to_rad_left);
-		printf("radian value left %f\n", degrees_to_rad_right);
-
-		printf("velocity.x %f\n", velocity.x);
-		printf("velocity.y %f\n", velocity.y);
-		printf("velocity.a %f\n", velocity.a);
+		// printf("radian value left %f\n", degrees_to_rad_left);
+		// printf("radian value left %f\n", degrees_to_rad_right);
+		//
+		// printf("velocity.x %f\n", velocity.x);
+		// printf("velocity.y %f\n", velocity.y);
+		// printf("velocity.a %f\n", velocity.a);
 
 //DRIVE
 
@@ -85,20 +88,35 @@ void opcontrol() {
 		angler.move(0);
 	}
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-		angler_pid(2100, true);
-		lift_target = 2100;
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+		bool notDrop = true;
+		angler_pid(1300, true);
+		pros::delay(1000);
+		lift(2600);
 		pros::delay(20);
-		lift_target = 1840;
+
+		// while (notDrop) {
+		// 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+		// 		notDrop = false;
+		// 	}
+		//
+		// 	angler_pid(1400, true);
+		// 	pros::delay(200);
+		// 	lift_target = 3120;
+		// 	pros::delay(20);
+		// 	lift_target = 4000;
+		// 	pros::delay(2000);
+		// }
 	} else {
 		angler.move(0);
+		arm.move(0);
 	}
 
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
 		angler_pid(1382, true);
-		lift_target = 4030;
+	 	lift(4030);
 		pros::delay(20);
-		lift_target = 1840;
+ 		lift(1840);
 	} else {
 		angler.move(0);
 	}

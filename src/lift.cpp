@@ -5,31 +5,36 @@
 #include "pid.h"
 
 //global variabless
-pros::task_t lift_task;
+//pros::task_t lift_task;
 
-float lift_target;
+//float lift_target;
 
-void lift(void*ignore) {
-  pid_values lift_pid(0.2, 0, 0, 30, 50, 110);
-  int timeout = 100;
-  int failsafe = 2000;    //2000
-  int initial_millis = pros::millis();
-  unsigned int net_timer;
-  bool timer_turn = true;
-  net_timer = pros::millis() + timeout;
+void lift(float lift_target) {
+  // while (true) {
+    pid_values lift_pid(0.2, 0, 0, 30, 100, 110);
+    int timeout = 100;
+    int failsafe = 2000;    //2000
+    int initial_millis = pros::millis();
+    unsigned int net_timer;
+    bool timer_turn = true;
+    net_timer = pros::millis() + timeout;
 
-  while ((pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
-    float encoder_avg = potentiometer_arm.get_value();
-    float calc_power = pid_calc(&lift_pid, lift_target, encoder_avg);
-    float final_power = power_limit(lift_pid.max_power, calc_power);
-    arm.move(final_power);
+    while ((pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+      float encoder_avg = potentiometer_arm.get_value();
+      float final_power = pid_calc(&lift_pid, lift_target, encoder_avg);
+      printf("Final POWER %f\n", final_power);
+      printf("what up %f\n", encoder_avg);
 
-    if (timer_turn == true) net_timer = pros::millis() + timeout;
+      arm.move(final_power);
 
-    if (fabs(lift_pid.error) < 2) timer_turn = false;
-    //47.5 SHORT POST
-    //63 TALL POST
-    pros::delay(20);
-  }
-  arm.move(0);
+      if (timer_turn == true) net_timer = pros::millis() + timeout;
+
+      if (fabs(lift_pid.error) < 2) timer_turn = false;
+      //47.5 SHORT POST
+      //63 TALL POST
+      pros::delay(20);
+      lift_target = lift_pid.target;
+    }
+    arm.move(0);
+  //}
 }

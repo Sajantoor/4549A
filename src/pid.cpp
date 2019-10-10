@@ -19,7 +19,8 @@ float power_limit(float allowed_speed, float actual_speed) {
 
 // Calculates power and returns power as float
 float pid_calc(pid_values *pid, float target, float sensor) {
-   pid->error = target - sensor;
+   pid->target = target;
+   pid->error = pid->target - sensor;
    float derivative = (pid->error - pid->last_error);
    pid->last_error = pid->error;
    float proportional = pid->error;
