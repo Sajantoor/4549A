@@ -6,6 +6,8 @@
 #include "lift.h"
 #include "angler.h"
 
+bool run_shit = true;
+
 void opcontrol() {
 	//pros::lcd::initialize();
 //arm.move_absolute(800,120);
@@ -70,10 +72,10 @@ void opcontrol() {
 
 	// loader
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-		loader_left.move(-127);
+		loader_left.move(127);
 		loader_right.move(127);
 	} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-		loader_left.move(127);
+		loader_left.move(-127);
 		loader_right.move(-127);
 	} else {
 		loader_left.move(0);
@@ -81,46 +83,26 @@ void opcontrol() {
 	}
 
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-		angler_pid(1382, true);
+		angler_pid(1382);
 		pros::delay(20);
-		angler_pid(2300, true);
+		angler_pid(2300);
 	} else {
 		angler.move(0);
 	}
 
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-		bool notDrop = true;
-		angler_pid(1300, true);
-		pros::delay(1000);
+		angler_pid(1300);
 		lift(2600);
 		pros::delay(20);
 
-		// while (notDrop) {
-		// 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
-		// 		notDrop = false;
-		// 	}
-		//
-		// 	angler_pid(1400, true);
-		// 	pros::delay(200);
-		// 	lift_target = 3120;
-		// 	pros::delay(20);
-		// 	lift_target = 4000;
-		// 	pros::delay(2000);
-		// }
 	} else {
-		angler.move(0);
 		arm.move(0);
 	}
 
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-		// angler_pid(1382, true);
-		// lift(2600);
-	 	// lift(4030);
-		// pros::delay(20);
- 		// lift(1840);
-	} else {
-		angler.move(0);
+	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+		run_shit = true;
+		run_shit ? angler_pid(2000) : angler_pid(2000);
 	}
-		pros::delay(20);
+
 	}
 }

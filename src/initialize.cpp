@@ -5,15 +5,9 @@
 #include "lcd.h"
 #include "lift.h"
 #include "intake.h"
+#include "angler.h"
 
 
-
-/**
- * Runs initialization code. This occurs as soon as the program is started.
- *
- * All other competition modes are blocked by initialize; it is recommended
- * to keep execution time for this mode under a few seconds.
- */
 void initialize()  {
 		//pros::lcd::initialize();
 
@@ -27,13 +21,16 @@ void initialize()  {
 															TASK_STACK_DEPTH_DEFAULT, "VELOCITY TASK");
 
 	pros::task_t auto_selecter_task = pros::c::task_create(auto_selecter, (void*)NULL, TASK_PRIORITY_DEFAULT,
-											TASK_STACK_DEPTH_DEFAULT, "AUTO SELECTER TASK");
+																		TASK_STACK_DEPTH_DEFAULT, "AUTO SELECTER TASK");
 
-	pros::task_t lift_task = pros::c::task_create(lift_task_t, (void*)NULL, TASK_PRIORITY_DEFAULT,
-											TASK_STACK_DEPTH_DEFAULT, "LIFT TASK");
+	pros::task_t lift_task_init = pros::c::task_create(lift_task, (void*)NULL, TASK_PRIORITY_DEFAULT,
+														TASK_STACK_DEPTH_DEFAULT, "LIFT TASK");
 
 	pros::task_t loader_task = pros::c::task_create(intake, (void*)NULL, TASK_PRIORITY_DEFAULT,
-											TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");
+														TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");
+
+	pros::task_t angler_task = pros::c::task_create(angler_pid_task, (void*)NULL, TASK_PRIORITY_DEFAULT,
+											       TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");
 
 
 	// if ((potentiometer.get_value()) < 400) {

@@ -5,9 +5,9 @@
 extern float lift_val;
 extern bool liftTask;
 
-void lift(float lift_target);
-void lift_task_t(void*ignore);
-extern pros::task_t lift_task;
+void lift(int value);
+void lift_task(void*ignore);
+extern pros::task_t lift_task_init;
 
 
 #endif

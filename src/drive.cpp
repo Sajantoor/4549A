@@ -200,8 +200,8 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float 
     bool timer_drive = true;			//used to exit out of piD loop after robot reaches error
     float net_timer = pros::millis() + timeout; //just to initialize net_timer at first
 
-      if(target > 0){direction = 1;}
-      else if (target < 0){direction = -1;}
+      if (target > 0) direction = 1;
+      else if (target < 0) direction = -1;
 
       while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
         encoder_average = (right_encoder.get_value() + left_encoder.get_value()) / 2;
@@ -717,7 +717,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
       limit_to_val_set(finalpower, abs(max_speed));
 			if (finalpower * sgn(max_speed) < 30) //30
-				finalpower = 30 * sgn(max_speed);
+      finalpower = 30 * sgn(max_speed);
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 5);
 			finalpower = last += delta;
@@ -878,12 +878,12 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 //          cross_product = (current_position_x_prime - starting_point_x) * (ending_point_y_prime - starting_point_y_prime) -
 //          (current_position_y_prime - starting_point_y_prime) * (ending_point_x_prime - starting_point_x_prime);
 //
-//         if (cross_product > -10)
-//         {
-//         // printf("Right Of Line");
-//         //pros::lcd::print(1, "RIGHT OF LINE");
-//
-//         }
+        // if (cross_product > -10)
+        // {
+        // // printf("Right Of Line");
+        // //pros::lcd::print(1, "RIGHT OF LINE");
+        //
+        // }
 //
 //         else if (cross_product < 10)
 //         {
@@ -918,15 +918,23 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 //
 //  }
 
-  while (true) {
-    vector rotation_vector;
-    vector delta_main_line;
-    float angle_main_line;
-    vector rotated_main_line;
-    float line_ahead_point = 0.5;
-    float target_orientation;
-    float line_point_angle;
+  vector rotation_vector;
+  vector delta_main_line;
+  float angle_main_line;
+  vector rotated_main_line;
+  float line_ahead_point = 0.5;
+  float target_orientation;
+  float line_point_angle;
 
+  while (true) {
+
+    // vector rotation_vector;
+    // vector delta_main_line;
+    // float angle_main_line;
+    // vector rotated_main_line;
+    // float line_ahead_point = 0.5;
+    // float target_orientation;
+    // float line_point_angle;
 
     delta_main_line.x = ending_point_x - starting_point_x;
   	delta_main_line.y = ending_point_y - starting_point_y;
