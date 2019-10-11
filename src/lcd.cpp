@@ -381,7 +381,8 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
 
   void auto_selecter (void*ignore)
   {
-
+  while (true)
+  {
   lv_scr_load(scr1);
   switcher = 0;
   lv_style_copy(&red_button_style, &lv_style_plain);
@@ -440,4 +441,5 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
   lv_btn_set_action(testing, LV_BTN_ACTION_CLICK, testing_auto);
 
   pros::delay(10);
+}
 }

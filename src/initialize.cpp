@@ -29,9 +29,10 @@ void initialize()  {
 	pros::task_t loader_task = pros::c::task_create(intake, (void*)NULL, TASK_PRIORITY_DEFAULT,
 														TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");
 
-	pros::task_t angler_task = pros::c::task_create(angler_pid_task, (void*)NULL, TASK_PRIORITY_DEFAULT,
-											       TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");
+//	pros::task_t angler_task = pros::c::task_create(angler_pid_task, (void*)NULL, TASK_PRIORITY_DEFAULT,
+											       //TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");
 
+pros::Task angler_task_cpp(angler_pid_task, nullptr, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT,  "loader task");
 
 	// if ((potentiometer.get_value()) < 400) {
 	// 	//pros::lcd::print(3, "red back stack and park");
