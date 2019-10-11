@@ -25,7 +25,7 @@ float pid_calc(pid_values *pid, float target, float sensor) {
    pid->last_error = pid->error;
    float proportional = pid->error;
    float integral = pid->error + integral;
-    printf("error%f\n",pid->error);
+    //printf("error%f\n",pid->error);
 
    if (integral*pid->Ki > pid->integral_limit) {
      integral = pid->integral_limit;

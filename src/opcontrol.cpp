@@ -19,9 +19,9 @@ void opcontrol() {
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 
 	while (true) {
-		printf("Back Encoder %d\n", back_encoder.get_value());
-		printf("Right Encoder: %d\n", right_encoder.get_value());
-		printf("Left Encoder %d\n", left_encoder.get_value());
+		// printf("Back Encoder %d\n", back_encoder.get_value());
+		// printf("Right Encoder: %d\n", right_encoder.get_value());
+		// printf("Left Encoder %d\n", left_encoder.get_value());
 
 		// float line_angle = nearestangle(0.4636,0);
 		// printf("nearest angle %f \n", line_angle);
@@ -83,26 +83,19 @@ void opcontrol() {
 	}
 
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-		angler_pid(1382);
+		angler_pid(1275);
 		pros::delay(20);
-		angler_pid(2300);
+		angler_pid(2200);
 	} else {
 		angler.move(0);
 	}
 
 	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-		angler_pid(1300);
-		lift(2600);
+		angler_pid(1720);
+		lift(2700);
 		pros::delay(20);
-
 	} else {
-		arm.move(0);
+		angler_pid(2200);
 	}
-
-	if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-		run_shit = true;
-		run_shit ? angler_pid(2000) : angler_pid(2000);
-	}
-
 	}
 }
