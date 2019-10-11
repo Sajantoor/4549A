@@ -46,7 +46,9 @@ lv_obj_t * orientation_label = lv_label_create(scr4, NULL);
 lv_obj_t * velocity_x_label = lv_label_create(scr4, NULL);
 lv_obj_t * velocity_y_label = lv_label_create(scr4, NULL);
 lv_obj_t * switcher_label = lv_label_create(scr4, NULL);
-lv_obj_t * potentiometer_label = lv_label_create(scr4, NULL);
+lv_obj_t * arm_potentiometer_label = lv_label_create(scr4, NULL);
+lv_obj_t * angler_potentiometer_label = lv_label_create(scr4, NULL);
+
 
 lv_obj_t * reset = lv_btn_create (scr4, NULL);
 lv_obj_t * reset_label = lv_label_create(reset, NULL);
@@ -336,11 +338,17 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_label_set_text(switcher_label, s.c_str());
     lv_obj_align(switcher_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 198);
 
-    std::ostringstream potentiometerV;
-    potentiometerV << "Potentiometer: " << std::setprecision(3) << potentiometer_arm.get_value();
-    auto pv = potentiometerV.str();
-    lv_label_set_text(potentiometer_label, pv.c_str());
-    lv_obj_align(potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 220);
+    std::ostringstream arm_potentiometerV;
+    arm_potentiometerV << "Arm Potentiometer: " << std::setprecision(3) << potentiometer_arm.get_value();
+    auto arpv = arm_potentiometerV.str();
+    lv_label_set_text(arm_potentiometer_label, arpv.c_str());
+    lv_obj_align(arm_potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 220);
+
+    std::ostringstream angler_potentiometerV;
+    angler_potentiometerV << "Angler Potentiometer: " << std::setprecision(3) << potentiometer_angler.get_value();
+    auto anpv = angler_potentiometerV.str();
+    lv_label_set_text(angler_potentiometer_label, anpv.c_str());
+    lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 0, 0);
 
 
     lv_obj_set_size(reset, 75, 75);
