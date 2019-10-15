@@ -348,7 +348,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     angler_potentiometerV << "Angler Potentiometer: " << std::setprecision(3) << potentiometer_angler.get_value();
     auto anpv = angler_potentiometerV.str();
     lv_label_set_text(angler_potentiometer_label, anpv.c_str());
-    lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 0, 0);
+    lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
 
 
     lv_obj_set_size(reset, 75, 75);
@@ -381,9 +381,9 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
 
   void auto_selecter (void*ignore)
   {
-  while (true)
-  {
   lv_scr_load(scr1);
+  // while (true)
+  // {
   switcher = 0;
   lv_style_copy(&red_button_style, &lv_style_plain);
   red_button_style.body.main_color = LV_COLOR_MAKE(200, 0, 0);
@@ -441,5 +441,5 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
   lv_btn_set_action(testing, LV_BTN_ACTION_CLICK, testing_auto);
 
   pros::delay(10);
-}
+// }
 }

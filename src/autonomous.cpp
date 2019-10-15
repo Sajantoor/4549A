@@ -9,7 +9,13 @@
 void autonomous() {
   //pros::lcd::initialize();
   full_position_reset();
-  position_drive(0, 0, 0, 40, 0, 100, 1, 0);
+  position_drive(0, 0, 0, 21, 0, 100, 1.2, 0);
+  position_turn2(degToRad(-90), ccw, 0.2,30,2.5);
+  //pros::delay(5000);
+  position_drive(0, 21, 0, 21, 50, 100, 1, 0);
+  //position_turn2(degToRad(-90), ccw, 0.2,30,2.5);
+  // position_drive(0, 25, 0, 0, 50, -100, 1, 0);
+  // position_drive(0, 0, 20, 20, 0, 100, 1, 0);
 
   if (switcher == 11) {
 

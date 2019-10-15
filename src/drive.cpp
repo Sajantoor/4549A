@@ -71,13 +71,13 @@ void tracking_update(void*ignore) {
     float degrees_to_rad_right = (pi/180) * degrees_encoder_right; //gives back values in radians
     float degrees_to_rad_back = (pi/180) * degrees_encoder_back; //gives back values in radians
 
-    const float wheel_radius = 1.4545; //1.375
+    const float wheel_radius = 1.3845055; //1.4545
 
     float inches_traveled_left = degrees_to_rad_left * wheel_radius; //gives back values in inches
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-    const float distance_between_centre = 6.553329;//6.553329
+    const float distance_between_centre = 5.553592;//5.6380148
     //CORDINATES facing the enemies side is 𝜃r = 0
 
     beginning_orientation = 0;
@@ -91,9 +91,11 @@ void tracking_update(void*ignore) {
     if (change_in_angle == 0) {
      local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
     } else {
-      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 3.6377953f),
+      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 1.266666f),//2.853739
       2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
     }
+
+    //printf("orientation %f \n", radToDeg(orientation));
 
     float average_orientation = orientation + (change_in_angle/2);
     float rotation_amount = orientation + (change_in_angle)/2;
@@ -106,14 +108,6 @@ void tracking_update(void*ignore) {
     position.y += global_offset.y;
 
 
-  //  //pros::lcd::print(5, "change_in_angle %f\n", change_in_angle);
-  // pros::lcd::print(0, "orientation %f\n", orientation);
-  // pros::lcd::print(1, "position.x %f\n", position.x);
-  // pros::lcd::print(2, "position.y %f\n", position.y);
-  // pros::lcd::print(4, "local_offset %f\n", local_offset);
-  //pros::lcd::print(5, "change_left%f\n", inches_traveled_left - prev_inches_traveled_left);
-  // pros::lcd::print(6, "change_right%f\n", inches_traveled_right- prev_inches_traveled_right);
- //pros::lcd::print(7, "change_in_angle %f\n", change_in_angle);
     orientation = new_absolute_orientation; //gives back value in radians
     prev_inches_traveled_left = inches_traveled_left;
     prev_inches_traveled_right = inches_traveled_right;
@@ -249,7 +243,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float 
 
 
 void position_turn(float target, int timeout) {
-    float kp = 61;
+    float kp = 75.6;
     float kd = 0;
     float ki = 0;
     float proportional, derivative, integral;
@@ -263,10 +257,13 @@ void position_turn(float target, int timeout) {
     int max_speed = 100;
     float max_error = 0.001f;
     bool timer_turn = true;
-    float net_timer;
+    unsigned int net_timer;
 
-    int failsafe = 2000;
+    int failsafe = 1500;
     int initial_millis = pros::millis();
+    printf("orientation %f\n", orientation);
+    printf("timer %i\n", pros::millis());
+
 
     while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
       encoder_avg = orientation;
@@ -278,9 +275,11 @@ void position_turn(float target, int timeout) {
 
       //pros::lcd::print(0, "orientation %f\n", orientation);
       //pros::lcd::print(1, "error %f\n", error);
+      printf("target %f\n", degToRad(target));
+      printf("error %f\n", radToDeg(error));
 
 
-      if (fabs(error) > (degToRad(22))) integral = 0;
+      if (fabs(error) > (degToRad(22))) integral = 0;//22
       if (integral > integral_limit) integral = integral_limit;
       if (-integral < -integral_limit) integral = -integral_limit;
 
@@ -291,6 +290,8 @@ void position_turn(float target, int timeout) {
       printf("position.x %f\n", position.x);
       printf(" \n");
       printf("position.y %f\n", position.y);
+      printf(" \n");
+      printf("finalpower %f\n", final_power);
       printf(" \n");
 
       if (timer_turn == true) {
@@ -305,11 +306,11 @@ void position_turn(float target, int timeout) {
 
   if (final_power > 0) {
     set_drive(20,-20);
-    pros::delay(110);
+    pros::delay(50);
     drive_set(0);
   } else if (final_power < 0) {
     set_drive(-20,20);
-    pros::delay(110);
+    pros::delay(50);
     drive_set(0);
   } else {
     set_drive(0,0);
@@ -349,7 +350,7 @@ void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int 
   	  }
 
       set_drive(20,-20);
-      pros::delay(150);
+      pros::delay(100);
       set_drive(0,0);
 
       printf("done \n");
@@ -671,7 +672,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     polar positionErrPolar;
 
     int initial_millis = pros::millis();
-    int failsafe = 3000;
+    int failsafe = 2000;
 
     float magnPosvector;
     float angle_main_line;
@@ -685,6 +686,9 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     float correctA;
     int last = startpower;
     float line_length;
+    float sin_line;
+    float cos_line;
+    float velocity_line;
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
@@ -696,7 +700,8 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
       line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
       magnPosvector = sqrt(line_length);
-
+      sin_line = sin(angle_main_line);
+      cos_line = cos(angle_main_line);
       vectorToPolar(positionErr, positionErrPolar);
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
@@ -707,17 +712,17 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 6 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
-        printf(" \n");
+  			correction = fabs(err_x) > max_error ? 8.2 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+        printf(" \n");//8.5
       }
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-      finalpower = round(-127.0 / 40 * positionErr.y) * sgn(max_speed); //38
+      finalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed); //17.9
 
       limit_to_val_set(finalpower, abs(max_speed));
-			if (finalpower * sgn(max_speed) < 30) //30
-      finalpower = 30 * sgn(max_speed);
+			if (finalpower * sgn(max_speed) < 35) //30
+      finalpower = 35 * sgn(max_speed);
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 5);
 			finalpower = last += delta;
@@ -738,6 +743,10 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         }
 
         printf("back_encoder %d\n", back_encoder.get_value());
+        printf(" \n");
+        printf("left_encoder %d\n", left_encoder.get_value());
+        printf(" \n");
+        printf("right_encoder %d\n", right_encoder.get_value());
         printf(" \n");
         printf("position.x %f\n", position.x);
         printf(" \n");
@@ -794,9 +803,18 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
         printf("--------------------------------------------------------------------------------------\n");
         printf(" \n");
 
+        pros::delay(10);
+
       } while (positionErr.y < -early_stop /*&& (initial_millis + failsafe) < pros::millis()*/);
 
-      set_drive(10, 10);
+      if (max_speed < 0)
+      {
+        drive_set(-25);
+      }
+      else if (max_speed > 0)
+      {
+        drive_set(25);
+      }
 
     do {
       positionErr.x = position.x - ending_point_x;
@@ -806,19 +824,31 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
 
-    } while(positionErr.y < -early_stop);
+      velocity_line = sin_line * velocity.x + cos_line * velocity.y;
+      printf("driving done velocity\n");
+
+      pros::delay(5);
+    } while(positionErr.y < -early_stop - (velocity_line * 0.098));
+
+    printf("driving done\n");
+    printf("velocity_line %f \n", velocity_line);
 
     if (max_speed < 0) {
       drive_set(20);
-      pros::delay(100);
+      pros::delay(50);
       drive_set(0);
+      printf("driving done back\n");
+
     } else if (max_speed > 0) {
       drive_set(-20);
-      pros::delay(100);
+      pros::delay(50);
       drive_set(0);
+      printf("driving done forward\n");
+
     } else {
       drive_set(0);
     }
+    // drive_set(0);
     printf("driving done\n");
 }
 

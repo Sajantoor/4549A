@@ -22,6 +22,12 @@ void opcontrol() {
 			// printf("Back Encoder %d\n", back_encoder.get_value());
 			// printf("Right Encoder: %d\n", right_encoder.get_value());
 			// printf("Left Encoder %d\n", left_encoder.get_value());
+			printf("position.x %f\n", position.x);
+			printf(" \n");
+			printf("position.y %f\n", position.y);
+			printf(" \n");
+			printf("orientation %f\n", radToDeg(orientation));
+			printf(" \n");
 
 			// float line_angle = nearestangle(0.4636,0);
 			// printf("nearest angle %f \n", line_angle);
