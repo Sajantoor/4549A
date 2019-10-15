@@ -22,12 +22,12 @@ void opcontrol() {
 			// printf("Back Encoder %d\n", back_encoder.get_value());
 			// printf("Right Encoder: %d\n", right_encoder.get_value());
 			// printf("Left Encoder %d\n", left_encoder.get_value());
-			printf("position.x %f\n", position.x);
-			printf(" \n");
-			printf("position.y %f\n", position.y);
-			printf(" \n");
-			printf("orientation %f\n", radToDeg(orientation));
-			printf(" \n");
+			// printf("position.x %f\n", position.x);
+			// printf(" \n");
+			// printf("position.y %f\n", position.y);
+			// printf(" \n");
+			// printf("orientation %f\n", radToDeg(orientation));
+			// printf(" \n");
 
 			// float line_angle = nearestangle(0.4636,0);
 			// printf("nearest angle %f \n", line_angle);
@@ -89,15 +89,14 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			angler_pid(1275);
+			angler_pid(1250);
 			pros::delay(20);
-			angler_pid(2200);
-			printf("button pressed \n \n");
+			// angler_pid(2050);
 		}
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 			angler_pid(1720);
-			lift(3400);
+			lift(3400, 10000);
 		}
 
 		pros::delay(20);

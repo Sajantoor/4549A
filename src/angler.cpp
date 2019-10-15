@@ -10,7 +10,6 @@ bool anglerBool = false;
 void angler_pid(float position) {
   target = position;
   anglerBool = true;
-  printf(anglerBool ? "true" : "false");
 }
 
 void angler_pid_task(void*ignore) {
@@ -31,3 +30,5 @@ void angler_pid_task(void*ignore) {
     pros::delay(20);
   }
 }
+
+// OPTIMIZE: ADD ARRAY FOR POSITION VALUES SO THEY DON'T RUN AT THE SAME TIME, INSTEAD OF HAVING A DELAY. THIS IS A CLEANER SOLUTION.
