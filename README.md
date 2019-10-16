@@ -7,8 +7,8 @@
  * [Motors and Sensors](#Motors_and_Sensors)
  * [Opcontrol](#Opcontrol)
  * [PID](#PID)
- * [Angler PID](#Angler_PID)
- * [LCD Display](#LCD_Display)
+ * [Angler PID](#Angler-PID)
+ * [LCD Display](#LCD-Display)
  
  
  ## Initialize
@@ -44,10 +44,10 @@ if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 [View opcontrol](../master/src/opcontrol.cpp)
 
  
-This code allows the driver to, at a button press, stack cubes with the angler and angler returns to its original position. This is a task which allows the driver to do other things such as drive or intake, if they desired. (The values here are potentiometer values.)
+This code allows the driver to, at a button press, stack cubes with the angler and the angler returns to its original position. This is a task which allows the driver to do other things such as drive or intake, if they desired. (The values here are potentiometer values.)
  
  ## PID 
- > This is own non redundant, PID function. PID values such as kp, ki, etc. are entered using a constructor inside a struct. These values are used with a target and sensor values to calculate what the power the motor should be at that given time. 
+ > This is our non redundant, PID function. PID values such as kp, ki, etc. are entered using a constructor inside a struct. These values are used with a target and sensor values to calculate what power the motor should be at that given time. 
  
  ```cpp
 typedef struct pid_values {
@@ -61,17 +61,17 @@ typedef struct pid_values {
   }
 } pid_values;
 ```
-[View the struct](../master/incldue/pid.h)
+[View the struct](../master/include/pid.h)
 
 
-This is the whole struct with the constructor. It's designed to be as flexible as possible as well as not redundant as possible. Inside our function we can manipulate different aspects of this struct such as the derivative value if we so desired using the "dot (.)" operator. 
+This is the struct with its constructor. It's designed to be as flexible as possible and non redundant. Inside our function we can manipulate different aspects of this struct such as the derivative value if we so desired using the "dot (.)" operator. `<constructor id>.derivative`
 
  
  ```cpp
  pid_values angler_pid(0.31, 0.07, 0, 30, 500, 70);
  ```
  
-This piece of code creates a struct with the id of "angler_pid" using the pid_values constructor (above). These arguments are passed according to the constructor arguments (kp is the first argument within the constuctor, therefore 0.31 will be the kp).
+This piece of code creates a struct with the id of "angler_pid" using the pid_values constructor (above). These arguments are passed according to the constructor parameters (kp is the first argument within the constuctor, therefore 0.31 will be the kp).
  
 
 ```cpp
@@ -108,7 +108,7 @@ This function runs the PID calculations using pointers. It takes in the argument
 This function is called like this: 
 ```cpp
 float final_power = pid_calc(&lift_pid, height, position);
-arm.move(final_power);
+motor.move(final_power);
 ```
 
 One of the functions called in the "pid_calc" function is "power_limit". It performs a simple check and returns with a float value. It takes in 2 arguments, "allowed_speed" (max speed) and "actual_speed". It checks whether or not the calculated PID speed is greater than the max speed allowed and returns a value accordingly. 
@@ -130,7 +130,7 @@ float power_limit(float allowed_speed, float actual_speed) {
 [View PID](../master/src/pid.cpp)
 
 ## Angler PID 
-> The angler function uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of changing after the target has been reached. 
+> The angler function uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of switching to the new target after the current target has been reached. 
 
 [View Angler](../master/src/angler.cpp)
 
