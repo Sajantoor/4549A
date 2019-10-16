@@ -25,7 +25,6 @@ float pid_calc(pid_values *pid, float target, float sensor) {
    pid->last_error = pid->error;
    float proportional = pid->error;
    float integral = pid->error + integral;
-    //printf("error%f\n",pid->error);
 
    if (integral*pid->Ki > pid->integral_limit) {
      integral = pid->integral_limit;
@@ -35,14 +34,12 @@ float pid_calc(pid_values *pid, float target, float sensor) {
      integral = -pid->integral_limit;
    }
 
-   // BUG: Comment this out if this doesn't work
-   //
    if (fabs(pid->error) > pid->integral_active_zone) {
      integral = 0;
    }
 
-   // calculates power then returns power as max power
    pid->calc_power = (proportional*pid->Kp) + (integral*pid->Ki) + (derivative*pid->Kd);
+   // calculates power then returns power as max power
    pid->power = power_limit(pid->max_power, pid->calc_power);
    return pid->power;
 }
