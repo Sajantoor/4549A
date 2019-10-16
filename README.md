@@ -3,10 +3,12 @@
 
  #### Table of Contents
  
- * Initialize 
- * Motors and Sensors
- * Opcontrol
- * PID
+ * [Initialize](#Initialize)
+ * [Motors and Sensors](#Motors_and_Sensors)
+ * [Opcontrol](#Opcontrol)
+ * [PID](#PID)
+ * [Angler PID](#Angler_PID)
+ * [LCD Display](#LCD_Display)
  
  
  ## Initialize
@@ -16,6 +18,8 @@ An example of a task definition:
  ```cpp
  pros::task_t tracking_task = pros::c::task_create(tracking_update, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "TRACKING TASK");
  ```
+
+[View Initialize](../master/src/initialize.cpp)
  
  ## Motors and Sensors
  > Motors and sensors are defined in their own file.
@@ -24,6 +28,8 @@ An example of a task definition:
  ```cpp
  pros::Motor drive_left(DRIVE_LEFT, MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
  ```
+ 
+ [View motors and sensors](../master/src/motor_setup.cpp)
  
  ## Opcontrol
  > This is where all the driver related code is. It's designed to be as simple as possible for the driver and requires as few inputs as possible from the driver allowing them to focus on more important aspects of the game.
@@ -35,6 +41,8 @@ if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
   angler_pid(2050);
 }
  ```
+[View opcontrol](../master/src/opcontrol.cpp)
+
  
 This code allows the driver to, at a button press, stack cubes with the angler and angler returns to its original position. This is a task which allows the driver to do other things such as drive or intake, if they desired. (The values here are potentiometer values.)
  
@@ -53,8 +61,10 @@ typedef struct pid_values {
   }
 } pid_values;
 ```
-This is the whole struct with the constructor. It's designed to be as flexible as possible as well as not redundant as possible. Inside our function we can manipulate different aspects of this struct such as the derivative value if we so desired using the "dot (.)" operator. 
+[View the struct](../master/incldue/pid.h)
 
+
+This is the whole struct with the constructor. It's designed to be as flexible as possible as well as not redundant as possible. Inside our function we can manipulate different aspects of this struct such as the derivative value if we so desired using the "dot (.)" operator. 
 
  
  ```cpp
@@ -62,7 +72,6 @@ This is the whole struct with the constructor. It's designed to be as flexible a
  ```
  
 This piece of code creates a struct with the id of "angler_pid" using the pid_values constructor (above). These arguments are passed according to the constructor arguments (kp is the first argument within the constuctor, therefore 0.31 will be the kp).
- 
  
 
 ```cpp
@@ -92,6 +101,8 @@ float pid_calc(pid_values *pid, float target, float sensor) {
    return pid->power;
 }
 ```
+
+
 This function runs the PID calculations using pointers. It takes in the arguments of the struct (which is called "pid" because of the pointer), target and the sensor we are using, sometimes this is encoders, other times it's potentiometer values. The motor is given the return value of `pid.power`, which is the final power calculated. 
 
 This function is called like this: 
@@ -115,4 +126,20 @@ float power_limit(float allowed_speed, float actual_speed) {
    return actual_speed;
 }
 ```
+
+[View PID](../master/src/pid.cpp)
+
+## Angler PID 
+> The angler function uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of changing after the target has been reached. 
+
+[View Angler](../master/src/angler.cpp)
+
+## LCD Display
+> The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
+
+< Include screenshot of LCD here > 
+
+[View LCD](../master/src/lcd.cpp)
+
+ 
  
