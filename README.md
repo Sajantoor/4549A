@@ -48,7 +48,7 @@ if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 This code allows the driver to, at a button press, stack cubes with the angler and the angler returns to its original position. This is a task which allows the driver to do other things such as drive or intake, if they desired. (The values here are potentiometer values.)
  
  ## PID 
- > This is our non redundant, PID function. PID values such as kp, ki, etc. are entered using a constructor inside a struct. These values are used with a target and sensor values to calculate what power the motor should be at that given time. 
+ > This is our non redundant, PID function. PID values such as kp, kd, etc. are entered using a constructor inside a struct. These values are used with a target and sensor values to calculate what power the motor should be at that given time. 
  
  ```cpp
 typedef struct pid_values {
@@ -156,10 +156,33 @@ float power_limit(float allowed_speed, float actual_speed) {
 ## LCD Display
 > The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
 
-< Include screenshot of LCD here > 
+< Include screenshot of LCD here> 
 
 [View LCD](../master/src/lcd.cpp)
 
+## Tracking Task
+> Another name of this tracking System is Absolute Positioning System (APS). The APS System that keeps track of the absolute position (i.e. Cartesian Coordinates) and the current orientation during Programming Skills and Match Autonomous. The input for this system tracking system are 3 Encoders and the output are the absolute Position and the Orientation.
 
- 
- 
+> This is the major part of calculations done to calculate the X and Y coordinates of the bot and the current Orientation.
+```cpp
+    if (change_in_angle == 0) {
+     local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
+    } else {
+      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 1.266666f),//2.853739
+      2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
+    }
+    
+    float average_orientation = orientation + (change_in_angle/2);
+    float rotation_amount = orientation + (change_in_angle)/2;
+
+    polar offset_polar = vector_to_polar(local_offset);
+    offset_polar.theta += rotation_amount;
+    vector global_offset = polar_to_vector(offset_polar);
+
+    position.x += global_offset.x;
+    position.y += global_offset.y;
+```
+[View Tracking Task](https://github.com/Sajantoor/4549A/blob/master/src/drive.cpp)
+
+#Drive and Turn Pids
+These are the many Driving and Turning Pids with input taken from the Tracking Task, for ex. `position.x`, `position.y` and `orientation`.
