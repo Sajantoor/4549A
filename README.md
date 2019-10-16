@@ -156,7 +156,7 @@ float power_limit(float allowed_speed, float actual_speed) {
 ## LCD Display
 > The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
 
-< Include screenshot of LCD here > 
+< Include screenshot of LCD here> 
 
 [View LCD](../master/src/lcd.cpp)
 
