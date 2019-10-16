@@ -6,8 +6,6 @@
 #include "lift.h"
 #include "angler.h"
 
-bool run_shit = true;
-
 void opcontrol() {
 	//pros::lcd::initialize();
 //arm.move_absolute(800,120);
@@ -89,22 +87,26 @@ void opcontrol() {
 			loader_right.move(0);
 		}
 
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			angler_pid(1450);
-			pros::delay(1000);
-			angler_pid(2050);
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+			if (liftVal) {
+				angler_pid(1280);
+				pros::delay(2000);
+				angler_pid(2050);
+			}
 		}
 
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			angler_pid(1720);
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 
 			if (liftVal) {
-				lift(3250, true);
-				liftVal = false;
+				angler_pid(1569);
+				lift(1210, 20000);
 			} else {
-				lift(2000, false);
-				liftVal = true;
+				lift(2600, 0);
+				pros::delay(500);
+				angler_pid(1700);
 			}
+
+			liftVal ? liftVal = false : liftVal = true;
 		}
 
 		pros::delay(20);
