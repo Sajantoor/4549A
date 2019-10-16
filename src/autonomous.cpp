@@ -5,14 +5,24 @@
 #include "all_used.h"
 #include "lcd.h"
 #include "lift.h"
+#include "intake.h"
+#include "angler.h"
 
 void autonomous() {
   //pros::lcd::initialize();
   full_position_reset();
-  position_drive(0, 0, 0, 21, 0, 100, 1.2, 0);
-  position_turn2(degToRad(-90), ccw, 0.2,30,2.5);
-  //pros::delay(5000);
-  position_drive(0, 21, 0, 21, 50, 100, 1, 0);
+  position_drive(0, 0, 0, 50, 0, 100, 1.2, 0);
+  loader_left.move(127);
+  loader_right.move(127);
+  position_drive(0, 50, 0, 0, 0, -100, 1.2, 0);
+  position_turn2(degToRad(90), cw, 0.2,30,2.5);
+  position_drive(0, 0, 30, 0, 0, 100, 1.2, 0);
+  angler_pid(1250);
+  pros::delay(2000);
+  angler_pid(2050);
+  position_drive(30, 0, 0, 0, 0, -100, 1.2, 0);
+  // //pros::delay(5000);
+  // position_drive(0, 21, 0, 21, 50, 100, 1, 0);
   //position_turn2(degToRad(-90), ccw, 0.2,30,2.5);
   // position_drive(0, 25, 0, 0, 50, -100, 1, 0);
   // position_drive(0, 0, 20, 20, 0, 100, 1, 0);
