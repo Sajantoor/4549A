@@ -160,6 +160,29 @@ float power_limit(float allowed_speed, float actual_speed) {
 
 [View LCD](../master/src/lcd.cpp)
 
+## Tracking Task
+> Another name of this tracking System is Absolute Positioning System (APS). The APS System that keeps track of the absolute position (i.e. Cartesian Coordinates) and the current orientation during Programming Skills and Match Autonomous. The input for this system tracking system are 3 Encoders and the output are the absolute Position and the Orientation.
 
- 
- 
+> This is the major part of calculations done to calculate the X and Y coordinates of the bot and the current Orientation.
+```cpp
+    if (change_in_angle == 0) {
+     local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
+    } else {
+      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 1.266666f),//2.853739
+      2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
+    }
+    
+    float average_orientation = orientation + (change_in_angle/2);
+    float rotation_amount = orientation + (change_in_angle)/2;
+
+    polar offset_polar = vector_to_polar(local_offset);
+    offset_polar.theta += rotation_amount;
+    vector global_offset = polar_to_vector(offset_polar);
+
+    position.x += global_offset.x;
+    position.y += global_offset.y;
+```
+[View Tracking Task](https://github.com/Sajantoor/4549A/blob/master/src/drive.cpp)
+
+#Drive and Turn Pids
+These are the many Driving and Turning Pids with input taken from the Tracking Task, for ex. `position.x`, `position.y` and `orientation`.
