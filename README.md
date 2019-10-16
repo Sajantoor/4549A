@@ -7,7 +7,8 @@
  * [Motors and Sensors](#Motors_and_Sensors)
  * [Opcontrol](#Opcontrol)
  * [PID](#PID)
- * [Angler PID](#Angler-PID)
+ * [Angler PID Task](#Angler-PID)
+ * [Lift PID Task](#Lif-PID-Task)
  * [LCD Display](#LCD-Display)
  
  
@@ -129,10 +130,28 @@ float power_limit(float allowed_speed, float actual_speed) {
 
 [View PID](../master/src/pid.cpp)
 
-## Angler PID 
-> The angler function uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of switching to the new target after the current target has been reached. 
+## Angler PID Task
+> The angler task uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of switching to the new target after the current target has been reached. 
 
 [View Angler](../master/src/angler.cpp)
+
+## Lift PID Task
+> The Lift PID task uses the same PID calculations but it has to overcome another problem. In order for the lift to move, clearance has to be made via the angler moving, therefore the task only runs once the angler has moved to a certain threshold. Another problem is we need it to have a delay in order to drop the cubes into the tower and allowing the driver to position themselves, otherwise the angler drops instantly after the position has been reached due to gravity and the weight of the lift. 
+
+```cpp
+  while (true) {
+    while ((potentiometer_angler.get_value() < angler_threshold) && liftBool) {
+      ...
+
+       if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
+         liftBool = false; // exit out of the loop
+         delayTime = 0 // reset delay time
+       }
+     }
+  }
+  ```
+
+[View Lift](../master/src/lift.cpp)
 
 ## LCD Display
 > The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
@@ -140,6 +159,7 @@ float power_limit(float allowed_speed, float actual_speed) {
 < Include screenshot of LCD here > 
 
 [View LCD](../master/src/lcd.cpp)
+
 
  
  
