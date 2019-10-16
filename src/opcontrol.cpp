@@ -17,6 +17,7 @@ void opcontrol() {
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
+	bool liftVal = true;
 
 	while (true) {
 			// printf("Back Encoder %d\n", back_encoder.get_value());
@@ -89,14 +90,21 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			angler_pid(1250);
-			pros::delay(20);
-			// angler_pid(2050);
+			angler_pid(1450);
+			pros::delay(1000);
+			angler_pid(2050);
 		}
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 			angler_pid(1720);
-			lift(3400, 10000);
+
+			if (liftVal) {
+				lift(3250, true);
+				liftVal = false;
+			} else {
+				lift(2000, false);
+				liftVal = true;
+			}
 		}
 
 		pros::delay(20);
