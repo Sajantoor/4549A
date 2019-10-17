@@ -13,8 +13,8 @@
  * [Tracking Task](#Tracking-Task)
  * [Turn PIDs](#Turn-PIDs)
  * [Drive PID](#Drive-PID)
-
- 
+ * [Motor Sensor Init](#Motor-Sensor-Init)
+ * [Autonomous](#Autonomous)
  ## Initialize
  > The initalize file is used to define tasks for future use. 
 
