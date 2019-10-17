@@ -185,7 +185,7 @@ float power_limit(float allowed_speed, float actual_speed) {
     position.x += global_offset.x;
     position.y += global_offset.y;
 ```
-[View Tracking Task](https://github.com/Sajantoor/4549A/blob/master/src/drive.cpp)
+[View Tracking Task](../master/src/drive.cpp)
 
 ## Turn PIDs
 > These are the many Driving and Turning Pids with input taken from the Tracking Task, for ex. `position.x`, `position.y` and `orientation`. I have 4 sets of turn functions, so I have a turn function to turn a specific degree and another turn function to turn to a specific angle but it is done in a different way. This is the same with my turn fuction to turn a specific coordinate. 
@@ -252,7 +252,8 @@ float power_limit(float allowed_speed, float actual_speed) {
       break;
 ```
 This difference is the same for my turn function that turns the bot to turn towards a certain coordinate.
-[Veiw Turning Code](https://github.com/Sajantoor/4549A/blob/master/src/drive.cpp#L245)
+
+[View Turning](../master/src/drive.cpp)
 
 ## Drive PID
 > I made a drive pid that takes in account the X, Y and Orientation to drive to any coordinate with correction. This function uses many concepts from Math like Algebra, Trignometry and even Calculus to find calculations for corrections and supllying power to the motors.
@@ -293,7 +294,7 @@ This difference is the same for my turn function that turns the bot to turn towa
       			break;
         }
 ```
-[View Drive Pid] (https://github.com/Sajantoor/4549A/blob/master/src/drive.cpp#L666)
+[View Drive PID](../master/src/drive.cpp#L666)
 
 ## Motor Sensor Init
 > This is very all the motors, sensors and ports for the motors are defined. 
@@ -306,13 +307,16 @@ pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 ```
 ## Autonomous 
 > In autonomous, all the PIDs and function are used to make routines for match's autos and Programing Skills. This is also where the LCD is used to help select auto.
+
 ```cpp
 if (switcher == 1){
-//routines for red auto
+ ...routines for red auto
 }
 
 if (switcher == 2){
-//routines for blue auto
+ ... routines for blue auto
 }
 ``` 
 The switcher value is what I change in the LCD to change autos.
+
+[View Autonomous](../master/src/autonomous.cpp)
