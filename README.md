@@ -10,7 +10,10 @@
  * [Angler PID Task](#Angler-PID)
  * [Lift PID Task](#Lif-PID-Task)
  * [LCD Display](#LCD-Display)
- 
+ * [Tracking Task](#Tracking-Task)
+ * [Turn PIDs](#Turn-PIDs)
+ * [Drive PID](#Drive-PID)
+
  
  ## Initialize
  > The initalize file is used to define tasks for future use. 
@@ -184,7 +187,7 @@ float power_limit(float allowed_speed, float actual_speed) {
 ```
 [View Tracking Task](https://github.com/Sajantoor/4549A/blob/master/src/drive.cpp)
 
-## Turn Pids
+## Turn PIDs
 > These are the many Driving and Turning Pids with input taken from the Tracking Task, for ex. `position.x`, `position.y` and `orientation`. I have 4 sets of turn functions, so I have a turn function to turn a specific degree and another turn function to turn to a specific angle but it is done in a different way. This is the same with my turn fuction to turn a specific coordinate. 
 
 > For turning to a specific angle, I have one turn function that uses normal PID Calculations 
