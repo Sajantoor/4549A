@@ -310,11 +310,11 @@ pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 
 ```cpp
 if (switcher == 1){
- ...routines for red auto
+ //routines for red auto
 }
 
 if (switcher == 2){
- ... routines for blue auto
+ //routines for blue auto
 }
 ``` 
 The switcher value is what I change in the LCD to change autos.
