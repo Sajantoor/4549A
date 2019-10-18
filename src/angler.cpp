@@ -13,18 +13,14 @@ void angler_pid(float position) {
 }
 
 void angler_pid_task(void*ignore) {
-  pid_values angler_pid(0.51, 0.07, 0, 30, 500, 70);
+  pid_values angler_pid(0.1, 0.4, 0.5, 30, 500, 85);
 
   while(true) {
     while (anglerBool) {
       float position = potentiometer_angler.get_value();
       int final_power = pid_calc(&angler_pid, target, position);
       angler.move(final_power);
-      //printf("error check %f\n \n", fabs(angler_pid.error));
-
-      if (fabs(angler_pid.error) < 12) {
-        anglerBool = false;
-      }
+      printf("%f \n \n ", angler_pid.error);
     }
     angler.move(0);
     pros::delay(20);
