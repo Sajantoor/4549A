@@ -159,7 +159,9 @@ float power_limit(float allowed_speed, float actual_speed) {
 ## LCD Display
 > The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
 
-< Include screenshot of LCD here> 
+![LCD Start Page](../assets/2019-10-17-072731_480x272_pros_capture.png) 
+![LCD Red Auto Selecter](../assets/2019-10-17-072819_480x272_pros_capture.png) 
+![LCD Values Page](../assets/2019-10-17-072758_480x272_pros_capture.png) 
 
 [View LCD](../master/src/lcd.cpp)
 
