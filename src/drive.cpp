@@ -671,8 +671,10 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     vector rotated_main_line;
     polar positionErrPolar;
 
-    int initial_millis = pros::millis();
-    int failsafe = 2000;
+    unsigned int net_timer;
+     int initial_millis = pros::millis();
+     int failsafe = 5000;
+     net_timer = pros::millis() + failsafe; //just to initialize net_timer at first
 
     float magnPosvector;
     float angle_main_line;
@@ -718,7 +720,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-      finalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed); //17.9
+      finalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed); //17
 
       limit_to_val_set(finalpower, abs(max_speed));
 			if (finalpower * sgn(max_speed) < 35) //30
@@ -805,16 +807,9 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
         pros::delay(10);
 
-      } while (positionErr.y < -early_stop /*&& (initial_millis + failsafe) < pros::millis()*/);
+      } while ((positionErr.y < -early_stop) && !(pros::millis() > net_timer));
 
-      if (max_speed < 0)
-      {
-        drive_set(-25);
-      }
-      else if (max_speed > 0)
-      {
-        drive_set(25);
-      }
+      set_drive(25 * sgn(max_speed), 25 * sgn(max_speed));
 
     do {
       positionErr.x = position.x - ending_point_x;

@@ -109,6 +109,17 @@ void opcontrol() {
 			liftVal ? liftVal = false : liftVal = true;
 		}
 
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
+			arm.move(127);
+		}
+		else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
+		{
+			arm.move(-127);
+		}
+		else {
+			arm.move(0);
+		}
+
 		pros::delay(20);
 	}
 }
