@@ -89,14 +89,27 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (liftVal) {
-				angler_pid(1280);
+				angler_pid(1330);
 				pros::delay(2000);
-				angler_pid(2050);
+				angler_pid(2010);
 			}
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 
+			if (liftVal) {
+				angler_pid(1569);
+				lift(1210, 20000);
+			} else {
+				lift(2600, 0);
+				pros::delay(500);
+				angler_pid(1700);
+			}
+
+			liftVal ? liftVal = false : liftVal = true;
+		}
+
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 			if (liftVal) {
 				angler_pid(1569);
 				lift(1210, 20000);
