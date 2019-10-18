@@ -42,9 +42,9 @@ void autonomous() {
     loader_left.move(0);
     loader_right.move(0);
     pros::delay(200);
-    angler_pid(1260);
+    angler_pid(1260, 0);
     pros::delay(2000);
-    angler_pid(2050);
+    angler_pid(2050, 0);
     loader_left.move(-50);
     loader_right.move(-50);
     position_drive(0, 5, 0, 0, 0, -90, 1.2, 0, 4);//10,-10

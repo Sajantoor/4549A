@@ -5,7 +5,7 @@
 extern float target;
 
 void angler_pid_task(void*ignore);
-void angler_pid(float target);
+void angler_pid(float target, float delayTime);
 
 extern pros::task_t angler_task;
 

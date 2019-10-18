@@ -19,7 +19,7 @@ void lift(int moveVal, int holdVal) {
 }
 
 void lift_task(void*ignore) {
-  pid_values lift_pid(0.1, 0, 0, 30, 500, 110);
+  pid_values lift_pid(0.25, 0, 0, 30, 500, 127);
   float timeout = 1000;
   float failsafe;
   float delayTime;
