@@ -243,7 +243,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float 
 
 
 void position_turn(float target, int timeout) {
-    float kp = 75.6;
+    float kp = 77;//75.6
     float kd = 0;
     float ki = 0;
     float proportional, derivative, integral;
@@ -663,7 +663,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop) {
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float correction_val) {
     vector error;
     vector positionErr;
     vector rotation_vector;
@@ -712,8 +712,8 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 8.2 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
-        printf(" \n");//8.5
+  			correction = fabs(err_x) > max_error ? correction_val * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+        printf(" \n");//8.2
       }
 
     //------------------------------------------------------------math--------------------------------------------------------
