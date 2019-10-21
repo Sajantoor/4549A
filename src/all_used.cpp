@@ -52,7 +52,7 @@ void reset_position_full(vector& gposition, float x, float y, float a)
   prev_inches_traveled_right = 0;
   prev_inches_traveled_back = 0;
   beginning_orientation = 0;
-  
+
 	position.y = y;
 	position.x = x;
 	orientation = a;

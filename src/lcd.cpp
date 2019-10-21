@@ -178,7 +178,7 @@ static lv_res_t red_tile_screen(lv_obj_t * btn) {
 
   lv_obj_set_size(auto1, 200, 100); //change name when making auto
   lv_obj_align(auto1, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
-  lv_label_set_text(auto1_label, "AUTO 1");
+  lv_label_set_text(auto1_label, "Back 5 Stack");
   lv_btn_set_style(auto1, LV_BTN_STYLE_REL, &red_autos_button_style);
 
   lv_obj_set_size(auto2, 200, 100); //change name when making auto

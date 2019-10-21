@@ -12,6 +12,7 @@
 #define limit_to_val_set(input, val) input = limit_to_val(input, val)
 
 void full_position_reset();
+void resetPositionFull(vector& position, float y, float x, float a);
 
 float flmod(float x, float y); // Floating point mod operation
 float degToRad(float degrees); // Convert degrees to radians
