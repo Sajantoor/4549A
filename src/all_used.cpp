@@ -40,3 +40,20 @@ float degToRad(float degrees) {
 float radToDeg(float radians) {
 	return radians * 180 / pi;
 }
+
+void reset_position_full(vector& gposition, float x, float y, float a)
+{
+	printf("Resetting position %f %f %f | %f %f %f", position.y, position.x, radToDeg(fmod(orientation, pi * 2)), y, x, radToDeg(fmod(a, pi * 2)));
+
+  left_encoder.reset();
+  right_encoder.reset();
+  back_encoder.reset();
+  prev_inches_traveled_left = 0;
+  prev_inches_traveled_right = 0;
+  prev_inches_traveled_back = 0;
+  beginning_orientation = 0;
+  
+	position.y = y;
+	position.x = x;
+	orientation = a;
+}
