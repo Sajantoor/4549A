@@ -41,9 +41,9 @@ float radToDeg(float radians) {
 	return radians * 180 / pi;
 }
 
-void reset_position_full(vector& gposition, float x, float y, float a)
+void reset_position_full(float x, float y, float a)
 {
-	printf("Resetting position %f %f %f | %f %f %f", position.y, position.x, radToDeg(fmod(orientation, pi * 2)), y, x, radToDeg(fmod(a, pi * 2)));
+	printf("Resetting position %f %f %f | %f %f %f \n \n", position.y, position.x, radToDeg(fmod(orientation, pi * 2)), y, x, radToDeg(fmod(a, pi * 2)));
 
   left_encoder.reset();
   right_encoder.reset();

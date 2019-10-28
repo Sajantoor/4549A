@@ -11,13 +11,16 @@ void opcontrol() {
 //arm.move_absolute(800,120);
 //arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-	full_position_reset();
+	//full_position_reset();
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	bool liftVal = true;
 
 	while (true) {
+		printf("position.x %f \n", position.x);
+		printf("position.y %f \n", position.y);
+
 			// printf("Back Encoder %d\n", back_encoder.get_value());
 			// printf("Right Encoder: %d\n", right_encoder.get_value());
 			// printf("Left Encoder %d\n", left_encoder.get_value());
@@ -88,11 +91,15 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			if (liftVal) {
-				angler_pid(1330, 0);
-				pros::delay(2000);
-				angler_pid(2010, 0);
-			}
+			// if (liftVal) {
+			// 	angler_pid(1330, 0);
+			// 	pros::delay(2000);
+			// 	angler_pid(2010, 0);
+			// }
+			angler_pid(2570, 0);
+			pros::delay(1700);
+			intake_run(-127,2500);
+			angler_pid(1780, 0);
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
@@ -148,15 +155,15 @@ void opcontrol() {
 			liftVal ? liftVal = false : liftVal = true;
 		}
 
-if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
-	arm.move(127);
-}
-else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
-	arm.move(-127);
-}
-else{
-	arm.move(0);
-}
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
+			arm.move(127);
+		}
+		else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
+			arm.move(-127);
+		}
+		else{
+			arm.move(0);
+		}
 
 		pros::delay(20);
 	}

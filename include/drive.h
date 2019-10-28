@@ -67,6 +67,8 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed = 110, 
 
 void turn_pid_encoder_average(double target, unsigned int timeout);
 
+void intake_run(int speed_intake, int run_time_intake);
+
 //--------------------------------------POSITION-------------------------------------------------------
 
 float nearestangle(float target_angle, float reference_angle);
@@ -83,7 +85,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float correction_val);
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop);
 
 void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y);
 

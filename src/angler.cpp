@@ -18,7 +18,7 @@ void angler_pid(float position, float delayTime) {
 }
 
 void angler_pid_task(void*ignore) {
-  pid_values angler_pid(0.1, 0.4, 0.5, 30, 500, 85);
+  pid_values angler_pid(0.4, 0.3, 0.15, 25, 500, 70);
   float failsafe;
 
   while(true) {
@@ -32,7 +32,9 @@ void angler_pid_task(void*ignore) {
       int final_power = pid_calc(&angler_pid, target, position);
       angler.move(final_power);
 
-      if ((fabs(angler_pid.error) < 15) && (pros::millis() > failsafe))  {
+      printf("error %f \n \n", angler_pid.error);
+
+      if ((fabs(angler_pid.error) < 10) && (pros::millis() > failsafe))  {
         anglerBool = false;
       }
     }
