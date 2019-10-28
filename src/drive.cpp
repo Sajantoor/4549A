@@ -78,6 +78,7 @@ void tracking_update(void*ignore) {
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
     const float distance_between_centre = 5.384;//5.6380148
+    const float distance_between_backwheel_center = -2.0254878;//3.54331
     //CORDINATES facing the enemies side is 𝜃r = 0
 
     //beginning_orientation = 0;
@@ -91,7 +92,7 @@ void tracking_update(void*ignore) {
     if (change_in_angle == 0) {
      local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
     } else {
-      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 3.54331f),//1.266666  3.54331
+      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + distance_between_backwheel_center),//1.266666  3.54331
       2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
     }
 

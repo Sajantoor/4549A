@@ -13,8 +13,9 @@ void autonomous() {
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
   reset_position_full(120, 10, 0);
-  position_drive(120, 10, 120, 35, 0, 100, 1.8, 0);
-  position_drive(120, 35, 120, 15, -50, -100, 1.8, 0);
+  position_turn(-90, 100);
+  // position_drive(120, 10, 120, 35, 0, 100, 1.8, 0);
+  // position_drive(120, 35, 120, 15, -50, -100, 1.8, 0);
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
 
@@ -40,9 +41,9 @@ void autonomous() {
     loader_left.move(0);
     loader_right.move(0);
     pros::delay(200);
-    angler_pid(1260, 0);
+    angler_pid(2570, 0);
     pros::delay(2000);
-    angler_pid(2050, 0);
+    angler_pid(1780, 0);
     loader_left.move(-50);
     loader_right.move(-50);
     position_drive(135, 7, 120, 10, 0, -100, 1.8, 0);
@@ -67,9 +68,9 @@ void autonomous() {
     loader_left.move(0);
     loader_right.move(0);
     pros::delay(200);
-    angler_pid(1260, 0);
+    angler_pid(2570, 0);
     pros::delay(2000);
-    angler_pid(2050, 0);
+    angler_pid(1780, 0);
     loader_left.move(-50);
     loader_right.move(-50);
     position_drive(135, 7, 120, 10, 0, -100, 1.8, 0);
@@ -91,9 +92,9 @@ void autonomous() {
     loader_left.move(0);
     loader_right.move(0);
     pros::delay(200);
-    angler_pid(1260, 0);
+    angler_pid(2570, 0);
     pros::delay(2000);
-    angler_pid(2050, 0);
+    angler_pid(1780, 0);
     loader_left.move(-50);
     loader_right.move(-50);
     position_drive(140, 132, 120, 135, 0, -100, 1.8, 0);// stack done for second blue one zone stack

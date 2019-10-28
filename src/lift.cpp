@@ -40,12 +40,14 @@ void lift_task(void*ignore) {
        if ((fabs(lift_pid.error) < 50) && (currentTime > delayTime)) {
          liftBool = false;
          hold = 0;
+         arm.move(0);
        } else if (failsafe < currentTime) {
          liftBool = false;
          hold = 0;
+         arm.move(0);
        }
      }
-    arm.move(0);
+
     pros::delay(20);
   }
 }
