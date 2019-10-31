@@ -78,7 +78,7 @@ void tracking_update(void*ignore) {
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
     const float distance_between_centre = 5.384;//5.6380148
-    const float distance_between_backwheel_center = -2.0254878;//3.54331
+    const float distance_between_backwheel_center = -1.985856;//-2.0254878
     //CORDINATES facing the enemies side is 𝜃r = 0
 
     //beginning_orientation = 0;
@@ -257,8 +257,8 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float 
 
 
 void position_turn(float target, int timeout) {
-    float kp = 63;//75.6
-    float kd = 0.1;
+    float kp = 55.5;//75.6
+    float kd = 0.05;
     float ki = 0;
     float proportional, derivative, integral;
 
@@ -319,11 +319,11 @@ void position_turn(float target, int timeout) {
 
   if (final_power > 0) {
     set_drive(20,-20);
-    pros::delay(50);
+    pros::delay(100);
     drive_set(0);
   } else if (final_power < 0) {
     set_drive(-20,20);
-    pros::delay(50);
+    pros::delay(100);
     drive_set(0);
   } else {
     set_drive(0,0);
@@ -728,13 +728,13 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
-        printf(" \n");//8.2
+  			correction = fabs(err_x) > max_error ? 5.25 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+        printf(" \n");//5.3
       }
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-      finalpower = round(-127.0 / 40 * positionErr.y) * sgn(max_speed); //17
+      finalpower = round(-127.0 / 36 * positionErr.y) * sgn(max_speed); //17
 
       limit_to_val_set(finalpower, abs(max_speed));
 			if (finalpower * sgn(max_speed) < 30) //30

@@ -18,8 +18,8 @@ void opcontrol() {
 	bool liftVal = true;
 
 	while (true) {
-		printf("position.x %f \n", position.x);
-		printf("position.y %f \n", position.y);
+		// printf("position.x %f \n", position.x);
+		// printf("position.y %f \n", position.y);
 
 			// printf("Back Encoder %d\n", back_encoder.get_value());
 			// printf("Right Encoder: %d\n", right_encoder.get_value());
@@ -91,77 +91,75 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			// if (liftVal) {
-			// 	angler_pid(1330, 0);
-			// 	pros::delay(2000);
-			// 	angler_pid(2010, 0);
-			// }
-			angler_pid(2570, 0);
-			pros::delay(1700);
-			intake_run(-127,2500);
-			angler_pid(1780, 0);
+			if (liftVal) {
+				angler_pid(2720, 0);
+				pros::delay(2000);
+				angler_pid(1640, 0);
+			}
+			// angler_pid(2570, 0);
+			// pros::delay(1700);
+			// intake_run(-127,2500);
+			// angler_pid(1780, 0);
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (liftVal) {
-				angler_pid(1569, 20000);
-				lift(746, 20000);
+				angler_pid(1950, 20000);
+				lift(2610, 20000);
 			} else {
-				lift(1890, 0);
+				lift(3000, 0);
 				pros::delay(500);
-				angler_pid(1700, 0);
+				angler_pid(1640, 0);
 			}
 
 			liftVal ? liftVal = false : liftVal = true;
 		}
 
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			if (liftVal) {
-				angler_pid(1569, 20000);
-				lift(1204, 20000);
-			} else {
-				lift(1890, 0);
-				pros::delay(500);
-				angler_pid(1700, 0);
-			}
+		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+		// 	if (liftVal) {
+		// 		angler_pid(2060, 20000);
+		// 		lift(2630, 20000);
+		// 	} else {
+		// 		lift(3830, 0);
+		// 		pros::delay(500);
+		// 		angler_pid(1765, 0);
+		// 	}
+		//
+		// 	liftVal ? liftVal = false : liftVal = true;
+		// }
 
-			liftVal ? liftVal = false : liftVal = true;
-		}
-
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-			if (liftVal) {
-				angler_pid(1569, 20000);
-				lift(1227, 20000);
-			} else {
-				lift(1890, 0);
-				pros::delay(500);
-				angler_pid(1700, 0);
-			}
-
-			liftVal ? liftVal = false : liftVal = true;
-		}
+		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+		// 	if (liftVal) {
+		// 		angler_pid(2060, 20000);
+		// 		lift(2570, 20000);
+		// 	} else {
+		// 		lift(3830, 0);
+		// 		pros::delay(500);
+		// 		angler_pid(1745, 0);
+		// 	}
+		//
+		// 	liftVal ? liftVal = false : liftVal = true;
+		// }
 
 
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-			if (liftVal) {
-				angler_pid(1569, 20000);
-				lift(1210, 20000);
-			} else {
-				lift(2600, 0);
-				pros::delay(500);
-				angler_pid(1700, 0);
-			}
+		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+		// 	if (liftVal) {
+		// 		angler_pid(1569, 20000);
+		// 		lift(1210, 20000);
+		// 	} else {
+		// 		lift(2600, 0);
+		// 		pros::delay(500);
+		// 		angler_pid(1745, 0);
+		// 	}
+		//
+		// 	liftVal ? liftVal = false : liftVal = true;
+		// }
 
-			liftVal ? liftVal = false : liftVal = true;
-		}
-
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
 			arm.move(127);
-		}
-		else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
+		} else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
 			arm.move(-127);
-		}
-		else{
+		} else {
 			arm.move(0);
 		}
 

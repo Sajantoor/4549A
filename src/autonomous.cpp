@@ -13,50 +13,39 @@ void autonomous() {
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
   reset_position_full(120, 10, 0);
-  position_turn(-90, 100);
-  // position_drive(120, 10, 120, 35, 0, 100, 1.8, 0);
-  // position_drive(120, 35, 120, 15, -50, -100, 1.8, 0);
+  //position_turn(90, 100);
+  //position_turn2(degToRad(90), cw, 0.17, 30, 2.5);
+  // position_drive(120, 10, 120, 40, 0, 100, 0.5, 0);
+  // position_drive(120, 40, 120, 10, -50, -100, 0.5, 0);
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
 
-//RED ONE ZONE STACK
+//RED two ZONE STACK
   if(switcher == 1){
-    reset_position_full(120, 10, 0);
+    reset_position_full(46, 10, 0);
     beginning_orientation = 0;
-
-    loader_left.move(127);
-    loader_right.move(127);
-    position_drive(120, 10, 120, 52, 0, 100, 1.8, 0);
-    position_drive(120, 52, 120, 15, -50, -100, 1.8, 0);
-    position_turn(90, 100);
-    position_drive(120, 10, 135, 7, 0, 100, 1.8, 0);
-    loader_left.move(0);
-    loader_right.move(0);
-    loader_left.move(-80);
-    loader_right.move(-80);
-    pros::delay(225);
     loader_left.move(80);
     loader_right.move(80);
-    pros::delay(1120);
-    loader_left.move(0);
-    loader_right.move(0);
-    pros::delay(200);
-    angler_pid(2570, 0);
-    pros::delay(2000);
-    angler_pid(1780, 0);
-    loader_left.move(-50);
-    loader_right.move(-50);
-    position_drive(135, 7, 120, 10, 0, -100, 1.8, 0);
-  }
+    position_drive(46, 10, 46, 60, 0, 100, 1, 5);// pick up cubes
+    position_drive(46, 60, 46, 27, -40, -100, 1, 0);
+    position_turn2(degToRad(-90), ccw, 0.17, 30, 2.5);
+    position_drive(46, 27, 35, 27, 0, 100, 0.5, 5);
+    position_turn2(degToRad(0), cw, 0.17, 30, 2.5);
+    position_drive(35, 27, 35, 13, 0, -100, 0.5, 0);
+    drive_line_up(-30, 400);
+    drive_line_up(20, 500);
+    position_turn2(degToRad(-90), ccw, 0.17, 30, 2.5);
+    position_drive(35, 12, 12, 12, 0, 100, 0.5, 0);
+}
 
 //SKILLZ
   if(switcher == 10){
     loader_left.move(127);
     loader_right.move(127);
-    position_drive(120, 10, 120, 52, 0, 100, 1.8, 0);// pick up cubes
-    position_drive(120, 52, 120, 15, -50, -100, 1.8, 0);
-    position_turn(90, 100);
-    position_drive(120, 10, 135, 7, 0, 100, 1.8, 0); //drive to red one zone
+    position_drive(120, 10, 120, 60, 0, 100, 1.5, 0);// pick up cubes
+    position_drive(120, 60, 120, 12, -50, -100, 1.5, 0);
+    position_turn(100, 100);
+    position_drive(120, 12, 122, 12, 0, 110, 1.5, 0); //drive to red one zone
     loader_left.move(0);
     loader_right.move(0);
     loader_left.move(-80);
@@ -73,7 +62,7 @@ void autonomous() {
     angler_pid(1780, 0);
     loader_left.move(-50);
     loader_right.move(-50);
-    position_drive(135, 7, 120, 10, 0, -100, 1.8, 0);
+    position_drive(130, 10, 120, 10, 0, -100, 1.8, 0);
     position_turn(0, 100);
     //first stack done in red one zone
     loader_left.move(127);
