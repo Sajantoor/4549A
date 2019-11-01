@@ -18,7 +18,7 @@ void angler_pid(float position, float delay) {
 }
 
 void angler_pid_task(void*ignore) {
-  pid_values angler_pid(0.35, 0.8, 0.5, 30, 500, 90);
+  pid_values angler_pid(0.35, 0.8, 0.5, 30, 500, 80);
   float failsafe;
 
   while(true) {
@@ -34,9 +34,9 @@ void angler_pid_task(void*ignore) {
       angler.move(final_power);
 
       if (pros::c::motor_get_torque(11) > 0.7) {
-        angler_pid.max_power = 110;
+        angler_pid.max_power = 100;
       } else {
-        angler_pid.max_power = 90;
+        angler_pid.max_power = 80;
       }
 
       if (fabs(angler_pid.error) < 600) {
@@ -46,11 +46,6 @@ void angler_pid_task(void*ignore) {
           angler_pid.max_power = angler_pid.max_power - 15;
         }
       }
-
-      // printf("torque %f \n \n", pros::c::motor_get_torque(11));
-      printf("power %i \n \n", final_power);
-      // printf("error %f \n \n", angler_pid.error);
-
 
       if ((fabs(angler_pid.error) < 10) && (currentTime > failsafe))  {
         anglerBool = false;

@@ -9,37 +9,52 @@
 #include "angler.h"
 
 void autonomous() {
-  printf("PositionX: %f || PositionY: %f || Orientation: %f \n \n", position.x, position.y, orientation);
-  printf("position.x %f \n", position.x);
-  printf("position.y %f \n", position.y);
-  reset_position_full(120, 10, 0);
+  // unlock mechanism
+  angler_pid(2720, 0);
+  angler_pid(1640, 0);
+  angler_pid(2720, 0);
+  loader_left.move(-127);
+  loader_right.move(-127);
+  pros::delay(1500);
+  loader_left.move(0);
+  loader_right.move(0);
+  angler_pid(1640, 0);
+  
+  // drive_pid_encoder(30, 1000, 127);
+  // position_turn2(degToRad(90), cw, 0.17, 35, 6);
+  // position_turn2(degToRad(0), ccw, 0.17, 35, 6);
+  // drive_pid_encoder(-30, 1000, 127);
+
+
   //position_turn(90, 100);
   //position_turn2(degToRad(90), cw, 0.17, 30, 2.5);
   // position_drive(120, 10, 120, 40, 0, 100, 0.5, 0);
   // position_drive(120, 40, 120, 10, -50, -100, 0.5, 0);
-  printf("position.x %f \n", position.x);
-  printf("position.y %f \n", position.y);
+
 
 //RED two ZONE STACK
-  if(switcher == 1){
-    reset_position_full(46, 10, 0);
+  if (switcher == 1) {
+    // reset_position_full(46, 10, 0);
     beginning_orientation = 0;
-    loader_left.move(80);
-    loader_right.move(80);
-    position_drive(46, 10, 46, 60, 0, 100, 1, 5);// pick up cubes
-    position_drive(46, 60, 46, 27, -40, -100, 1, 0);
-    position_turn2(degToRad(-90), ccw, 0.17, 30, 2.5);
-    position_drive(46, 27, 35, 27, 0, 100, 0.5, 5);
-    position_turn2(degToRad(0), cw, 0.17, 30, 2.5);
-    position_drive(35, 27, 35, 13, 0, -100, 0.5, 0);
-    drive_line_up(-30, 400);
-    drive_line_up(20, 500);
-    position_turn2(degToRad(-90), ccw, 0.17, 30, 2.5);
-    position_drive(35, 12, 12, 12, 0, 100, 0.5, 0);
+    angler_pid(2720,0);
+    pros::delay(800);
+    loader_left.move(-127);
+    loader_left.move(-127);
+    pros::delay(2000);
+    loader_left.move(0);
+    loader_left.move(0);
+    angler_pid(1640,0);
+    loader_left.move(100);
+    loader_right.move(100);
+    drive_pid_encoder(60, 1000, 127);
+    drive_pid_encoder(-60, 1000, 127);
+    drive_line_up(-50, 400);
+    drive_line_up(50, 500);
+    position_turn2(degToRad(90), cw, 0.17, 35, 6);
 }
 
 //SKILLZ
-  if(switcher == 10){
+  if (switcher == 10) {
     loader_left.move(127);
     loader_right.move(127);
     position_drive(120, 10, 120, 60, 0, 100, 1.5, 0);// pick up cubes

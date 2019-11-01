@@ -191,12 +191,13 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
   printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
 }
 
-void drive_pid_encoder(float target, unsigned int timeout, int max_speed, float Kp_C) {
+void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed) {
+    float target = ((targetVal)/(2.75*pi) * 360);
   if (pros::competition::is_autonomous()) {
-
+    float Kp_C = 0.25;
     int failsafe = 2500;    //varible value
     int initial_millis = pros::millis();
-    pid_values drive_pid(0.5, 0.8, 0, 50, (12/(4*pi)), 110);
+    pid_values drive_pid(0.1, 0.8, 0, 50, (12/(4*pi)), max_speed);
 
     double error_c;
     int direction;

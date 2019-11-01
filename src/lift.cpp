@@ -19,7 +19,7 @@ void lift(int moveVal, int holdVal) {
 }
 
 void lift_task(void*ignore) {
-  pid_values lift_pid(0.25, 0, 0, 30, 500, 127);
+  pid_values lift_pid(0.5, 0.7, 0, 30, 500, 127);
   float timeout = 1000;
   float failsafe;
   float delayTime;
@@ -37,7 +37,7 @@ void lift_task(void*ignore) {
        float final_power = pid_calc(&lift_pid, height, position);
        arm.move(final_power);
 
-       if ((fabs(lift_pid.error) < 50) && (currentTime > delayTime)) {
+       if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
          liftBool = false;
          hold = 0;
          arm.move(0);
@@ -46,6 +46,8 @@ void lift_task(void*ignore) {
          hold = 0;
          arm.move(0);
        }
+       printf("lift %f \n \n", lift_pid.error);
+
      }
 
     pros::delay(20);
