@@ -192,7 +192,8 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
 }
 
 void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed) {
-    float target = ((targetVal)/(2.75*pi) * 360);
+  float target = ((targetVal)/(2.75*pi) * 360);
+
   if (pros::competition::is_autonomous()) {
     float Kp_C = 0.25;
     int failsafe = 2500;    //varible value
@@ -218,12 +219,12 @@ void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed) {
         error_c = (left_encoder.get_value() - right_encoder.get_value());
 
         if (fabs(drive_pid.error) > (0.1/(4*pi) * 360)) {
-            error_c = error_c + correction_drive;
-            left_drive_set(final_power - error_c*Kp_C);
-            right_drive_set(final_power + error_c*Kp_C);
+          error_c = error_c + correction_drive;
+          left_drive_set(final_power - error_c*Kp_C);
+          right_drive_set(final_power + error_c*Kp_C);
         } else if (fabs(drive_pid.error) < (1/(4*pi) * 360)) {	//less than 1 inches
-      			timer_drive = false;		//start timer to to exit piD loop
-            drive_pid.integral = 0;
+    			timer_drive = false;		//start timer to to exit piD loop
+          drive_pid.integral = 0;
       	} else if (timer_drive) {
       		net_timer = pros::millis() + timeout;
       	} else {
