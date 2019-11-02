@@ -191,14 +191,14 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
   printf("encoder avg %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
 }
 
-void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed) {
-  float target = ((targetVal)/(2.75*pi) * 360);
+void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
+  reset_drive_encoders();
 
   if (pros::competition::is_autonomous()) {
-    float Kp_C = 0.25;
+    float Kp_C = 0;
     int failsafe = 2500;    //varible value
     int initial_millis = pros::millis();
-    pid_values drive_pid(0.1, 0.8, 0, 50, (12/(4*pi)), max_speed);
+    pid_values drive_pid(0.4, 1, 0, 30, (12/(2.75*pi)), max_speed);
 
     double error_c;
     int direction;
@@ -215,22 +215,24 @@ void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed) {
 
       while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
         encoder_average = (right_encoder.get_value() + left_encoder.get_value()) / 2;
-        float final_power = pid_calc(&drive_pid, target, encoder_average);
-        error_c = (left_encoder.get_value() - right_encoder.get_value());
+        drive_pid.error = ((target)/(2.75*pi) * 360) - drive_distance_correction - encoder_average;
 
-        if (fabs(drive_pid.error) > (0.1/(4*pi) * 360)) {
-          error_c = error_c + correction_drive;
-          left_drive_set(final_power - error_c*Kp_C);
-          right_drive_set(final_power + error_c*Kp_C);
-        } else if (fabs(drive_pid.error) < (1/(4*pi) * 360)) {	//less than 1 inches
-    			timer_drive = false;		//start timer to to exit piD loop
-          drive_pid.integral = 0;
-      	} else if (timer_drive) {
-      		net_timer = pros::millis() + timeout;
-      	} else {
-          left_drive_set(final_power);
-          right_drive_set(final_power);
-        }
+        float final_power = pid_calc(&drive_pid, ((target)/(2.75*pi) * 360) - drive_distance_correction, encoder_average);
+        error_c = (left_encoder.get_value() - right_encoder.get_value()) + correction_drive;
+
+        left_drive_set(final_power - error_c*Kp_C);
+        right_drive_set(final_power + error_c*Kp_C);
+
+     		if (fabs(drive_pid.error) < (1/(2.75*pi) * 360)){	//less than 1 inches
+     			timer_drive = false;		//start timer to to exit piD loop
+           drive_pid.integral = 0;
+     		}
+
+     		else if (timer_drive){
+     			net_timer = pros::millis() + timeout;
+     		}
+
+        printf("error %f \n \n", drive_pid.error);
 
     	pros::delay(20);
     }
@@ -246,8 +248,7 @@ void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed) {
   prev_correction_drive = correction_drive;
   correction_drive = (left_encoder.get_value() - right_encoder.get_value()) + prev_correction_drive;
 
-  drive_distance_correction = ((left_encoder.get_value() + right_encoder.get_value())/2)
-                  - ((target)/(4*pi) * 360) + drive_distance_correction;
+  drive_distance_correction = ((left_encoder.get_value() + right_encoder.get_value())/2) - ((target)/(4*pi) * 360) + drive_distance_correction;
 
   printf("correction drive %f\n", correction_drive);
   printf("correction_turn = %1f\n", correction_turn);

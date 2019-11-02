@@ -9,17 +9,42 @@
 #include "angler.h"
 
 void autonomous() {
-  // unlock mechanism
-  angler_pid(2720, 0);
-  angler_pid(1640, 0);
-  angler_pid(2720, 0);
+  //drive_pid_encoder(20, 5000, 60);
+
+reset_drive_encoders();
+  beginning_orientation = 0;
+  pros::delay(600);
+  loader_left.move(127);
+  loader_right.move(127);
+  drive_pid_encoder(15, 1000, 80);
+  pros::delay(50);
+  position_turn2(degToRad(40), cw, 0.11, 30, 6);
+  //position_turn(45,100);
   loader_left.move(-127);
   loader_right.move(-127);
-  pros::delay(1500);
-  loader_left.move(0);
-  loader_right.move(0);
-  angler_pid(1640, 0);
-  
+  pros::delay(500);
+  position_turn2(degToRad(6), ccw, 0.17, 35, 6);
+  loader_left.move(90);
+  loader_right.move(90);
+  drive_pid_encoder(11, 1000, 60);
+  drive_pid_encoder(18, 1000, 50);
+  drive_pid_encoder(-32, 1000, 85);
+  drive_line_up(-50, 400);
+  drive_line_up(50, 300);
+  position_turn2(degToRad(-90), ccw, 0.17, 35, 6);
+
+
+  // unlock mechanism
+  // angler_pid(2720, 0);
+  // angler_pid(1640, 0);
+  // angler_pid(2720, 0);
+  // loader_left.move(-127);
+  // loader_right.move(-127);
+  // pros::delay(1500);
+  // loader_left.move(0);
+  // loader_right.move(0);
+  // angler_pid(1640, 0);
+
   // drive_pid_encoder(30, 1000, 127);
   // position_turn2(degToRad(90), cw, 0.17, 35, 6);
   // position_turn2(degToRad(0), ccw, 0.17, 35, 6);
@@ -36,18 +61,11 @@ void autonomous() {
   if (switcher == 1) {
     // reset_position_full(46, 10, 0);
     beginning_orientation = 0;
-    angler_pid(2720,0);
-    pros::delay(800);
-    loader_left.move(-127);
-    loader_left.move(-127);
-    pros::delay(2000);
-    loader_left.move(0);
-    loader_left.move(0);
-    angler_pid(1640,0);
-    loader_left.move(100);
-    loader_right.move(100);
-    drive_pid_encoder(60, 1000, 127);
-    drive_pid_encoder(-60, 1000, 127);
+    pros::delay(600);
+    loader_left.move(127);
+    loader_right.move(127);
+    drive_pid_encoder(50, 1000, 80);
+    drive_pid_encoder(-50, 1000, 90);
     drive_line_up(-50, 400);
     drive_line_up(50, 500);
     position_turn2(degToRad(90), cw, 0.17, 35, 6);
