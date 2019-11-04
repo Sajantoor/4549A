@@ -12,38 +12,7 @@ void autonomous() {
   //drive_pid_encoder(20, 5000, 60);
 
 reset_drive_encoders();
-  beginning_orientation = 0;
-  pros::delay(600);
-  loader_left.move(127);
-  loader_right.move(127);
-  drive_pid_encoder(15, 1000, 80);
-  pros::delay(50);
-  position_turn2(degToRad(40), cw, 0.11, 30, 6);
-  //position_turn(45,100);
-  loader_left.move(-127);
-  loader_right.move(-127);
-  pros::delay(500);
-  position_turn2(degToRad(6), ccw, 0.17, 35, 6);
-  loader_left.move(90);
-  loader_right.move(90);
-  drive_pid_encoder(11, 1000, 60);
-  drive_pid_encoder(18, 1000, 50);
-  drive_pid_encoder(-32, 1000, 85);
-  drive_line_up(-50, 400);
-  drive_line_up(50, 300);
-  position_turn2(degToRad(-90), ccw, 0.17, 35, 6);
-
-
   // unlock mechanism
-  // angler_pid(2720, 0);
-  // angler_pid(1640, 0);
-  // angler_pid(2720, 0);
-  // loader_left.move(-127);
-  // loader_right.move(-127);
-  // pros::delay(1500);
-  // loader_left.move(0);
-  // loader_right.move(0);
-  // angler_pid(1640, 0);
 
   // drive_pid_encoder(30, 1000, 127);
   // position_turn2(degToRad(90), cw, 0.17, 35, 6);
@@ -51,7 +20,7 @@ reset_drive_encoders();
   // drive_pid_encoder(-30, 1000, 127);
 
 
-  //position_turn(90, 100);
+  //position_turn(45, 100);
   //position_turn2(degToRad(90), cw, 0.17, 30, 2.5);
   // position_drive(120, 10, 120, 40, 0, 100, 0.5, 0);
   // position_drive(120, 40, 120, 10, -50, -100, 0.5, 0);
@@ -59,16 +28,134 @@ reset_drive_encoders();
 
 //RED two ZONE STACK
   if (switcher == 1) {
-    // reset_position_full(46, 10, 0);
-    beginning_orientation = 0;
-    pros::delay(600);
+    angler_pid(2720, 0);
+    angler_pid(1640, 0);
+    angler_pid(2720, 0);
+    loader_left.move(-127);
+    loader_right.move(-127);
+    pros::delay(1500);
+    loader_left.move(0);
+    loader_right.move(0);
+    angler_pid(1640, 0);
+
     loader_left.move(127);
     loader_right.move(127);
-    drive_pid_encoder(50, 1000, 80);
-    drive_pid_encoder(-50, 1000, 90);
+    drive_pid_encoder(17, 1000, 80);
+    pros::delay(50);
+    reset_position_full(23, 46, 0);
+    position_turn2(degToRad(90), cw, 0.2, 35, 6);
+    //position_turn(45,100);
+    loader_left.move(-127);
+    loader_right.move(-127);
+    pros::delay(500);
+    //position_turn2(degToRad(0), ccw, 0.17, 35, 6);
+    reset_position_full(46, 35, 0.5*pi);
+    position_turn(5,100);
+    loader_left.move(75);
+    loader_right.move(75);
+    drive_pid_encoder(11, 1000, 60);
+    drive_pid_encoder(15, 1000, 50);
+    drive_pid_encoder(-35, 1000, 112);
     drive_line_up(-50, 400);
-    drive_line_up(50, 500);
-    position_turn2(degToRad(90), cw, 0.17, 35, 6);
+    drive_line_up(50, 230);
+    reset_position_full(23, 12, 0);
+    position_turn2(degToRad(-90), ccw, 0.17, 35, 6);
+    drive_pid_encoder(25, 2000, 80);
+    loader_left.move(-80);
+    loader_right.move(-80);
+    pros::delay(325);
+    loader_left.move(0);
+    loader_right.move(0);
+    angler_pid(2790, 0);
+    pros::delay(2000);
+    angler_pid(1640, 0);
+    pros::delay(50);
+    loader_left.move(-127);
+    loader_right.move(-127);
+    drive_pid_encoder(-10, 1000, 80);
+    // reset_position_full(46, 10, 0);
+    // beginning_orientation = 0;
+    // pros::delay(600);
+    // loader_left.move(127);
+    // loader_right.move(127);
+    // drive_pid_encoder(50, 1000, 80);
+    // drive_pid_encoder(-50, 1000, 90);
+    // drive_line_up(-50, 400);
+    // drive_line_up(50, 500);
+    // position_turn2(degToRad(90), cw, 0.17, 35, 6);
+}
+
+if (switcher == 2) {
+  angler_pid(2720, 0);
+  angler_pid(1640, 0);
+  angler_pid(2720, 0);
+  loader_left.move(-127);
+  loader_right.move(-127);
+  pros::delay(1500);
+  loader_left.move(0);
+  loader_right.move(0);
+  angler_pid(1640, 0);
+  // drive_pid_encoder(10, 1000, 80);
+  // pros::delay(500);
+  // drive_pid_encoder(-10, 1000, 80);
+}
+
+if(switcher == 5){
+  angler_pid(2720, 0);
+  angler_pid(1640, 0);
+  angler_pid(2720, 0);
+  loader_left.move(-127);
+  loader_right.move(-127);
+  pros::delay(1500);
+  loader_left.move(0);
+  loader_right.move(0);
+  angler_pid(1640, 0);
+
+  loader_left.move(127);
+  loader_right.move(127);
+  drive_pid_encoder(17, 1000, 80);
+  pros::delay(50);
+  reset_position_full(23, 46, 0);
+  position_turn2(degToRad(-90), ccw, 0.11, 30, 6);
+  //position_turn(45,100);
+  loader_left.move(-127);
+  loader_right.move(-127);
+  pros::delay(500);
+  //position_turn2(degToRad(0), ccw, 0.17, 35, 6);
+  reset_position_full(46, 35, -0.5*pi);
+  position_turn(-5,100);
+  loader_left.move(75);
+  loader_right.move(75);
+  drive_pid_encoder(11, 1000, 60);
+  drive_pid_encoder(15, 1000, 50);
+  drive_pid_encoder(-35, 1000, 85);
+  drive_line_up(-50, 400);
+  drive_line_up(50, 230);
+  reset_position_full(23, 12, 0);
+  position_turn2(degToRad(90), cw, 0.17, 35, 6);
+  drive_pid_encoder(1, 1000, 80);
+  loader_left.move(-80);
+  loader_right.move(-80);
+  pros::delay(325);
+  loader_left.move(0);
+  loader_right.move(0);
+  angler_pid(2790, 0);
+  pros::delay(2000);
+  angler_pid(1640, 0);
+  pros::delay(50);
+  loader_left.move(-127);
+  loader_right.move(-127);
+  drive_pid_encoder(-10, 1000, 80);
+  // reset_position_full(46, 10, 0);
+  // beginning_orientation = 0;
+  // pros::delay(600);
+  // loader_left.move(127);
+  // loader_right.move(127);
+  // drive_pid_encoder(50, 1000, 80);
+  // drive_pid_encoder(-50, 1000, 90);
+  // drive_line_up(-50, 400);
+  // drive_line_up(50, 500);
+  // position_turn2(degToRad(90), cw, 0.17, 35, 6);
 }
 
 //SKILLZ

@@ -51,7 +51,7 @@ void reset_position_full(float x, float y, float a)
   prev_inches_traveled_left = 0;
   prev_inches_traveled_right = 0;
   prev_inches_traveled_back = 0;
-  beginning_orientation = 0;
+  beginning_orientation = a;
 
 	position.y = y;
 	position.x = x;

@@ -261,7 +261,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 void position_turn(float target, int timeout) {
     float kp = 55.5;//75.6
-    float kd = 0.05;
+    float kd = 0.1;
     float ki = 0;
     float proportional, derivative, integral;
 
