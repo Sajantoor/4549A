@@ -12,24 +12,26 @@ void autonomous() {
   printf("PositionX: %f || PositionY: %f || Orientation: %f \n \n", position.x, position.y, orientation);
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
-  reset_position_full(120, 10, 0);
+  reset_position_full(0, 0, 0);
   //position_turn(90, 100);
   //position_turn2(degToRad(90), cw, 0.17, 30, 2.5);
-  // position_drive(120, 10, 120, 40, 0, 100, 0.5, 0);
+  beginning_orientation = 0;
+  position_drive(0, 0, 0, 30, 0, 100, 1, 0);
   // printf("position.x %f \n", position.x);
   // printf("position.y %f \n", position.y);
   // pros::delay(6000);
   // // reset_position_full(120, 40, 0);
-  // position_drive(120, 40, 120, 10, -50, -70, 0.5, 0);
-  // printf("position.x %f \n", position.x);
-  // printf("position.y %f \n", position.y);
+  //position_drive(120, 40, 120, 10, -50, -70, 1, 0);
+  printf("position.x %f \n", position.x);
+  printf("position.y %f \n", position.y);
 
 //RED two ZONE STACK
   if(switcher == 1){
     reset_position_full(46, 10, 0);
     beginning_orientation = 0;
     angler_pid(2720, 0);
-    pros::delay(1500);
+    angler_pid(1640, 0);
+    angler_pid(2720, 0);
     loader_left.move(-127);
     loader_right.move(-127);
     pros::delay(1500);
