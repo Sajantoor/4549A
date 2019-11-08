@@ -96,12 +96,11 @@ void tracking_update(void*ignore) {
       2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
     }
 
-    //printf("orientation %f \n", radToDeg(orientation));
-    // printf("something %f \n \n", beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre)));
-    // printf("beginning_orientation %f \n \n", beginning_orientation);
-    // printf("PositionX: %f || PositionY: %f || Orientation: %f \n \n", position.x, position.y, orientation);
-    // printf("position.x %f \n \n", position.x);
-    // printf("position.y %f \n \n", position.y);
+    // printf("local_offset %f, %f \n \n", local_offset.x, local_offset.y);
+    // printf("change_in_angle %f \n \n", change_in_angle);
+    // printf("inches_traveled_left %f \n \n", inches_traveled_left);
+    // printf("inches_traveled_right %f \n \n", inches_traveled_right);
+    // printf("inches_traveled_back %f \n \n", inches_traveled_back);
 
     float average_orientation = orientation + (change_in_angle/2);
     float rotation_amount = orientation + (change_in_angle)/2;
@@ -707,7 +706,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     float sin_line;
     float cos_line;
     float velocity_line;
-    float look_ahead_distance = 5;
+    float look_ahead_distance = 4;
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
@@ -736,10 +735,10 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       if (max_error) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
-  			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
+  			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 2 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 7 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
         printf(" \n");//5.3
       }
 

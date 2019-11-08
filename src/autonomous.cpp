@@ -16,7 +16,8 @@ void autonomous() {
   //position_turn(90, 100);
   //position_turn2(degToRad(90), cw, 0.17, 30, 2.5);
   beginning_orientation = 0;
-  position_drive(0, 0, 0, 30, 0, 100, 1, 0);
+  position_drive(0, 0, 0, 30, 0, 100, 0.5, 0);
+  position_drive(0, 30, 0, 0, 0, -100, 0.5, 0);
   // printf("position.x %f \n", position.x);
   // printf("position.y %f \n", position.y);
   // pros::delay(6000);

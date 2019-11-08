@@ -34,39 +34,6 @@ void initialize()  {
 
 pros::Task angler_task_cpp(angler_pid_task, nullptr, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT,  "loader task");
 
-	// if ((potentiometer.get_value()) < 400) {
-	// 	//pros::lcd::print(3, "red back stack and park");
-	// }
-	//
-	// else if ((500 < potentiometer.get_value()) && (potentiometer.get_value() < 900))  {
-	// 	//pros::lcd::print(3, "red back cap");
-	// }
-	//
-	//  else if ((1000 < potentiometer.get_value()) && (potentiometer.get_value() < 1400)) {
-	// 	 //pros::lcd::print(3, "red front park");
-	//  }
-	//
-	// else if ((1500 < potentiometer.get_value()) && (potentiometer.get_value() < 1800)) {
-	// 	//pros::lcd::print(3, "blue front park");
-	// }
-	//
-	// //blue
-	// else if ((1900 < potentiometer.get_value()) && (potentiometer.get_value() < 2400)) {
-	// 	//pros::lcd::print(3, "blue back cap");
-	// }
-	//
-	// else if ((2500 < potentiometer.get_value()) && (potentiometer.get_value() < 3000))  {
-	// 	//pros::lcd::print(3, "blue stack park");
-	// }
-	//
-	// else if ((3100 < potentiometer.get_value()) && (potentiometer.get_value() < 3400)) {
-	// 	//pros::lcd::print(3, "skills");
-	// }
-	//
-	// else if ((3500 < potentiometer.get_value()) && (potentiometer.get_value() < 4095)) {
-	// 	//pros::lcd::print(3, "testing");
-	// }
-
 }
 
 /**
