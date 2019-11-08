@@ -3,40 +3,58 @@
 #include "all_used.h"
 #include "angler.h"
 #include "motor_sensor_init.h"
-#include <vector>
 
 // define array to prepare for multiple calls, reserverd 5 element slots, can be increased if needed.
 // Needs to be reservered because memory issues.
-std::vector<float> targetArray(10);
-std::vector<float> delayArray(10);
-float delayTime = 0;
+float currentTarget;
+float nextTarget;
+float delayTime;
+float nextDelayTime;
 bool anglerBool = false;
 bool timerAng = false;
-int queue = 0;
+bool torqueCheck = true;
 
 void angler_pid(float position, float delay) {
-  targetArray[queue] = position;
-  delayArray[queue] = delay;
-  printf("target is: %f \n \n", targetArray[0]);
   anglerBool = true;
   timerAng = true;
-  if (queue > 5) queue = 5; else queue++;
+  torqueCheck = true;
+
+  if (!currentTarget) {
+    currentTarget = position;
+    delayTime = delay;
+  } else {
+    nextTarget = position;
+    nextDelayTime = delay;
+  }
 }
 
 void angler_pid_task(void*ignore) {
-  pid_values angler_pid(0.35, 0.8, 0.5, 30, 500, 80);
-  float failsafe;
+  pid_values angler_pid(0.5, 0.8, 0.8, 30, 500, 80);
+  float delayTimer;
+  float timeout;
+  float maxTorque = 0;
 
   while(true) {
     while (anglerBool) {
       if (timerAng) {
-        failsafe = pros::millis() + delayArray[0];
+        delayTimer = pros::millis() + delayTime;
+        timeout = pros::millis() + 2000;
         timerAng = false;
       }
 
+      if (pros::c::motor_get_torque(11) > maxTorque) {
+        maxTorque = pros::c::motor_get_torque(11);
+      }
+
+      // if ((maxTorque > 1.45) && torqueCheck) {
+      //   currentTarget = currentTarget - 20;
+      //   torqueCheck = false;
+      //         printf("max torque: %f \n \n", maxTorque);
+      // }
+
       float currentTime = pros::millis();
       float position = potentiometer_angler.get_value();
-      int final_power = pid_calc(&angler_pid, targetArray[0], position);
+      int final_power = pid_calc(&angler_pid, currentTarget, position);
       angler.move(final_power);
 
       if (pros::c::motor_get_torque(11) > 0.7) {
@@ -49,30 +67,35 @@ void angler_pid_task(void*ignore) {
         if (angler_pid.max_power < 10) {
           angler_pid.max_power = 10;
         } else {
-          angler_pid.max_power = angler_pid.max_power - 15;
+          if (maxTorque > 1.45) {
+            angler_pid.max_power = angler_pid.max_power - 25;
+          } else {
+            angler_pid.max_power = angler_pid.max_power - 15;
+          }
         }
       }
 
-      if (targetArray[0] == 0) {
-        for (int j = 0; j < 5; j++) {
-          targetArray[j] = 0;
-          delayArray[j] = 0;
-        }
 
+      if ((fabs(angler_pid.error) <= 5) && (currentTime > delayTimer))  {
         angler.move(0);
-        queue = 0;
-        printf("CLEARED ARRAY___________________________ \n \n");
-        anglerBool = false;
-      }
 
-      if ((fabs(angler_pid.error) < 10) && (currentTime > failsafe) && !(targetArray.size() == 0))  {
-        targetArray.erase(targetArray.begin());
-        delayArray.erase(delayArray.begin());
-        printf("SHIFTED ARRAY TO: %f ______________________________ \n \n \n", targetArray[0]);
+        if (nextTarget == 0) {
+          currentTarget = 0;
+          delayTime = 0;
+          anglerBool = false;
+        } else {
+          currentTarget = nextTarget;
+          delayTime = nextDelayTime;
+          nextTarget = 0;
+          timerAng = true;
+        }
+
+      } else if ((currentTime > timeout)) {
         angler.move(0);
         timerAng = true;
-        pros::delay(500);
+        pros::delay(20);
       }
+
       pros::delay(20);
     }
     pros::delay(5);

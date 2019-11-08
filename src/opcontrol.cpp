@@ -91,9 +91,9 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			if (liftVal && (queue == 0)) {
-				angler_pid(2790, 0);
-				angler_pid(1640, 0);
+			if (liftVal) {
+				angler_pid(2550, 2000);
+				angler_pid(1552, 0);
 			}
 			// angler_pid(2570, 0);
 			// pros::delay(1700);
