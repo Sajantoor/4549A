@@ -5,7 +5,6 @@
 #include "all_used.h"
 #include "lcd.h"
 #include "lift.h"
-#include "intake.h"
 #include "angler.h"
 
 void autonomous() {

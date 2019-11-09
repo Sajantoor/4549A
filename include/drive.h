@@ -63,7 +63,7 @@ void turn_pid(float degs, float Ki,  unsigned int timeout = 100);
 
 //--------------------------------------ENCODERS-------------------------------------------------------
 
-void drive_pid_encoder(float target, unsigned int timeout, int max_speed = 110, float Kp_C = 0.5);
+void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed = 110);
 
 void turn_pid_encoder_average(double target, unsigned int timeout);
 

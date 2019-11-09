@@ -4,7 +4,6 @@
 #include "all_used.h"
 #include "lcd.h"
 #include "lift.h"
-#include "intake.h"
 #include "angler.h"
 
 
@@ -26,8 +25,6 @@ void initialize()  {
 	pros::task_t lift_task_init = pros::c::task_create(lift_task, (void*)NULL, TASK_PRIORITY_DEFAULT,
 														TASK_STACK_DEPTH_DEFAULT, "LIFT TASK");
 
-	pros::task_t loader_task = pros::c::task_create(intake, (void*)NULL, TASK_PRIORITY_DEFAULT,
-														TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");
 
 //	pros::task_t angler_task = pros::c::task_create(angler_pid_task, (void*)NULL, TASK_PRIORITY_DEFAULT,
 											       //TASK_STACK_DEPTH_DEFAULT, "LOADER TASK");

@@ -92,9 +92,8 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (liftVal) {
-				angler_pid(2720, 0);
-				pros::delay(2000);
-				angler_pid(1640, 0);
+				angler_pid(2550, 2000);
+				angler_pid(1552, 0);
 			}
 			// angler_pid(2570, 0);
 			// pros::delay(1700);
@@ -105,7 +104,7 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (liftVal) {
 				angler_pid(1950, 20000);
-				lift(2610, 20000);
+				lift(1720, 20000);
 			} else {
 				lift(3000, 0);
 				pros::delay(500);
@@ -115,18 +114,18 @@ void opcontrol() {
 			liftVal ? liftVal = false : liftVal = true;
 		}
 
-		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-		// 	if (liftVal) {
-		// 		angler_pid(2060, 20000);
-		// 		lift(2630, 20000);
-		// 	} else {
-		// 		lift(3830, 0);
-		// 		pros::delay(500);
-		// 		angler_pid(1765, 0);
-		// 	}
-		//
-		// 	liftVal ? liftVal = false : liftVal = true;
-		// }
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+			if (liftVal) {
+				angler_pid(2060, 20000);
+				lift(1900, 20000);
+			} else {
+				lift(3000, 0);
+				pros::delay(500);
+				angler_pid(1765, 0);
+			}
+
+			liftVal ? liftVal = false : liftVal = true;
+		}
 
 		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
 		// 	if (liftVal) {
@@ -162,6 +161,20 @@ void opcontrol() {
 		} else {
 			arm.move(0);
 		}
+
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+			angler_pid(2720, 0);
+		  angler_pid(1640, 0);
+		  angler_pid(2720, 0);
+		  loader_left.move(-127);
+		  loader_right.move(-127);
+		  pros::delay(1500);
+		  loader_left.move(0);
+		  loader_right.move(0);
+		  angler_pid(1640, 0);
+
+		}
+
 
 		pros::delay(20);
 	}
