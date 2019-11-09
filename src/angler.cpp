@@ -8,7 +8,7 @@ float currentTarget;
 float nextTarget;
 float delayTime;
 float nextDelayTime;
-const float 7STACK_TORQUE = 1.45; // this is roughly the amount of torque on the motor for a 7 stack
+const float SEVEN_STACK_TORQUE = 1.45; // this is roughly the amount of torque on the motor for a 7 stack
 bool anglerBool = false;
 bool timerAng = false;
 bool torqueCheck = false;
@@ -48,7 +48,7 @@ void angler_pid_task(void*ignore) {
       }
 
       // slightly reduces the target of a 7 stack to improve accuracy
-      if ((maxTorque > 7STACK_TORQUE) && torqueCheck) {
+      if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
         currentTarget = currentTarget - 20;
         torqueCheck = false;
       }
@@ -67,7 +67,7 @@ void angler_pid_task(void*ignore) {
           angler_pid.max_power = 10;
         } else {
           // slow down faster for 7 stack or greater
-          if (maxTorque > 7STACK_TORQUE) {
+          if (maxTorque > SEVEN_STACK_TORQUE) {
             angler_pid.max_power = angler_pid.max_power - 25;
           } else {
             angler_pid.max_power = angler_pid.max_power - 15;

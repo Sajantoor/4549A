@@ -10,7 +10,7 @@
 #define LOADER_RIGHT 12
 #define LOADER_LEFT 20
 #define ANGLER 11
-#define ARM 16
+#define ARM 18
 
 
 
