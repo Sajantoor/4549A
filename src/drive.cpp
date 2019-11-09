@@ -77,8 +77,8 @@ void tracking_update(void*ignore) {
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-    const float distance_between_centre = 5.384;//5.6380148
-    const float distance_between_backwheel_center = -1.985856;//-2.0254878
+    const float distance_between_centre = 5.648845;//5.6380148
+    const float distance_between_backwheel_center = 5;//-2.0254878
     //CORDINATES facing the enemies side is 𝜃r = 0
 
     //beginning_orientation = 0;
@@ -706,7 +706,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     float sin_line;
     float cos_line;
     float velocity_line;
-    float look_ahead_distance = 4;
+    float look_ahead_distance = 15;
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
@@ -735,10 +735,10 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       if (max_error) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
-  			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
+  			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 7 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 6 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
         printf(" \n");//5.3
       }
 
