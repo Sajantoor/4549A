@@ -77,8 +77,8 @@ void tracking_update(void*ignore) {
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-    const float distance_between_centre = 5.648845;//5.6380148
-    const float distance_between_backwheel_center = 5;//-2.0254878
+    const float distance_between_centre = 5.49380807;//5.6380148
+    const float distance_between_backwheel_center = 4.15;//-2.0254878
     //CORDINATES facing the enemies side is 𝜃r = 0
 
     //beginning_orientation = 0;
@@ -160,9 +160,9 @@ void intake_run(int speed_intake, int run_time_intake){
 
 void turn_pid_encoder_average(double target, unsigned int timeout) {
   int ticks_to_deg = 3;
-  pid_values turn_pid(0.45, 0.7, 0.25, 30, 30*ticks_to_deg, 110);
+  pid_values turn_pid(57, 0, 0, 30, 30*ticks_to_deg, 110);
   drive_distance_correction = 0;
-  reset_drive_encoders();
+  //reset_drive_encoders();
 
   degrees_flag = target*ticks_to_deg;
   int failsafe = 2000;    //2000
@@ -173,7 +173,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
 
   while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
     float encoder_avg = (left_encoder.get_value() - right_encoder.get_value()) / 2;
-    float final_power = pid_calc(&turn_pid, target, encoder_avg);
+    float final_power = pid_calc(&turn_pid, degToRad(target), orientation);
     turn_set(final_power);
 
     if (timer_turn == true) net_timer = pros::millis() + timeout;
@@ -258,7 +258,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 //-------------------------------------POSITION PIDS--------------------------------------------------------------------
 
 
-void position_turn(float target, int timeout) {
+void position_turn(float target, int timeout, int max_speed) {
     float kp = 55.5;//75.6
     float kd = 0.1;
     float ki = 0;
@@ -270,7 +270,7 @@ void position_turn(float target, int timeout) {
     int last_error = 0;
     int integral_limit = 50;
 
-    int max_speed = 100;
+    //int max_speed = 100;
     bool timer_turn = true;
     unsigned int net_timer;
 

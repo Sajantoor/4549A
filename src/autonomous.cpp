@@ -12,20 +12,26 @@ void autonomous() {
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
   reset_position_full(0, 0, 0);
-  //position_turn(90, 100);
-  //position_turn2(degToRad(90), cw, 0.17, 30, 2.5);
   beginning_orientation = 0;
-  loader_left.move(127);
-  loader_right.move(127);
-  position_drive(0, 0, 0, 30, 0, 20, 1, 0);
-  position_drive(0, 30, 0, 0, 0, -100, 0.5, 0);
-  loader_left.move(0);
-  loader_right.move(0);
+  //position_turn(-90, 100, 100);
+  //turn_pid_encoder_average(90, 100);
+  //position_turn2(degToRad(-90), ccw, 0, 30, 3.7);
+  // loader_left.move(127);
+  // loader_right.move(127);
+  position_drive(0, 0, -30, -30, 0, -90, 1, 0);
+  turn_pid_encoder_average(-13, 100);
+  position_drive(-30, -30, -30, -10, 0, 90, 1, 0);
+  // turn_pid_encoder_average(90, 100);
+  // turn_pid_encoder_average(0, 100);
+  // position_drive(0, 30, 0, 0, 0, -100, 0.5, 0);
+  // loader_left.move(0);
+  // loader_right.move(0);
   // printf("position.x %f \n", position.x);
   // printf("position.y %f \n", position.y);
   // pros::delay(6000);
   // // reset_position_full(120, 40, 0);
   //position_drive(120, 40, 120, 10, -50, -70, 1, 0);
+  printf("orientation %f \n", orientation);
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
 
@@ -74,7 +80,7 @@ void autonomous() {
     loader_right.move(127);
     position_drive(120, 10, 120, 60, 0, 100, 1.5, 0);// pick up cubes
     position_drive(120, 60, 120, 12, -50, -100, 1.5, 0);
-    position_turn(100, 100);
+    position_turn(100, 100, 100);
     position_drive(120, 12, 122, 12, 0, 110, 1.5, 0); //drive to red one zone
     loader_left.move(0);
     loader_right.move(0);
@@ -93,12 +99,12 @@ void autonomous() {
     loader_left.move(-50);
     loader_right.move(-50);
     position_drive(130, 10, 120, 10, 0, -100, 1.8, 0);
-    position_turn(0, 100);
+    position_turn(0, 100, 100);
     //first stack done in red one zone
     loader_left.move(127);
     loader_right.move(127);
     position_drive(120, 10, 120, 135, 0, 100, 1.8, 0);// pick up second stack in blue zone
-    position_turn(90, 100);
+    position_turn(90, 100,100);
     position_drive(120, 135, 140, 132, 0, 100, 1.8, 0);// drive to blue one zone
     loader_left.move(0);
     loader_right.move(0);
@@ -117,7 +123,7 @@ void autonomous() {
     loader_left.move(-50);
     loader_right.move(-50);
     position_drive(140, 132, 120, 135, 0, -100, 1.8, 0);// stack done for second blue one zone stack
-    position_turn(-90, 100);
+    position_turn(-90, 100, 100);
     drive_line_up(-90, 3000);
     reset_position_full(120, 135, 0);// line up with wall
   }

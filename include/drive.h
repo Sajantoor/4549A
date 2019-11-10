@@ -77,7 +77,7 @@ void tracking_update(void*ignore);
 
 void tracking_velocity(void*ignore);
 
-void position_turn(float target, int timeout);
+void position_turn(float target, int timeout, int max_speed);
 
 void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int coast_power, float stop_offset_deg);
 
