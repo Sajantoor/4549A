@@ -20,7 +20,7 @@ void angler_pid(float position, float delay) {
     delayTime = delay;
   } else {
     nextTarget = position;
-    nextDelayTime = delay;
+    delayTime = delay;
   }
   // runs tasks and its checks
   anglerBool = true;
@@ -38,7 +38,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 2000 + ((delayTime > 2000) ? 1000 : delayTime); // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + 2000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
       }
 
@@ -91,7 +91,6 @@ void angler_pid_task(void*ignore) {
           anglerBool = false;
         } else {
           currentTarget = nextTarget;
-          delayTime = nextDelayTime;
           nextTarget = 0;
           timerAng = true;
         }

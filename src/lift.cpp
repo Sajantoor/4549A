@@ -8,7 +8,7 @@
 int height;
 bool liftBool = false;
 bool timer = true;
-const int ANGLER_THRESHOLD = 1720;
+int angler_threshold = 1720;
 int hold = 0;
 
 void lift(int moveVal, int holdVal) {
@@ -19,37 +19,44 @@ void lift(int moveVal, int holdVal) {
 }
 
 void lift_task(void*ignore) {
-  pid_values lift_pid(0.5, 0.7, 0, 30, 500, 127);
+  int maxPower = 127;
+  pid_values lift_pid(0.5, 0.7, 0, 30, 500, maxPower);
   float timeout = 1000;
   float failsafe;
   float delayTime;
 
   while (true) {
-    while ((potentiometer_angler.get_value() < ANGLER_THRESHOLD) && liftBool) {
+    while ((potentiometer_angler.get_value() > angler_threshold) && liftBool) {
       if (timer) {
         failsafe = pros::millis() + timeout + hold;
         delayTime = pros::millis() + hold;
         timer = false;
       }
 
+      if (pros::c::motor_get_torque(18) > 0.8) {
+        lift_pid.max_power = 127;
+      } else {
+        lift_pid.max_power = maxPower;
+      }
+
        float currentTime = pros::millis();
        float position = potentiometer_arm.get_value();
        float final_power = pid_calc(&lift_pid, height, position);
+       arm.move(final_power);
 
 
        if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
+         liftBool = false;
          hold = 0;
          arm.move(0);
-         liftBool = false;
        } else if (failsafe < currentTime) {
+         liftBool = false;
          hold = 0;
          arm.move(0);
-         liftBool = false;
        }
-       arm.move(final_power);
 
        printf("final power %f \n \n", final_power);
-       pros::delay(20);
+              printf("error %f \n \n", lift_pid.error);
      }
 
     pros::delay(20);
