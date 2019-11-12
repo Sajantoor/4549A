@@ -18,9 +18,15 @@ void autonomous() {
   //position_turn2(degToRad(-90), ccw, 0, 30, 3.7);
   // loader_left.move(127);
   // loader_right.move(127);
-  position_drive(0, 0, -30, -30, 0, -90, 1, 0);
-  turn_pid_encoder_average(-13, 100);
-  position_drive(-30, -30, -30, -10, 0, 90, 1, 0);
+
+            // position_drive(0, 0, -30, -30, 0, -90, 1, 0);
+            // turn_pid_encoder_average(-13, 100);
+            // position_drive(-30, -30, -30, -10, 0, 90, 1, 0);
+            turn_pid_encoder_average(90, 1000);
+            turn_pid_encoder_average(0, 5000);
+            // position_drive(-30, -10, 0, -10, 0, 90, 1, 0);
+            // turn_pid_encoder_average(0, 100);
+
   // turn_pid_encoder_average(90, 100);
   // turn_pid_encoder_average(0, 100);
   // position_drive(0, 30, 0, 0, 0, -100, 0.5, 0);

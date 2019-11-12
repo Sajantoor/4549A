@@ -77,7 +77,7 @@ void tracking_update(void*ignore) {
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-    const float distance_between_centre = 5.49380807;//5.6380148
+    const float distance_between_centre = 5.3365377;//5.49380807
     const float distance_between_backwheel_center = 4.15;//-2.0254878
     //CORDINATES facing the enemies side is 𝜃r = 0
 
@@ -160,28 +160,43 @@ void intake_run(int speed_intake, int run_time_intake){
 
 void turn_pid_encoder_average(double target, unsigned int timeout) {
   int ticks_to_deg = 3;
-  pid_values turn_pid(57, 0, 0, 30, 30*ticks_to_deg, 110);
+  pid_values turn_pid(60.4, 0, 0, 30, degToRad(10), 110);//59.9
   drive_distance_correction = 0;
-  //reset_drive_encoders();
 
   degrees_flag = target*ticks_to_deg;
-  int failsafe = 2000;    //2000
+  int failsafe = 2500;    //2000
   int initial_millis = pros::millis();
   unsigned int net_timer;
   bool timer_turn = true;
   net_timer = pros::millis() + timeout;
+  float final_power;
+  bool turnBool = true;
 
-  while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
-    float encoder_avg = (left_encoder.get_value() - right_encoder.get_value()) / 2;
-    float final_power = pid_calc(&turn_pid, degToRad(target), orientation);
+//  while(orientation < degToRad(target)) {
+  while(turnBool&& (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+    final_power = pid_calc(&turn_pid, degToRad(target), orientation);
     turn_set(final_power);
+    printf("finalpower %f \n\n", final_power);
+    printf("error %f \n\n", turn_pid.error);
 
+    if (fabs(turn_pid.error) < degToRad(0.5)) turnBool = false;
     if (timer_turn == true) net_timer = pros::millis() + timeout;
 
-    pros::delay(20); //20
+    pros::delay(10); //20
   }
 
-  turn_set(0);
+  if (final_power > 0) {
+    set_drive(20,-20);
+    pros::delay(150);
+    drive_set(0);
+  } else if (final_power < 0) {
+    set_drive(-20,20);
+    pros::delay(150);
+    drive_set(0);
+  } else {
+    set_drive(0,0);
+  }
+
   correction_drive = (correction_turn + (left_encoder.get_value() - right_encoder.get_value())/2 - degrees_flag);
   prev_correction_turn = correction_turn;
   correction_turn = ((left_encoder.get_value() - right_encoder.get_value())/2 - degrees_flag + prev_correction_turn);///ticks_to_deg;
