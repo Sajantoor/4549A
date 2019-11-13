@@ -693,7 +693,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout) {
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance) {
     vector error;
     vector positionErr;
     vector rotation_vector;
@@ -723,7 +723,6 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     float sin_line;
     float cos_line;
     float velocity_line;
-    float look_ahead_distance = 15;
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
@@ -766,6 +765,204 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       limit_to_val_set(finalpower, abs(max_speed));
 			if (finalpower * sgn(max_speed) < 30) //30
       finalpower = 30 * sgn(max_speed);
+			int delta = finalpower - last;
+			limit_to_val_set(delta, 5);
+			finalpower = last += delta;
+
+      switch (sgn(correction)) {
+    		case 0:
+            left_drive_set(finalpower);
+            right_drive_set(finalpower);
+      			break;
+    		case 1:
+            left_drive_set(finalpower);
+            right_drive_set(finalpower * exp(-correction));
+      			break;
+    		case -1:
+            left_drive_set(finalpower * exp(correction));
+            right_drive_set(finalpower);
+      			break;
+        }
+
+        // printf("back_encoder %d\n", back_encoder.get_value());
+        // printf(" \n");
+        // printf("left_encoder %d\n", left_encoder.get_value());
+        // printf(" \n");
+        // printf("right_encoder %d\n", right_encoder.get_value());
+        // printf(" \n");
+        printf("position.x %f\n", position.x);
+        printf(" \n");
+        printf("position.y %f\n", position.y);
+        printf(" \n");
+        printf("positionErr.x %f\n", positionErr.x);
+        printf(" \n");
+        printf("positionErr.y %f\n", positionErr.y);
+        printf(" \n");
+        // printf("final_power %f\n", finalpower);
+        // printf(" \n");
+        printf("err_angle %f\n", err_angle);
+        printf(" \n");
+        printf("err_x %f\n", err_x);
+        printf(" \n");
+        printf("look_ahead_point.x %f\n", look_ahead_point.x);
+        printf(" \n");
+        printf("look_ahead_point.y %f\n", look_ahead_point.y);
+        printf(" \n");
+        printf("orientation %f\n", orientation);
+        printf(" \n");
+        printf("correctA %f\n", correctA);
+        printf(" \n");
+        printf("correction %f\n", correction);
+        printf(" \n");
+        // printf("max_error %f\n", max_error);
+        // printf(" \n");
+        // printf("orientation %f\n", orientation);
+        // printf(" \n");
+        // printf("sgn(max_speed) %d\n", sgn(max_speed));
+        // printf(" \n");
+        // printf("tan(err_angle) %f \n", tan(err_angle));
+        // printf(" \n");
+        // printf("exp(correction) %f \n", exp(correction));
+        // printf(" \n");
+        // printf("last finalpower %d \n", last);
+        // printf(" \n");
+        // printf("delta %d \n", delta);
+        // printf(" \n");
+        // printf("magnPosvector %f\n", magnPosvector);
+        // printf(" \n");
+        // printf("line_length %f\n", line_length);
+        // printf(" \n");
+        // printf("positionErrPolar %f\n", positionErrPolar.theta);
+        // printf(" \n");
+        // printf("Line Angle %f\n", radToDeg(line_angle));
+        // printf(" \n");
+        // printf("angle_main_line %f\n", radToDeg(angle_main_line));
+        // printf(" \n");
+        // printf("Moving to %f , %f from %f , %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
+        // printf(" \n");
+        // printf("Moved to %f %f from %f %f at %f  || %f.x , %f.y , %f\n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed, position.x, position.y, radToDeg(orientation));
+        // printf(" \n");
+        // printf("--------------------------------------------------------------------------------------\n");
+        // printf(" \n");
+
+        pros::delay(10);
+
+      } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+
+      drive_set(25 * sgn(max_speed));
+
+    do {
+      positionErr.x = position.x - ending_point_x;
+      positionErr.y = position.y - ending_point_y;
+
+      vectorToPolar(positionErr, positionErrPolar);
+      positionErrPolar.theta += angle_main_line;
+      polarToVector(positionErrPolar, positionErr);
+
+      velocity_line = sin_line * velocity.x + cos_line * velocity.y;
+      //printf("driving done velocity\n");
+      // printf("position.x %f\n", position.x);
+      // printf(" \n");
+      // printf("position.y %f\n", position.y);
+      // printf(" \n");
+
+      pros::delay(5);
+    } while((positionErr.y < -early_stop - (velocity_line * 0.098)) && (pros::millis() < net_timer));
+
+    printf("driving done\n");
+    printf("velocity_line %f \n", velocity_line);
+
+    if (max_speed < 0) {
+      drive_set(20);
+      pros::delay(50);
+      drive_set(0);
+      printf("driving done back\n");
+
+    } else if (max_speed > 0) {
+      drive_set(-20);
+      pros::delay(50);
+      drive_set(0);
+      printf("driving done forward\n");
+
+    } else {
+      drive_set(0);
+    }
+    // drive_set(0);
+    printf("driving done\n");
+}
+
+void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance) {
+    vector error;
+    vector positionErr;
+    vector rotation_vector;
+    vector delta_main_line;
+    vector rotated_main_line;
+    vector look_ahead_point;
+    polar look_ahead_point_polar;
+    polar positionErrPolar;
+
+    unsigned int net_timer;
+    int initial_millis = pros::millis();
+    net_timer = initial_millis + timeout; //just to initialize net_timer at first
+    float failsafe = 2000;
+
+    float magnPosvector;
+    float angle_main_line;
+    //float line_ahead_point = 0.5;
+    float line_point_angle;
+    float line_angle;
+    float correction = 0;
+    float finalpower;
+    float err_angle;
+    float err_x;
+    float correctA;
+    int last = startpower;
+    float line_length;
+    float sin_line;
+    float cos_line;
+    float velocity_line;
+    printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
+    delta_main_line.x = ending_point_x - starting_point_x;
+    delta_main_line.y = ending_point_y - starting_point_y;
+
+    do {
+      look_ahead_point.x = 0;
+      look_ahead_point.y = positionErr.y + look_ahead_distance;
+      vectorToPolar(look_ahead_point, look_ahead_point_polar);
+      look_ahead_point_polar.theta -= angle_main_line;
+      polarToVector(look_ahead_point_polar, look_ahead_point);
+      look_ahead_point.x += ending_point_x;
+      look_ahead_point.y += ending_point_y;
+
+      positionErr.x = position.x - ending_point_x;
+      positionErr.y = position.y - ending_point_y;
+      angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
+      line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
+      line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
+      magnPosvector = sqrt(line_length);
+      sin_line = sin(angle_main_line);
+      cos_line = cos(angle_main_line);
+      vectorToPolar(positionErr, positionErrPolar);
+      positionErrPolar.theta += angle_main_line;
+      polarToVector(positionErrPolar, positionErr);
+
+      if (max_error) {
+  			err_angle = orientation - line_angle;
+  			err_x = positionErr.x + positionErr.y * tan(err_angle);
+  			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
+  			if (max_speed < 0)
+  				correctA += pi;
+  			correction = fabs(err_x) > max_error ? 5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+        printf(" \n");//5.3
+      }
+
+    //------------------------------------------------------------math--------------------------------------------------------
+
+      finalpower = round(-127.0 / 40 * positionErr.y) * sgn(max_speed); //17
+
+      limit_to_val_set(finalpower, abs(max_speed));
+			if (finalpower * sgn(max_speed) < 25) //30
+      finalpower = 25 * sgn(max_speed);
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 5);
 			finalpower = last += delta;
