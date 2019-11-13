@@ -173,7 +173,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
   bool turnBool = true;
 
 //  while(orientation < degToRad(target)) {
-  while(turnBool&& (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+  while(turnBool && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
     final_power = pid_calc(&turn_pid, degToRad(target), orientation);
     turn_set(final_power);
     printf("finalpower %f \n\n", final_power);
@@ -706,6 +706,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     unsigned int net_timer;
     int initial_millis = pros::millis();
     net_timer = initial_millis + timeout; //just to initialize net_timer at first
+    float failsafe = 2000;
 
     float magnPosvector;
     float angle_main_line;
@@ -847,7 +848,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
         pros::delay(10);
 
-      } while (positionErr.y < -early_stop && (pros::millis() < net_timer));
+      } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
       drive_set(25 * sgn(max_speed));
 
