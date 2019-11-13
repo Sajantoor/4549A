@@ -22,8 +22,8 @@ void autonomous() {
             // position_drive(0, 0, -30, -30, 0, -90, 1, 0);
             // turn_pid_encoder_average(-13, 100);
             // position_drive(-30, -30, -30, -10, 0, 90, 1, 0);
-            turn_pid_encoder_average(90, 1000);
-            turn_pid_encoder_average(0, 5000);
+            // turn_pid_encoder_average(90, 1000);
+            // turn_pid_encoder_average(0, 5000);
             // position_drive(-30, -10, 0, -10, 0, 90, 1, 0);
             // turn_pid_encoder_average(0, 100);
 
@@ -43,41 +43,68 @@ void autonomous() {
 
 //RED two ZONE STACK
   if(switcher == 1){
-    reset_position_full(46, 10, 0);
+    reset_position_full(118, 10, 0);
     beginning_orientation = 0;
-    angler_pid(2720, 0);
-    angler_pid(1640, 0);
-    angler_pid(2720, 0);
+    // angler_pid(2720, 0);
+    // angler_pid(1640, 0);
+    // angler_pid(2720, 0);
+    // loader_left.move(-127);
+    // loader_right.move(-127);
+    // pros::delay(1500);
+    // loader_left.move(0);
+    // loader_right.move(0);
+    // angler_pid(1640, 0);
+    angler_pid(2300, 0);
+    angler_pid(1552, 0);
+    angler_pid(2300, 0);
     loader_left.move(-127);
     loader_right.move(-127);
     pros::delay(1500);
     loader_left.move(0);
     loader_right.move(0);
-    angler_pid(1640, 0);
+    angler_pid(1552, 0);
     loader_left.move(100);
     loader_right.move(100);
-    position_drive(46, 10, 46, 60, 0, 100, 1, 5);// pick up cubes
-    position_drive(46, 10, 46, 10, 0, 100, 1, 0);// pick up cubes
-    drive_line_up(-50, 600);
-    drive_line_up(50, 500);
-    position_turn2(degToRad(-90), ccw, 0.17, 30, 2.5);
-    position_drive(46, 12, 26, 12, 0, 100, 0.5, 5);
-    loader_left.move(0);
-    loader_right.move(0);
-    loader_left.move(-80);
-    loader_right.move(-80);
-    pros::delay(225);
-    loader_left.move(80);
-    loader_right.move(80);
     pros::delay(500);
+    position_drive(118, 10, 118, 45, 0, 100, 1, 0);// pick up cubes
+    turn_pid_encoder_average(160,1000);
+    position_drive(118, 45, 128, 16, 0, 100, 1, 0);// pick up cubes
     loader_left.move(0);
     loader_right.move(0);
-    pros::delay(200);
-    angler_pid(2570, 0);
-    pros::delay(2000);
-    angler_pid(1640, 0);
-    loader_left.move(-50);
-    loader_right.move(-50);
+    angler_pid(2550, 2000);
+    angler_pid(1580, 0);
+
+    //position_drive(118, 20, 126, 16, 0, 100, 1, 10);// pick up cubes
+}
+
+  if(switcher == 2){
+    angler_pid(2550, 0);
+    angler_pid(1552, 0);
+    angler_pid(2550, 0);
+    loader_left.move(-127);
+    loader_right.move(-127);
+    pros::delay(1500);
+    loader_left.move(0);
+    loader_right.move(0);
+    angler_pid(1552, 0);
+    reset_position_full(95, 10, 0);
+    beginning_orientation = 0;
+    loader_left.move(127);
+    loader_right.move(127);
+    position_drive(95, 10, 95, 45, 0, 100, 1, 0);// pick up cubes
+    position_drive(95, 45, 118, 16, 0, -110, 2, 0);// pick up cubes
+    //turn_pid_encoder_average(0,300);
+    //drive_line_up(-40,500);
+    position_drive(118, 10, 118, 45, 0, 115, 1, 0);// pick up cubes
+    position_drive(118, 45, 118, 20, 0, -100, 1, 0);// pick up cubes
+    turn_pid_encoder_average(120,1000);
+    position_drive(118, 20, 127, 16, 0, 100, 1, 20);// pick up cubes
+    loader_left.move(0);
+    loader_right.move(0);
+  }
+
+if(switcher == 5){
+
 }
 
 //SKILLZ

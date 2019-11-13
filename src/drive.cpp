@@ -693,7 +693,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop) {
+void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout) {
     vector error;
     vector positionErr;
     vector rotation_vector;
@@ -705,9 +705,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
     unsigned int net_timer;
     int initial_millis = pros::millis();
-    int failsafe = 2000;
-    float timeout = 2000;
-    net_timer = pros::millis() + timeout; //just to initialize net_timer at first
+    net_timer = initial_millis + timeout; //just to initialize net_timer at first
 
     float magnPosvector;
     float angle_main_line;
@@ -849,7 +847,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
         pros::delay(10);
 
-      } while (positionErr.y < -early_stop /*&& (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())*/);
+      } while (positionErr.y < -early_stop && (pros::millis() < net_timer));
 
       drive_set(25 * sgn(max_speed));
 
@@ -869,7 +867,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       // printf(" \n");
 
       pros::delay(5);
-    } while(positionErr.y < -early_stop - (velocity_line * 0.098));
+    } while((positionErr.y < -early_stop - (velocity_line * 0.098)) && (pros::millis() < net_timer));
 
     printf("driving done\n");
     printf("velocity_line %f \n", velocity_line);

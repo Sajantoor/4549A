@@ -85,7 +85,10 @@ void opcontrol() {
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			loader_left.move(-127);
 			loader_right.move(-127);
-		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+			loader_left.move(-63);
+			loader_right.move(-63);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 			loader_left.move(-63);
 			loader_right.move(-63);
 		} else {
