@@ -93,25 +93,25 @@ void autonomous() {
 
     reset_position_full(95, 10, 0);
     beginning_orientation = 0;
-    loader_left.move(127);
-    loader_right.move(127);
+    loader_left.move(90);
+    loader_right.move(90);
     position_drive(95, 10, 95, 45, 0, 127, 1, 0, 2000, 15);// pick up cubes
     //position_drive(95, 45, 120, 10, 0, -110, 0.5, 0, 3000, 30);// CURVE TURN
-    position_drive2(95, 45, 125, 10, 0, -127, 0.5, 0, 2350, 30);// CURVE TURN
-    position_turn(12, 200, 127);
-    position_drive(118, 10, 118, 40, 0, 127, 1, 0, 2000, 15);// pick up cubes
-    turn_pid_encoder_average(150,1000);
-    loader_left.move(75);
-    loader_right.move(75);
+    position_drive2(95, 45, 125, 10, 0, -127, 0.5, 0, 2300, 30);// CURVE TURN
+    position_turn(12, 150, 127);
+    position_drive(118, 10, 118, 50, 0, 127, 1, 0, 2000, 15);// pick up cubes
+    turn_pid_encoder_average(155,1000);
+    loader_left.move(85);
+    loader_right.move(85);
     position_drive(118, 45, 144, 0, 0, 100, 1, 0, 2200, 15);// pick up cubes
-    loader_left.move(-50);
-    loader_right.move(-50);
-    pros::delay(600);
-    angler_pid(2580, 2500);
-    pros::delay(1200);
+    loader_left.move(-100);
+    loader_right.move(-100);
+    pros::delay(400);
+    angler_pid(2480, 2000);
     angler_pid(1580, 0);
     loader_left.move(0);
     loader_right.move(0);
+    pros::delay(6000);
     position_drive(144, 0, 110, 50, 0, -100, 1, 0, 2000, 15);// pick up cubes
   }
 

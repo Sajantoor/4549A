@@ -8,7 +8,7 @@
 int height;
 bool liftBool = false;
 bool timer = true;
-int angler_threshold = 1720;
+int angler_threshold = 1650;
 int hold = 0;
 
 void lift(int moveVal, int holdVal) {

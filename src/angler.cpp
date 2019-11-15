@@ -38,7 +38,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 1000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + 3000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
       }
 
@@ -49,7 +49,7 @@ void angler_pid_task(void*ignore) {
 
       // slightly reduces the target of a 7 stack to improve accuracy
       if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-        currentTarget = currentTarget - 20;
+        currentTarget = currentTarget + 120;
         torqueCheck = false;
       }
 

@@ -98,7 +98,7 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (liftVal) {
-				angler_pid(2450, 2000);
+				angler_pid(2480, 2000);
 				angler_pid(1580, 0);
 			}
 			// angler_pid(2570, 0);
@@ -114,7 +114,7 @@ void opcontrol() {
 			} else {
 				lift(1450, 0);
 				pros::delay(500);
-				angler_pid(1640, 0);
+				angler_pid(1580, 0);
 			}
 
 			liftVal ? liftVal = false : liftVal = true;
@@ -122,7 +122,7 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 			if (liftVal) {
-				angler_pid(1820, 20000);
+				angler_pid(1950, 20000);
 				lift(2500, 20000);
 			} else {
 				lift(1450, 0);
@@ -169,9 +169,9 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-			angler_pid(2000, 0);
+			angler_pid(2480, 0);
 		  angler_pid(1580, 0);
-		  angler_pid(2000, 0);
+		  angler_pid(2480, 0);
 		  loader_left.move(-127);
 		  loader_right.move(-127);
 		  pros::delay(1500);
