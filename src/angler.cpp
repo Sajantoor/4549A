@@ -38,7 +38,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 2000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + 1000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
       }
 
@@ -63,8 +63,8 @@ void angler_pid_task(void*ignore) {
 
       // slows down near the end of the stack
       if (fabs(angler_pid.error) < 600) {
-        if (angler_pid.max_power < 10) {
-          angler_pid.max_power = 10;
+        if (angler_pid.max_power < 40) {
+          angler_pid.max_power = 40;
         } else {
           // slow down faster for 7 stack or greater
           if (maxTorque > SEVEN_STACK_TORQUE) {
@@ -79,9 +79,12 @@ void angler_pid_task(void*ignore) {
       float position = potentiometer_angler.get_value();
       int final_power = pid_calc(&angler_pid, currentTarget, position);
       angler.move(final_power);
+      printf("angler error: %f \n \n", angler_pid.error);
+      printf("current Time: %f \n \n", currentTime);
+      printf("timeout: %f \n \n", timeout);
 
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
-      if (((fabs(angler_pid.error) <= 10) && (currentTime > holdTimer)) || (currentTime > timeout))  {
+      if (((fabs(angler_pid.error) <= 8) && (currentTime > holdTimer)) || (currentTime > timeout))  {
         angler.move(0);
         maxTorque = 0;
         // if there is a next target, then switch to the next target, else clear current target and exit the loop
