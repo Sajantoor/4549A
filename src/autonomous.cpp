@@ -97,26 +97,82 @@ void autonomous() {
     loader_right.move(90);
     position_drive(95, 10, 95, 45, 0, 127, 1, 0, 2000, 15);// pick up cubes
     //position_drive(95, 45, 120, 10, 0, -110, 0.5, 0, 3000, 30);// CURVE TURN
-    position_drive2(95, 45, 125, 10, 0, -127, 0.5, 0, 2300, 30);// CURVE TURN
-    position_turn(12, 150, 127);
+    position_drive2(95, 45, 125, 10, 0, -127, 3, 0, 2250, 70);// CURVE TURN
+    position_turn(12, 25, 127);
     position_drive(118, 10, 118, 50, 0, 127, 1, 0, 2000, 15);// pick up cubes
-    turn_pid_encoder_average(155,1000);
-    loader_left.move(85);
-    loader_right.move(85);
-    position_drive(118, 45, 144, 0, 0, 100, 1, 0, 2200, 15);// pick up cubes
-    loader_left.move(-100);
-    loader_right.move(-100);
-    pros::delay(400);
-    angler_pid(2480, 2000);
-    angler_pid(1580, 0);
-    loader_left.move(0);
-    loader_right.move(0);
-    pros::delay(6000);
-    position_drive(144, 0, 110, 50, 0, -100, 1, 0, 2000, 15);// pick up cubes
+    loader_left.move(60);
+    loader_right.move(60);
+    // turn_pid_encoder_average(150,1000);
+    // loader_left.move(0);
+    // loader_right.move(0);
+    // position_drive(118, 50, 118, 30, 0, 127, 1, 0, 2000, 15);// pick up cubes
+    //turn_pid_encoder_average(160,1000);
+    // position_turn(130, 1000, 127);
+    // drive_line_up(70, 600);
+    // pros::delay(2000);
+    // loader_left.move(-40);
+    // loader_right.move(-40);
+    // angler_pid(2490, 2000);
+    // angler_pid(1580, 0);
+    // pros::delay(2000);
+    // drive_line_up(-90, 500);
+    //position_drive(118, 23, 128, 15, 0, 127, 1, 0, 2000, 15);// pick up cubes
+    // loader_left.move(85);
+    // loader_right.move(85);
+    // position_drive(118, 45, 130, 15, 0, 127, 1, 0, 2300, 15);// pick up cubes
+    // loader_left.move(-100);
+    // loader_right.move(-100);
+    // pros::delay(400);
+    // angler_pid(2480, 2000);
+    // angler_pid(1580, 0);
+    // loader_left.move(0);
+    // loader_right.move(0);
+    // pros::delay(6000);
+    // position_drive(129, 15, 110, 50, 0, -100, 1, 0, 2000, 15);// pick up cubes
   }
 
 if(switcher == 5){
+  angler_pid(2480, 0);
+  angler_pid(1580, 0);
+  angler_pid(2480, 0);
+  loader_left.move(-127);
+  loader_right.move(-127);
+  pros::delay(1500);
+  loader_left.move(0);
+  loader_right.move(0);
+  angler_pid(1580, 0);
 
+  reset_position_full(100, 10, 0);
+  beginning_orientation = 0;
+  loader_left.move(90);
+  loader_right.move(90);
+  position_drive(100, 10, 100, 54, 0, 127, 1, 0, 2000, 15);// pick up cubes
+  position_drive(100, 60, 100, 30, 0, -115, 1, 0, 2000, 15);// pick up cubes
+  turn_pid_encoder_average(90,100);
+  position_drive(100, 30, 110, 30, 0, 127, 1, 0, 1900, 15);// pick up cubes
+  turn_pid_encoder_average(0,100);
+  loader_left.move(0);
+  loader_right.move(0);
+  position_drive(110, 30, 110, 15, 0, -127, 1, 0, 1800, 15);// pick up cubes
+  turn_pid_encoder_average(90,100);
+  drive_line_up(80, 400);
+  angler_pid(2530, 2000);
+  loader_left.move(-30);
+  loader_right.move(-30);
+  pros::delay(500);
+  loader_left.move(0);
+  loader_right.move(0);
+  angler_pid(1580, 0);
+  pros::delay(1500);
+  drive_line_up(-80, 400);
+  //position_drive(110, 20, 125, 20, 0, 100, 1, 0, 2000, 15);// pick up cubes
+  //turn_pid_encoder_average(140,1000);
+  // position_drive(30, 30, 17, 21, 0, 127, 1, 0, 2000, 15);// pick up cubes
+  // loader_left.move(0);
+  // loader_right.move(0);
+  // angler_pid(2530, 2000);
+  // angler_pid(1580, 0);
+  // pros::delay(1400);
 }
 
 //SKILLZ

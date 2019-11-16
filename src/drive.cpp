@@ -164,7 +164,7 @@ void turn_pid_encoder_average(double target, unsigned int timeout) {
   drive_distance_correction = 0;
 
   degrees_flag = target*ticks_to_deg;
-  int failsafe = 2500;    //2000
+  int failsafe = 1500;    //2000
   int initial_millis = pros::millis();
   unsigned int net_timer;
   bool timer_turn = true;

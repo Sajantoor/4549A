@@ -8,19 +8,24 @@ float currentTarget;
 float nextTarget;
 float delayTime;
 float nextDelayTime;
+float currentSpeed;
+float nextSpeed;
+
 const float SEVEN_STACK_TORQUE = 1.45; // this is roughly the amount of torque on the motor for a 7 stack
 bool anglerBool = false;
 bool timerAng = false;
 bool torqueCheck = false;
 
-void angler_pid(float position, float delay) {
+void angler_pid(float position, float delay, float speed) {
   // assigns position value based on if there is a currentTarget or not.
   if (!currentTarget) {
     currentTarget = position;
+    currentSpeed = speed;
     delayTime = delay;
   } else {
     nextTarget = position;
     delayTime = delay;
+    nextSpeed = speed;
   }
   // runs tasks and its checks
   anglerBool = true;
@@ -39,6 +44,7 @@ void angler_pid_task(void*ignore) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
         timeout = pros::millis() + 3000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        angler_pid.max_power = currentSpeed;
         timerAng = false;
       }
 
@@ -49,7 +55,7 @@ void angler_pid_task(void*ignore) {
 
       // slightly reduces the target of a 7 stack to improve accuracy
       if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-        currentTarget = currentTarget + 120;
+        currentTarget = currentTarget + 100;
         torqueCheck = false;
       }
 
@@ -90,10 +96,13 @@ void angler_pid_task(void*ignore) {
         // if there is a next target, then switch to the next target, else clear current target and exit the loop
         if (nextTarget == 0) {
           currentTarget = 0;
+          currentSpeed = 0;
           delayTime = 0;
           anglerBool = false;
         } else {
           currentTarget = nextTarget;
+          currentSpeed = nextSpeed;
+          nextSpeed = 0;
           nextTarget = 0;
           timerAng = true;
         }
