@@ -892,15 +892,10 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 }
 
 void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float turning, float max_power) {
-    vector error;
     vector positionErr;
     vector rotation_vector;
     vector delta_main_line;
-    vector rotated_main_line;
-    vector look_ahead_point;
-    polar look_ahead_point_polar;
     polar positionErrPolar;
-
 
     pid_values turn_pid(0, 0, 0, 30, 500, max_power);
     pid_values strafe_pid(0, 0, 0, 30, 500, max_power);
@@ -910,22 +905,8 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     int initial_millis = pros::millis();
     float failsafe = 2000;
 
-    float magnPosvector;
     float angle_main_line;
     //float line_ahead_point = 0.5;
-    float line_point_angle;
-    float line_angle;
-    float correction = 0;
-    float finalpower;
-    float err_angle;
-    float err_x;
-    float correctA;
-    float startpower = 0;
-    int last = startpower;
-    float line_length;
-    float sin_line;
-    float cos_line;
-    float velocity_line;
     int last_error_turn = 0;
     int last_error_throttle = 0;
     int last_error_strafe = 0;
@@ -956,7 +937,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     } while (positionErr.y && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     printf("driving done\n");
-    printf("velocity_line %f \n", velocity_line);
     drive_set(0);
 
     printf("driving done\n");
