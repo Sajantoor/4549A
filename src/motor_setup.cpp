@@ -16,6 +16,20 @@ void turn_set(int speed) {
   drive_right_b.move(-speed);
 }
 
+void strafe_left(int speed){
+  drive_left.move(-speed);
+  drive_left_b.move(speed);
+  drive_right.move(speed);
+  drive_right_b.move(-speed);
+}
+
+void strafe_right(int speed){
+  drive_left.move(speed);
+  drive_left_b.move(-speed);
+  drive_right.move(-speed);
+  drive_right_b.move(speed);
+}
+
 void left_drive_set(int speed) {
   drive_left.move(speed);
   drive_left_b.move(speed);

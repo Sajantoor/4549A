@@ -891,7 +891,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     printf("driving done\n");
 }
 
-void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float turning) {
+void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float turning, float max_power) {
     vector error;
     vector positionErr;
     vector rotation_vector;
@@ -901,21 +901,13 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     polar look_ahead_point_polar;
     polar positionErrPolar;
 
-    float kpT = 0;
-    float kdT = 0;
-    float kiT = 0;
 
-    float kpS = 0;
-    float kdS = 0;
-    float kiS = 0;
-
-    float kpTH = 0;
-    float kdTH = 0;
-    float kiTH = 0;
+    pid_values turn_pid(0, 0, 0, 30, 500, max_power);
+    pid_values strafe_pid(0, 0, 0, 30, 500, max_power);
+    pid_values throttle_pid(0, 0, 0, 30, 500, max_power);
 
     unsigned int net_timer;
     int initial_millis = pros::millis();
-    // net_timer = initial_millis + timeout; //just to initialize net_timer at first
     float failsafe = 2000;
 
     float magnPosvector;
@@ -943,7 +935,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     delta_main_line.y = ending_point_y - starting_point_y;
 
     do {
-
       positionErr.x = position.x - ending_point_x;
       positionErr.y = position.y - ending_point_y;
       angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
@@ -951,38 +942,18 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
 
-      float encoder_avg_turn = orientation;
-      float error_turn = degToRad(turning) - encoder_avg_turn;
-      float derivative_turn = (error_turn - last_error_turn)*kdT;
-      float last_error_turn = error_turn;
-      float integral_turn = error_turn + integral_turn;
-      float proportional_turn = error_turn*kpT;
-      float final_power_turn = proportional_turn + derivative_turn + (integral_turn * kiT);
-
-      float encoder_avg_strafe = position.x;
-      float error_strafe = ending_point_x - encoder_avg_strafe;
-      float derivative_strafe = (error_strafe - last_error_strafe)*kdS;
-      float last_error_strafe = error_strafe;
-      float integral_strafe = error_strafe + integral_turn;
-      float proportional_strafe = error_strafe*kpS;
-      float final_power_strafe = proportional_strafe + derivative_strafe + (integral_strafe * kiS);
-
-      float encoder_avg_throttle = position.y;
-      float error_throttle = ending_point_y - encoder_avg_throttle;
-      float derivative_throttle = (error_throttle - last_error_throttle)*kdTH;
-      float last_error_throttle = error_throttle;
-      float integral_throttle = error_throttle + integral_turn;
-      float proportional_throttle = error_throttle*kpTH;
-      float final_power_throttle = proportional_throttle + derivative_throttle + (integral_throttle * kiTH);
+      int final_power_turn = pid_calc(&turn_pid, degToRad(turning), orientation);
+      int final_power_strafe = pid_calc(&strafe_pid, ending_point_x, position.x);
+      int final_power_throttle = pid_calc(&throttle_pid, ending_point_y, position.y);
 
       drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
       drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
       drive_right.move(final_power_turn - final_power_throttle + final_power_strafe);
       drive_right_b.move(final_power_turn - final_power_throttle - final_power_strafe);
 
-        pros::delay(10);
+      pros::delay(10);
 
-      } while (positionErr.y && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+    } while (positionErr.y && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     printf("driving done\n");
     printf("velocity_line %f \n", velocity_line);
