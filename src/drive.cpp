@@ -891,7 +891,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     printf("driving done\n");
 }
 
-void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float turning, float max_power) {
+void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float target_angle, float max_power) {
     vector positionErr;
     vector rotation_vector;
     vector delta_main_line;
@@ -905,7 +905,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     int initial_millis = pros::millis();
     float failsafe = 2000;
 
-    float angle_main_line;
+    float err_angle;
     //float line_ahead_point = 0.5;
     int last_error_turn = 0;
     int last_error_throttle = 0;
@@ -918,14 +918,16 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     do {
       positionErr.x = position.x - ending_point_x;
       positionErr.y = position.y - ending_point_y;
-      angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
+      err_angle = target_angle - orientation;
       vectorToPolar(positionErr, positionErrPolar);
-      positionErrPolar.theta += angle_main_line;
+      positionErrPolar.theta -= err_angle;
       polarToVector(positionErrPolar, positionErr);
 
-      int final_power_turn = pid_calc(&turn_pid, degToRad(turning), orientation);
-      int final_power_strafe = pid_calc(&strafe_pid, ending_point_x, position.x);
-      int final_power_throttle = pid_calc(&throttle_pid, ending_point_y, position.y);
+      int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
+      int final_power_strafe = pid_calc(&strafe_pid, ending_point_y, position.y);
+      strafe_pid.error = positionErr.y;
+      int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, position.x);
+      throttle_pid.error = positionErr.x;
 
       drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
       drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
@@ -934,7 +936,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
       pros::delay(10);
 
-    } while (positionErr.y && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+    } while (positionErr.y < 0 && positionErr.x < 0 && fabs(turn_pid.error) < target_angle && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     printf("driving done\n");
     drive_set(0);
