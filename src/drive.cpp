@@ -924,10 +924,8 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       polarToVector(positionErrPolar, positionErr);
 
       int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
-      int final_power_strafe = pid_calc(&strafe_pid, ending_point_y, position.y);
-      strafe_pid.error = positionErr.y;
-      int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, position.x);
-      throttle_pid.error = positionErr.x;
+      int final_power_strafe = pid_calc(&strafe_pid, positionErr.y, 0);
+      int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, 0);
 
       drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
       drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);

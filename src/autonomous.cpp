@@ -97,7 +97,7 @@ void autonomous() {
     loader_right.move(127);
     position_drive(95, 10, 95, 45, 0, 127, 1, 0, 2000, 15);// pick up cubes
     //position_drive(95, 45, 120, 10, 0, -110, 0.5, 0, 3000, 30);// CURVE TURN
-    position_drive2(95, 45, 125, 10, 0, -127, 0.5, 0, 2350, 30);// CURVE TURN
+//    position_drive2(95, 45, 125, 10, 0, -127, 0.5, 0, 2350, 30);// CURVE TURN
     position_turn(12, 200, 127);
     position_drive(118, 10, 118, 40, 0, 127, 1, 0, 2000, 15);// pick up cubes
     turn_pid_encoder_average(150,1000);
