@@ -728,6 +728,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     delta_main_line.y = ending_point_y - starting_point_y;
 
     do {
+      angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
       look_ahead_point.x = 0;
       look_ahead_point.y = positionErr.y + look_ahead_distance;
       vectorToPolar(look_ahead_point, look_ahead_point_polar);
@@ -738,7 +739,6 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
       positionErr.x = position.x - ending_point_x;
       positionErr.y = position.y - ending_point_y;
-      angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
       line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
       line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
       magnPosvector = sqrt(line_length);
@@ -893,9 +893,11 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
 void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float target_angle, float max_power) {
     vector positionErr;
+    vector rotated_position;
     vector rotation_vector;
     vector delta_main_line;
     polar positionErrPolar;
+    polar rotated_positionPolar;
 
     pid_values turn_pid(0, 0, 0, 30, 500, max_power);
     pid_values strafe_pid(0, 0, 0, 30, 500, max_power);
@@ -916,21 +918,22 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     delta_main_line.y = ending_point_y - starting_point_y;
 
     do {
-      positionErr.x = position.x - ending_point_x;
-      positionErr.y = position.y - ending_point_y;
-      err_angle = target_angle - orientation;
-      vectorToPolar(positionErr, positionErrPolar);
-      positionErrPolar.theta -= err_angle;
-      polarToVector(positionErrPolar, positionErr);
 
       int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
-      int final_power_strafe = pid_calc(&strafe_pid, positionErr.y, 0);
-      int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, 0);
+      int final_power_strafe = pid_calc(&strafe_pid, ending_point_y, position.y);
+      int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, position.x);
 
-      drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
-      drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
-      drive_right.move(final_power_turn - final_power_throttle + final_power_strafe);
-      drive_right_b.move(final_power_turn - final_power_throttle - final_power_strafe);
+      rotated_position.x = final_power_throttle;
+      rotated_position.y = final_power_strafe;
+
+      vectorToPolar(rotated_position, rotated_positionPolar);
+      rotated_positionPolar.theta -= orientation;
+      polarToVector(rotated_positionPolar, rotated_position);
+
+      drive_left.move(final_power_turn + rotated_position.x + rotated_position.y);
+      drive_left_b.move(final_power_turn + rotated_position.x - rotated_position.y);
+      drive_right.move(final_power_turn - rotated_position.x + rotated_position.y);
+      drive_right_b.move(final_power_turn - rotated_position.x - rotated_position.y);
 
       pros::delay(10);
 
