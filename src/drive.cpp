@@ -918,7 +918,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     delta_main_line.y = ending_point_y - starting_point_y;
 
     do {
-
       int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
       int final_power_strafe = pid_calc(&strafe_pid, ending_point_y, position.y);
       int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, position.x);
