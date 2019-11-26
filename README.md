@@ -4,17 +4,18 @@
  #### Table of Contents
  
  * [Initialize](#Initialize)
- * [Motors and Sensors](#Motors_and_Sensors)
+ * [Motors and Sensors](#motors-and-sensors)
  * [Opcontrol](#Opcontrol)
  * [PID](#PID)
- * [Angler PID Task](#Angler-PID)
- * [Lift PID Task](#Lif-PID-Task)
+ * [Lift PID Task](#Lift-PID-Task)
+ * [Angler PID Task](#angler-pid)
  * [LCD Display](#LCD-Display)
  * [Tracking Task](#Tracking-Task)
  * [Turn PIDs](#Turn-PIDs)
  * [Drive PID](#Drive-PID)
  * [Motor Sensor Init](#Motor-Sensor-Init)
  * [Autonomous](#Autonomous)
+ 
  ## Initialize
  > The initalize file is used to define tasks for future use. 
 
@@ -133,11 +134,6 @@ float power_limit(float allowed_speed, float actual_speed) {
 
 [View PID](../master/src/pid.cpp)
 
-## Angler PID Task
-> The angler task uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of switching to the new target after the current target has been reached. 
-
-[View Angler](../master/src/angler.cpp)
-
 ## Lift PID Task
 > The Lift PID task uses the same PID calculations but it has to overcome another problem. In order for the lift to move, clearance has to be made via the angler moving, therefore the task only runs once the angler has moved to a certain threshold. Another problem is we need it to have a delay in order to drop the cubes into the tower and allowing the driver to position themselves, otherwise the angler drops instantly after the position has been reached due to gravity and the weight of the lift. 
 
@@ -156,6 +152,50 @@ float power_limit(float allowed_speed, float actual_speed) {
 
 [View Lift](../master/src/lift.cpp)
 
+
+## Angler PID Task
+> The angler task uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of switching to the new target after the current target has been reached. 
+
+```cpp 
+
+      // max torque value is used to calculate how many cubes are in the angler
+      if (pros::c::motor_get_torque(11) > maxTorque) {
+	maxTorque = pros::c::motor_get_torque(11);
+      }
+
+      // slightly reduces the target of a 7 stack to improve accuracy
+      if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
+	currentTarget = currentTarget + 100;
+	torqueCheck = false;
+      }
+
+      // run motors faster depending on the amount of torque applied on the motor
+      // based on the number of cubes, the max power needs to be greater
+      if (pros::c::motor_get_torque(11) > 0.7) {
+	angler_pid.max_power = 100;
+      } else {
+	angler_pid.max_power = 80;
+      }
+
+      // slows down near the end of the stack
+      if (fabs(angler_pid.error) < 600) {
+	if (angler_pid.max_power < 40) {
+	  angler_pid.max_power = 40;
+	} else {
+	  // slow down faster for 7 stack or greater
+	  if (maxTorque > SEVEN_STACK_TORQUE) {
+	    angler_pid.max_power = angler_pid.max_power - 25;
+	  } else {
+	    angler_pid.max_power = angler_pid.max_power - 15;
+	  }
+	}
+      }
+ ``` 
+ > Using torque values from the motor, we solved the problem where we weren't able to detect the number of cubes in the angler. Those torque values allow us to stack automatically with an increased degree of accuracy. 
+
+[View Angler](../master/src/angler.cpp)
+
+
 ## LCD Display
 > The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
 
@@ -173,7 +213,7 @@ float power_limit(float allowed_speed, float actual_speed) {
     if (change_in_angle == 0) {
      local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
     } else {
-      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 1.266666f),//2.853739
+      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + 1.266666f),
       2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
     }
     
@@ -211,20 +251,20 @@ float power_limit(float allowed_speed, float actual_speed) {
 > The other turn function that is used to turn to a specific angle is made to use more of the Tracking Values and is alot more accurate. Another difference is that the second turn function has a paramater that we can set to turn either clockwise or anticlockwise, which is why I have a switch statement.
 ```cpp
   switch (turnDir) {
-	   case cw:
+	case cw:
     	target_angle = orientation + flmod(target_angle - orientation, pi * 2);
     	endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
-      set_drive(-80,80);
+      	set_drive(-80,80);
 
-      while (orientation < endFull) {
-        pros::delay(10);
-      }
+	while (orientation < endFull) {
+		pros::delay(10);
+	}
 
-      set_drive(-coast_power, coast_power);
+      	set_drive(-coast_power, coast_power);
 
-  	  while (orientation < target_angle - degToRad(stop_offset_deg)) {
-        pros::delay(10);
-  	  }
+	while (orientation < target_angle - degToRad(stop_offset_deg)) {
+		pros::delay(10);
+	}
 
       set_drive(20,-20);
       pros::delay(100);
@@ -234,24 +274,24 @@ float power_limit(float allowed_speed, float actual_speed) {
 ```
 > This is for the Counter Clock wise Switch Statement
 ```cpp
-  	case ccw:
-  		target_angle = orientation - flmod(orientation - target_angle, pi * 2);
-  		endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
-      set_drive(80, -80);
-  		while (orientation > endFull) {
-        pros::delay(10);
-  		}
+case ccw:
+	target_angle = orientation - flmod(orientation - target_angle, pi * 2);
+	endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
+	set_drive(80, -80);
+	while (orientation > endFull) {
+	  pros::delay(10);
+	}
 
-      set_drive(coast_power, -coast_power);
-  		while (orientation > target_angle + degToRad(stop_offset_deg)) {
-        pros::delay(10);
-  		}
+	set_drive(coast_power, -coast_power);
+	while (orientation > target_angle + degToRad(stop_offset_deg)) {
+		pros::delay(10);
+	}
 
-      set_drive(-20,20);
-      pros::delay(150);
-      set_drive(0, 0);
+	set_drive(-20,20);
+	pros::delay(150);
+	set_drive(0, 0);
 
-      break;
+	break;
 ```
 This difference is the same for my turn function that turns the bot to turn towards a certain coordinate.
 
@@ -260,41 +300,39 @@ This difference is the same for my turn function that turns the bot to turn towa
 ## Drive PID
 > I made a drive pid that takes in account the X, Y and Orientation to drive to any coordinate with correction. This function uses many concepts from Math like Algebra, Trignometry and even Calculus to find calculations for corrections and supllying power to the motors.
 ```cpp
-      if (max_error) {
-  			err_angle = orientation - line_angle;
-  			err_x = positionErr.x + positionErr.y * tan(err_angle);
-  			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
-  			if (max_speed < 0)
-  				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 8.2 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
-        printf(" \n");//8.5
-      }
+if (max_error) {
+	err_angle = orientation - line_angle;
+	err_x = positionErr.x + positionErr.y * tan(err_angle);
+	correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
+	if (max_speed < 0) correctA += pi;
+	correction = fabs(err_x) > max_error ? 8.2 * (nearestangle(correctA, orientation) - orientation) * 				sgn(max_speed) : 0;
+}
 ```
 > As you can see in the code I use some variables from my Tracking Function. `position.x`, `position.y` and `orientation`. Another important part of my code is the part where I supply power to the motors and put in the correction variable.
 ```cpp
-      finalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed); //17.9
+finalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed); //17.9
 
-      limit_to_val_set(finalpower, abs(max_speed));
-			if (finalpower * sgn(max_speed) < 35) //30
-      finalpower = 35 * sgn(max_speed);
-			int delta = finalpower - last;
-			limit_to_val_set(delta, 5);
-			finalpower = last += delta;
+limit_to_val_set(finalpower, abs(max_speed));
+		if (finalpower * sgn(max_speed) < 35) //30
+finalpower = 35 * sgn(max_speed);
+		int delta = finalpower - last;
+		limit_to_val_set(delta, 5);
+		finalpower = last += delta;
 
-      switch (sgn(correction)) {
-    		case 0:
-            left_drive_set(finalpower);
-            right_drive_set(finalpower);
-      			break;
-    		case 1:
-            left_drive_set(finalpower);
-            right_drive_set(finalpower * exp(-correction));
-      			break;
-    		case -1:
-            left_drive_set(finalpower * exp(correction));
-            right_drive_set(finalpower);
-      			break;
-        }
+switch (sgn(correction)) {
+	case 0:
+		left_drive_set(finalpower);
+		right_drive_set(finalpower);
+		break;
+	case 1:
+		left_drive_set(finalpower);
+		right_drive_set(finalpower * exp(-correction));
+		break;
+	case -1:
+		left_drive_set(finalpower * exp(correction));
+		right_drive_set(finalpower);
+		break;
+}
 ```
 [View Drive PID](../master/src/drive.cpp#L666)
 
