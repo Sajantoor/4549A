@@ -929,14 +929,17 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       rotated_positionPolar.theta -= orientation;
       polarToVector(rotated_positionPolar, rotated_position);
 
-      drive_left.move(final_power_turn + rotated_position.x + rotated_position.y);
-      drive_left_b.move(final_power_turn + rotated_position.x - rotated_position.y);
-      drive_right.move(final_power_turn - rotated_position.x + rotated_position.y);
-      drive_right_b.move(final_power_turn - rotated_position.x - rotated_position.y);
+      rotated_position.x = final_power_throttle;
+      rotated_position.y = final_power_strafe;
+
+      drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
+      drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
+      drive_right.move(final_power_turn - final_power_throttle + final_power_strafe);
+      drive_right_b.move(final_power_turn - final_power_throttle - final_power_strafe);
 
       pros::delay(10);
 
-    } while (positionErr.y < 0 && positionErr.x < 0 && fabs(turn_pid.error) < target_angle && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+    } while (true);
 
     printf("driving done\n");
     drive_set(0);
