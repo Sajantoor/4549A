@@ -18,6 +18,7 @@ void opcontrol() {
 	bool liftVal = true;
 
 	while (true) {
+		printf("arm encoders %f \n", arm.get_position());
 		// printf("position.x %f \n\n", position.x);
 		// printf("position.y %f \n\n", position.y);
 		//

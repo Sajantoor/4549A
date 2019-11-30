@@ -339,7 +339,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_obj_align(switcher_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 198);
 
     std::ostringstream arm_potentiometerV;
-    arm_potentiometerV << "Arm Potentiometer: " << std::setprecision(3) << potentiometer_arm.get_value();
+    arm_potentiometerV << "Arm Encoder: " << arm.get_position();
     auto arpv = arm_potentiometerV.str();
     lv_label_set_text(arm_potentiometer_label, arpv.c_str());
     lv_obj_align(arm_potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 220);
@@ -349,6 +349,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     auto anpv = angler_potentiometerV.str();
     lv_label_set_text(angler_potentiometer_label, anpv.c_str());
     lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
+
 
 
     lv_obj_set_size(reset, 75, 75);
