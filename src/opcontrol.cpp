@@ -16,6 +16,7 @@ void opcontrol() {
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	bool liftVal = true;
+	int RX2 = 0, LY1 = 0, LX1 = 0, threshold = 20;
 
 	while (true) {
 		printf("arm encoders %f \n", arm.get_position());
@@ -72,40 +73,56 @@ void opcontrol() {
 		// 	strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
 		// 	strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
 		// }
+		//Create "deadzone" for Y1/Ch3
+	     if(abs(controller.get_analog(ANALOG_LEFT_Y)) > threshold)
+	       LY1 = controller.get_analog(ANALOG_LEFT_Y);
+	     else
+	       LY1 = 0;
+	     //Create "deadzone" for X1/Ch4
+	     if(abs(controller.get_analog(ANALOG_LEFT_X)) > threshold)
+	       LX1 = controller.get_analog(ANALOG_LEFT_X);
+	     else
+	       LX1 = 0;
+	     //Create "deadzone" for X2/Ch1
+	     if(abs(controller.get_analog(ANALOG_RIGHT_X)) > threshold)
+	       RX2 = controller.get_analog(ANALOG_RIGHT_X);
+	     else
+	       RX2 = 0;
 
-		int LStickY = controller.get_analog(ANALOG_LEFT_Y);
-		int RStickX = controller.get_analog(ANALOG_RIGHT_X);
-		int LStickX = controller.get_analog(ANALOG_LEFT_X);
+	     //Remote Control Commands
+		// int LStickY = controller.get_analog(ANALOG_LEFT_Y);
+		// int RStickX = controller.get_analog(ANALOG_RIGHT_X);
+		// int LStickX = controller.get_analog(ANALOG_LEFT_X);
+		//
+		int drive_right_power = LY1 - RX2 - LX1;
+		int drive_right_b_power = LY1 - RX2 + LX1;
+		int drive_left_power = LY1 + RX2 + LX1;
+		int drive_left_b_power = LY1 + RX2 - LX1;
+		//
+		// if (abs(LStickX) > 30) {
+		// 	drive_right = -LStickX;
+		// 	drive_right_b = LStickX;
+		// 	drive_left = LStickX;
+		// 	drive_left_b = -LStickX;
+		// }
+		//
+		// else if (abs(LStickY) > 30){
+		// 	drive_right = LStickY;
+		// 	drive_right_b = LStickY;
+		// 	drive_left = LStickY;
+		// 	drive_left_b = LStickY;
+		// }
+		//
+		// else {
+			drive_right.move(drive_right_power);
+			drive_right_b.move(drive_right_b_power);
+			drive_left.move(drive_left_power);
+			drive_left_b.move(drive_left_b_power);
+		// }
 
-		int drive_right_power = LStickY - RStickX - LStickX;
-		int drive_right_b_power = LStickY - RStickX + LStickX;
-		int drive_left_power = LStickY + RStickX + LStickX;
-		int drive_left_b_power = LStickY + RStickX - LStickX;
-
-		if (abs(LStickX) > 30) {
-			drive_right = -LStickX;
-			drive_right_b = LStickX;
-			drive_left = LStickX;
-			drive_left_b = -LStickX;
-		}
-
-		else if (abs(LStickY) > 30){
-			drive_right = LStickY;
-			drive_right_b = LStickY;
-			drive_left = LStickY;
-			drive_left_b = LStickY;
-		}
-
-		else {
-			drive_right = drive_right_power;
-			drive_right_b = drive_right_b_power;
-			drive_left = drive_left_power;
-			drive_left_b = drive_left_b_power;
-		}
-
-		printf("LStickX %i \n \n", LStickX);
-		printf("LStickY %i \n \n", LStickY);
-		printf("RStickX %i \n \n", RStickX);
+		// printf("LStickX %i \n \n", LStickX);
+		// printf("LStickY %i \n \n", LStickY);
+		// printf("RStickX %i \n \n", RStickX);
 
 		// loader
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
