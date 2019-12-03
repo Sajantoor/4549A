@@ -57,27 +57,26 @@ void opcontrol() {
 	//DRIVE
 
 	// slow down when buttons are pressed, for precise control
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			int drive_left = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
-			int drive_left_b = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
-			int drive_right = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
-			int drive_right_b = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
-	  }
-
-		// controller deadzone detection for both sticks
-		if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) < 15) {
-			 left_drive_set(0);
+		// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+		// 	int drive_left = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
+		// 	int drive_left_b = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
+		// 	int drive_right = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
+		// 	int drive_right_b = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
+	  // }
+		//
+		// // controller deadzone detection for both sticks
+		//
+		if ((fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y))) > (fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)))) {
+			set_drive((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2), (powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
 		} else {
-			// slew rate calculation
-			left_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2));
+			strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+			strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
 		}
 
-		if (abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)) < 15) {
-			right_drive_set(0);
-		} else {
-			// slew rate calculation
-			right_drive_set((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
-		}
+		// drive_right = controller.get_analog(ANALOG_LEFT_Y) - controller.get_analog(ANALOG_RIGHT_X) - controller.get_analog(ANALOG_LEFT_X);
+		// drive_right_b =  controller.get_analog(ANALOG_LEFT_Y) - controller.get_analog(ANALOG_RIGHT_X) + controller.get_analog(ANALOG_LEFT_X);
+		// drive_left = controller.get_analog(ANALOG_LEFT_Y) + controller.get_analog(ANALOG_RIGHT_X) + controller.get_analog(ANALOG_LEFT_X);
+		// drive_left_b =  controller.get_analog(ANALOG_LEFT_Y) + controller.get_analog(ANALOG_RIGHT_X) - controller.get_analog(ANALOG_LEFT_X);
 
 		// loader
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {

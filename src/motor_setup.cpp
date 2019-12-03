@@ -16,18 +16,11 @@ void turn_set(int speed) {
   drive_right_b.move(-speed);
 }
 
-void strafe_left(int speed){
+void strafe(int speed) {
   drive_left.move(-speed);
   drive_left_b.move(speed);
   drive_right.move(speed);
   drive_right_b.move(-speed);
-}
-
-void strafe_right(int speed){
-  drive_left.move(speed);
-  drive_left_b.move(-speed);
-  drive_right.move(-speed);
-  drive_right_b.move(speed);
 }
 
 void left_drive_set(int speed) {
@@ -49,7 +42,7 @@ void reset_drive_encoders() {
   right_encoder.reset();
 }
 
-void set_drive(int right_speed, int left_speed) {
-  right_drive_set(right_speed);
+void set_drive(int left_speed, int right_speed) {
   left_drive_set(left_speed);
+  right_drive_set(right_speed);
 }

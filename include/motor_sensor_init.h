@@ -7,7 +7,7 @@
 #define DRIVE_RIGHT 1
 #define DRIVE_RIGHT_B 5
 
-#define LOADER_RIGHT 3
+#define LOADER_RIGHT 2
 #define LOADER_LEFT 8
 #define ANGLER 7
 #define ARM 3
