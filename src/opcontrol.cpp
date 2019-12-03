@@ -66,17 +66,46 @@ void opcontrol() {
 		//
 		// // controller deadzone detection for both sticks
 		//
-		if ((fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y))) > (fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)))) {
-			set_drive((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2), (powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
-		} else {
-			strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
-			strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+		// if ((fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y))) > (fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)))) {
+		// 	set_drive((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2), (powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
+		// } else {
+		// 	strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+		// 	strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+		// }
+
+		int LStickY = controller.get_analog(ANALOG_LEFT_Y);
+		int RStickX = controller.get_analog(ANALOG_RIGHT_X);
+		int LStickX = controller.get_analog(ANALOG_LEFT_X);
+
+		int drive_right_power = LStickY - RStickX - LStickX;
+		int drive_right_b_power = LStickY - RStickX + LStickX;
+		int drive_left_power = LStickY + RStickX + LStickX;
+		int drive_left_b_power = LStickY + RStickX - LStickX;
+
+		if (abs(LStickX) > 30) {
+			drive_right = -LStickX;
+			drive_right_b = LStickX;
+			drive_left = LStickX;
+			drive_left_b = -LStickX;
 		}
 
-		// drive_right = controller.get_analog(ANALOG_LEFT_Y) - controller.get_analog(ANALOG_RIGHT_X) - controller.get_analog(ANALOG_LEFT_X);
-		// drive_right_b =  controller.get_analog(ANALOG_LEFT_Y) - controller.get_analog(ANALOG_RIGHT_X) + controller.get_analog(ANALOG_LEFT_X);
-		// drive_left = controller.get_analog(ANALOG_LEFT_Y) + controller.get_analog(ANALOG_RIGHT_X) + controller.get_analog(ANALOG_LEFT_X);
-		// drive_left_b =  controller.get_analog(ANALOG_LEFT_Y) + controller.get_analog(ANALOG_RIGHT_X) - controller.get_analog(ANALOG_LEFT_X);
+		else if (abs(LStickY) > 30){
+			drive_right = LStickY;
+			drive_right_b = LStickY;
+			drive_left = LStickY;
+			drive_left_b = LStickY;
+		}
+
+		else {
+			drive_right = drive_right_power;
+			drive_right_b = drive_right_b_power;
+			drive_left = drive_left_power;
+			drive_left_b = drive_left_b_power;
+		}
+
+		printf("LStickX %i \n \n", LStickX);
+		printf("LStickY %i \n \n", LStickY);
+		printf("RStickX %i \n \n", RStickX);
 
 		// loader
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {

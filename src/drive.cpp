@@ -891,7 +891,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     printf("driving done\n");
 }
 
-void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, float target_angle, float max_power) {
+void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power) {
     vector positionErr;
     vector rotated_position;
     vector rotation_vector;
@@ -899,9 +899,9 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     polar positionErrPolar;
     polar rotated_positionPolar;
 
-    pid_values turn_pid(0, 0, 0, 30, 500, max_power);
-    pid_values strafe_pid(0, 0, 0, 30, 500, max_power);
-    pid_values throttle_pid(0, 0, 0, 30, 500, max_power);
+    pid_values turn_pid(10, 0, 0, 30, 100, max_power);
+    pid_values strafe_pid(10, 0, 0, 30, 100, max_power);
+    pid_values throttle_pid(10, 0, 0, 30, 100, max_power);
 
     unsigned int net_timer;
     int initial_millis = pros::millis();
@@ -913,10 +913,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     int last_error_throttle = 0;
     int last_error_strafe = 0;
     float max_speed = 100;
-    printf("Moving to %f %f from %f %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y);
-    delta_main_line.x = ending_point_x - starting_point_x;
-    delta_main_line.y = ending_point_y - starting_point_y;
-
+    // printf("Moving to %f %f from %f %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y);
     do {
       int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
       int final_power_strafe = pid_calc(&strafe_pid, ending_point_y, position.y);
@@ -931,6 +928,9 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
       rotated_position.x = final_power_throttle;
       rotated_position.y = final_power_strafe;
+      printf("final_power_turn %i \n", final_power_turn);
+      printf("final_power_strafe done %i \n", final_power_strafe);
+      printf("final_power_throttle done %i \n", final_power_throttle);
 
       drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
       drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
