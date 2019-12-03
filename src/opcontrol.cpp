@@ -18,7 +18,6 @@ void opcontrol() {
 	bool liftVal = true;
 
 	while (true) {
-		printf("arm encoders %f \n", arm.get_position());
 		// printf("position.x %f \n\n", position.x);
 		// printf("position.y %f \n\n", position.y);
 		//
@@ -66,12 +65,57 @@ void opcontrol() {
 		//
 		// // controller deadzone detection for both sticks
 		//
-		if ((fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y))) > (fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)))) {
-			set_drive((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2), (powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
-		} else {
-			strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
-			strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+		// dumb method but it works
+		// if ((fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y))) > (fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)))) {
+		// 	set_drive((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2), (powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
+		// } else {
+		// 	strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+		// 	strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+		// }
+
+		int LStickX = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		int LStickY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		int RStickX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		int RStickY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+
+		// int left_power;
+		// int left_b_power;
+
+		int power[4];
+
+		power[0] = LStickY + LStickX;
+		power[1] = LStickY - LStickX;
+		power[2] = RStickY - RStickX;
+		power[3] = RStickY + RStickX;
+
+		for (size_t i = 0; i < 4; i++) {
+			if (abs(power[i]) > 127) {
+				if (power[i] > 0) {
+					power[i] = 127;
+				} else {
+					power[i] = -127;
+				}
+			}
 		}
+
+		drive_left = power[0];
+		drive_left_b = power[1];
+		drive_right = power[2];
+		drive_right_b = power[3];
+
+		// if (LStickX < 0) {
+		// 	left_power = -sqrt(powf(LStickY, 2) - powf(LStickX, 2));
+		// 	left_b_power = -sqrt(powf(LStickY, 2) + powf(LStickX, 2));
+		// } else {
+		// 	left_power = sqrt(powf(LStickY, 2) + powf(LStickX, 2));
+		// 	left_b_power = sqrt(powf(LStickY, 2) - powf(LStickX, 2));
+		// }
+		//
+		// if (LStickY < 0) {
+		// 	left_power = -left_power;
+		// 	left_b_power = -left_b_power;
+		// }
+
 
 		// drive_right = controller.get_analog(ANALOG_LEFT_Y) - controller.get_analog(ANALOG_RIGHT_X) - controller.get_analog(ANALOG_LEFT_X);
 		// drive_right_b =  controller.get_analog(ANALOG_LEFT_Y) - controller.get_analog(ANALOG_RIGHT_X) + controller.get_analog(ANALOG_LEFT_X);
