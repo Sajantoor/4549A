@@ -27,6 +27,8 @@ void autonomous() {
             // position_drive(-30, -10, 0, -10, 0, 90, 1, 0);
             // turn_pid_encoder_average(0, 100);
 
+     position_drive2(0, 20, 0, 100);
+
   // turn_pid_encoder_average(90, 100);
   // turn_pid_encoder_average(0, 100);
   // position_drive(0, 30, 0, 0, 0, -100, 0.5, 0);
