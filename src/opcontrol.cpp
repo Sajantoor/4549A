@@ -66,17 +66,12 @@ void opcontrol() {
 		//
 		// // controller deadzone detection for both sticks
 		//
-<<<<<<< HEAD
-		// dumb method but it works
-=======
->>>>>>> ae471ec11eca82f4ec349b6d0d2007bc008e67f4
 		// if ((fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y))) > (fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)))) {
 		// 	set_drive((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2), (powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
 		// } else {
 		// 	strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
 		// 	strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
 		// }
-<<<<<<< HEAD
 
 		int stickArray[4];
 		stickArray[0] = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
@@ -126,55 +121,6 @@ void opcontrol() {
 		// 	left_power = -left_power;
 		// 	left_b_power = -left_b_power;
 		// }
-
-=======
-		//Create "deadzone" for Y1/Ch3
-	     if(abs(controller.get_analog(ANALOG_LEFT_Y)) > threshold)
-	       LY1 = controller.get_analog(ANALOG_LEFT_Y);
-	     else
-	       LY1 = 0;
-	     //Create "deadzone" for X1/Ch4
-	     if(abs(controller.get_analog(ANALOG_LEFT_X)) > threshold)
-	       LX1 = controller.get_analog(ANALOG_LEFT_X);
-	     else
-	       LX1 = 0;
-	     //Create "deadzone" for X2/Ch1
-	     if(abs(controller.get_analog(ANALOG_RIGHT_X)) > threshold)
-	       RX2 = controller.get_analog(ANALOG_RIGHT_X);
-	     else
-	       RX2 = 0;
-
-	     //Remote Control Commands
-		// int LStickY = controller.get_analog(ANALOG_LEFT_Y);
-		// int RStickX = controller.get_analog(ANALOG_RIGHT_X);
-		// int LStickX = controller.get_analog(ANALOG_LEFT_X);
-		//
-		int drive_right_power = LY1 - RX2 - LX1;
-		int drive_right_b_power = LY1 - RX2 + LX1;
-		int drive_left_power = LY1 + RX2 + LX1;
-		int drive_left_b_power = LY1 + RX2 - LX1;
-		//
-		// if (abs(LStickX) > 30) {
-		// 	drive_right = -LStickX;
-		// 	drive_right_b = LStickX;
-		// 	drive_left = LStickX;
-		// 	drive_left_b = -LStickX;
-		// }
-		//
-		// else if (abs(LStickY) > 30){
-		// 	drive_right = LStickY;
-		// 	drive_right_b = LStickY;
-		// 	drive_left = LStickY;
-		// 	drive_left_b = LStickY;
-		// }
-		//
-		// else {
-			drive_right.move(drive_right_power);
-			drive_right_b.move(drive_right_b_power);
-			drive_left.move(drive_left_power);
-			drive_left_b.move(drive_left_b_power);
-		// }
->>>>>>> ae471ec11eca82f4ec349b6d0d2007bc008e67f4
 
 		// printf("LStickX %i \n \n", LStickX);
 		// printf("LStickY %i \n \n", LStickY);
