@@ -73,20 +73,26 @@ void opcontrol() {
 		// 	strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
 		// }
 
-		int LStickX = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
-		int LStickY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		int RStickX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		int RStickY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		int stickArray[4];
+		stickArray[0] = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		stickArray[1] = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		stickArray[2] = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		stickArray[3] = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 
+
+		for (size_t j = 0; j < 4; j++) {
+			if (abs(stickArray[j]) < 15) {
+				stickArray[j] = 0;
+			}
+		}
 		// int left_power;
 		// int left_b_power;
 
 		int power[4];
-
-		power[0] = LStickY + LStickX;
-		power[1] = LStickY - LStickX;
-		power[2] = RStickY - RStickX;
-		power[3] = RStickY + RStickX;
+		power[0] = stickArray[1] + stickArray[0];
+		power[1] = stickArray[1] - stickArray[0];
+		power[2] = stickArray[3] - stickArray[2];
+		power[3] = stickArray[3] + stickArray[2];
 
 		for (size_t i = 0; i < 4; i++) {
 			if (abs(power[i]) > 127) {
