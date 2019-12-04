@@ -77,8 +77,8 @@ void tracking_update(void*ignore) {
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-    const float distance_between_centre = 5.3365377;//5.49380807
-    const float distance_between_backwheel_center = 4.15;//-2.0254878
+    const float distance_between_centre = 1.59437;//5.49380807
+    const float distance_between_backwheel_center = 2.5;//-2.0254878
     //CORDINATES facing the enemies side is 𝜃r = 0
 
     //beginning_orientation = 0;
@@ -899,9 +899,9 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     polar positionErrPolar;
     polar rotated_positionPolar;
 
-    pid_values turn_pid(10, 0, 0, 30, 100, max_power);
-    pid_values strafe_pid(10, 0, 0, 30, 100, max_power);
-    pid_values throttle_pid(10, 0, 0, 30, 100, max_power);
+    pid_values turn_pid(0, 0, 0, 30, 100, max_power);
+    pid_values strafe_pid(0, 0, 0, 30, 100, max_power);
+    pid_values throttle_pid(11, 0, 0, 30, 100, max_power);
 
     unsigned int net_timer;
     int initial_millis = pros::millis();
@@ -912,12 +912,12 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     int last_error_turn = 0;
     int last_error_throttle = 0;
     int last_error_strafe = 0;
-    float max_speed = 100;
+    // float max_speed = 100;
     // printf("Moving to %f %f from %f %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y);
     do {
       int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
-      int final_power_strafe = pid_calc(&strafe_pid, ending_point_y, position.y);
-      int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, position.x);
+      int final_power_strafe = pid_calc(&strafe_pid, ending_point_x, position.x);
+      int final_power_throttle = pid_calc(&throttle_pid, ending_point_y, position.y);
 
       rotated_position.x = final_power_throttle;
       rotated_position.y = final_power_strafe;
@@ -931,19 +931,46 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       printf("final_power_turn %i \n", final_power_turn);
       printf("final_power_strafe done %i \n", final_power_strafe);
       printf("final_power_throttle done %i \n", final_power_throttle);
+      printf("position.x %f \n", position.x);
+      printf("position.y %f \n", position.y);
+      printf("orientation %f \n", orientation);
+      printf("rotated_position.x %f \n", rotated_position.x);
+      printf("rotated_position.y %f \n", rotated_position.y);
 
-      drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
-      drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
-      drive_right.move(final_power_turn - final_power_throttle + final_power_strafe);
-      drive_right_b.move(final_power_turn - final_power_throttle - final_power_strafe);
+      // power_limit(max_power, final_power_turn);
+      // power_limit(max_power, final_power_strafe);
+      // power_limit(max_power, final_power_throttle);
+
+      // drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
+      // drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
+      // drive_right.move(final_power_turn - final_power_throttle + final_power_strafe);
+      // drive_right_b.move(final_power_turn - final_power_throttle - final_power_strafe);
+
+      drive_left.move(final_power_throttle + final_power_turn + final_power_strafe);
+      drive_left_b.move(final_power_throttle + final_power_turn - final_power_strafe);
+      drive_right.move(final_power_throttle - final_power_turn - final_power_strafe);
+      drive_right_b.move(final_power_throttle - final_power_turn + final_power_strafe);
 
       pros::delay(10);
 
-    } while (true);
+    } while (rotated_position.x > 1);
 
     printf("driving done\n");
-    drive_set(0);
+    if (max_power < 0) {
+      drive_set(20);
+      pros::delay(50);
+      drive_set(0);
+      printf("driving done back\n");
 
+    } else if (max_power > 0) {
+      drive_set(-20);
+      pros::delay(50);
+      drive_set(0);
+      printf("driving done forward\n");
+
+    } else {
+      drive_set(0);
+    }
     printf("driving done\n");
 }
 
