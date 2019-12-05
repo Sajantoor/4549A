@@ -43,8 +43,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 3000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
-        angler_pid.max_power = currentSpeed;
+        timeout = pros::millis() + 4000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
       }
 
@@ -86,8 +85,6 @@ void angler_pid_task(void*ignore) {
       int final_power = pid_calc(&angler_pid, currentTarget, position);
       angler.move(final_power);
       printf("angler error: %f \n \n", angler_pid.error);
-      printf("current Time: %f \n \n", currentTime);
-      printf("timeout: %f \n \n", timeout);
 
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
       if (((fabs(angler_pid.error) <= 8) && (currentTime > holdTimer)) || (currentTime > timeout))  {

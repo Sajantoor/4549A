@@ -27,6 +27,9 @@ void autonomous() {
             // position_drive(-30, -10, 0, -10, 0, 90, 1, 0);
             // turn_pid_encoder_average(0, 100);
 
+     position_drive2(0, 20, 0, 100);
+     position_drive2(0, 0, 0, -100);
+
   // turn_pid_encoder_average(90, 100);
   // turn_pid_encoder_average(0, 100);
   // position_drive(0, 30, 0, 0, 0, -100, 0.5, 0);
@@ -97,38 +100,22 @@ void autonomous() {
     loader_right.move(90);
     position_drive(95, 10, 95, 45, 0, 127, 1, 0, 2000, 15);// pick up cubes
     //position_drive(95, 45, 120, 10, 0, -110, 0.5, 0, 3000, 30);// CURVE TURN
-    position_drive2(95, 45, 125, 10, 0, -127, 3, 0, 2250, 70);// CURVE TURN
-    position_turn(12, 25, 127);
-    position_drive(118, 10, 118, 50, 0, 127, 1, 0, 2000, 15);// pick up cubes
-    loader_left.move(60);
-    loader_right.move(60);
-    // turn_pid_encoder_average(150,1000);
-    // loader_left.move(0);
-    // loader_right.move(0);
-    // position_drive(118, 50, 118, 30, 0, 127, 1, 0, 2000, 15);// pick up cubes
-    //turn_pid_encoder_average(160,1000);
-    // position_turn(130, 1000, 127);
-    // drive_line_up(70, 600);
-    // pros::delay(2000);
-    // loader_left.move(-40);
-    // loader_right.move(-40);
-    // angler_pid(2490, 2000);
-    // angler_pid(1580, 0);
-    // pros::delay(2000);
-    // drive_line_up(-90, 500);
-    //position_drive(118, 23, 128, 15, 0, 127, 1, 0, 2000, 15);// pick up cubes
-    // loader_left.move(85);
-    // loader_right.move(85);
-    // position_drive(118, 45, 130, 15, 0, 127, 1, 0, 2300, 15);// pick up cubes
-    // loader_left.move(-100);
-    // loader_right.move(-100);
-    // pros::delay(400);
-    // angler_pid(2480, 2000);
-    // angler_pid(1580, 0);
-    // loader_left.move(0);
-    // loader_right.move(0);
-    // pros::delay(6000);
-    // position_drive(129, 15, 110, 50, 0, -100, 1, 0, 2000, 15);// pick up cubes
+//    position_drive2(95, 45, 125, 10, 0, -127, 0.5, 0, 2350, 30);// CURVE TURN
+    position_turn(12, 200, 127);
+    position_drive(118, 10, 118, 40, 0, 127, 1, 0, 2000, 15);// pick up cubes
+    turn_pid_encoder_average(150,1000);
+    loader_left.move(75);
+    loader_right.move(75);
+    position_drive(118, 45, 144, 0, 0, 100, 1, 0, 2200, 15);// pick up cubes
+    loader_left.move(-50);
+    loader_right.move(-50);
+    pros::delay(600);
+    angler_pid(2580, 2500);
+    pros::delay(1200);
+    angler_pid(1580, 0);
+    loader_left.move(0);
+    loader_right.move(0);
+    position_drive(144, 0, 110, 50, 0, -100, 1, 0, 2000, 15);// pick up cubes
   }
 
 if(switcher == 5){
