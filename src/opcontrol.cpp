@@ -7,87 +7,36 @@
 #include "angler.h"
 
 void opcontrol() {
-	//pros::lcd::initialize();
-//arm.move_absolute(800,120);
-//arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
 	//full_position_reset();
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	bool liftVal = true;
+	int stickArray[4];
+	int power[4];
 
 	while (true) {
-		// printf("position.x %f \n\n", position.x);
-		// printf("position.y %f \n\n", position.y);
-		//
-		// 	printf("Back Encoder %d\n\n", back_encoder.get_value());
-		// 	printf("Right Encoder: %d\n\n", right_encoder.get_value());
-		// 	printf("Left Encoder %d\n\n", left_encoder.get_value());
-		// 	// printf("position.x %f\n", position.x);
-		// 	// printf(" \n");
-		// 	// printf("position.y %f\n", position.y);
-		// 	// printf(" \n");
-		// 	printf("orientation %f\n", radToDeg(orientation));
-		// 	printf(" \n");
 
-			// float line_angle = nearestangle(0.4636,0);
-			// printf("nearest angle %f \n", line_angle);
-
-			//pros::lcd::print(1, "encoder_left %d\n", left_encoder.get_value());
-		  //pros::lcd::print(5, "velocity.a %f\n", velocity.a);
-
-			//pros::lcd::print(3, "position,x %f\n", position.x);
-		  //pros::lcd::print(4, "position.y %f\n", position.y);
-
-			//pros::lcd::print(6, "velocity.x %f\n", velocity.x);
-			//pros::lcd::print(7, "velocity.y %f\n", velocity.y);
-
-			// //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
-			// //pros::lcd::print(7, "encoder_back %d\n", back_encoder.get_value());
-
-			// printf("radian value left %f\n", degrees_to_rad_left);
-			// printf("radian value left %f\n", degrees_to_rad_right);
-			//
-			// printf("velocity.x %f\n", velocity.x);
-			// printf("velocity.y %f\n", velocity.y);
-			// printf("velocity.a %f\n", velocity.a);
-
-	//DRIVE
-
-	// slow down when buttons are pressed, for precise control
-		// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-		// 	int drive_left = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
-		// 	int drive_left_b = (controller.get_analog(ANALOG_LEFT_Y) * 0.5);
-		// 	int drive_right = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
-		// 	int drive_right_b = (controller.get_analog(ANALOG_RIGHT_Y) * 0.5);
-	  // }
-		//
-		// // controller deadzone detection for both sticks
-		//
-		// if ((fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y))) > (fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)) + fabs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)))) {
-		// 	set_drive((powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3)) / powf(127, 2), (powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3)) / powf(127, 2));
-		// } else {
-		// 	strafe(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
-		// 	strafe(-controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
-		// }
-
-		int stickArray[4];
-		stickArray[0] = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
-		stickArray[1] = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		stickArray[2] = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		stickArray[3] = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-
+		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
+		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
+		stickArray[2] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), 3) / powf(127, 2);
+		stickArray[3] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3) / powf(127, 2);
 
 		for (size_t j = 0; j < 4; j++) {
 			if (abs(stickArray[j]) < 15) {
 				stickArray[j] = 0;
 			}
-		}
-		// int left_power;
-		// int left_b_power;
 
-		int power[4];
+			if (j == 0 || j == 2) {
+				if (127 - abs(stickArray[j]) < 30) {
+					if (stickArray[j] > 0)
+						stickArray[j] = 127;
+					else
+						stickArray[j] = -127;
+				}
+			}
+		}
+
 		power[0] = stickArray[1] + stickArray[0];
 		power[1] = stickArray[1] - stickArray[0];
 		power[2] = stickArray[3] - stickArray[2];
@@ -107,23 +56,6 @@ void opcontrol() {
 		drive_left_b = power[1];
 		drive_right = power[2];
 		drive_right_b = power[3];
-
-		// if (LStickX < 0) {
-		// 	left_power = -sqrt(powf(LStickY, 2) - powf(LStickX, 2));
-		// 	left_b_power = -sqrt(powf(LStickY, 2) + powf(LStickX, 2));
-		// } else {
-		// 	left_power = sqrt(powf(LStickY, 2) + powf(LStickX, 2));
-		// 	left_b_power = sqrt(powf(LStickY, 2) - powf(LStickX, 2));
-		// }
-		//
-		// if (LStickY < 0) {
-		// 	left_power = -left_power;
-		// 	left_b_power = -left_b_power;
-		// }
-
-		// printf("LStickX %i \n \n", LStickX);
-		// printf("LStickY %i \n \n", LStickY);
-		// printf("RStickX %i \n \n", RStickX);
 
 		// loader
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
@@ -145,8 +77,8 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (liftVal) {
-				angler_pid(2450, 2000);
-				angler_pid(1580, 0);
+				angler_pid(1350, 4000);
+				angler_pid(3550, 0);
 			}
 			// angler_pid(2570, 0);
 			// pros::delay(1700);
@@ -156,12 +88,9 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (liftVal) {
-				angler_pid(1950, 20000);
-				lift(2820, 20000);
+				lift(1780, 20000);
 			} else {
-				lift(1450, 0);
-				pros::delay(500);
-				angler_pid(1640, 0);
+				lift(0, 0);
 			}
 
 			liftVal ? liftVal = false : liftVal = true;
@@ -169,12 +98,9 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 			if (liftVal) {
-				angler_pid(1820, 20000);
 				lift(2500, 20000);
 			} else {
-				lift(1450, 0);
-				pros::delay(500);
-				angler_pid(1570, 0);
+				lift(1100, 0);
 			}
 
 			liftVal ? liftVal = false : liftVal = true;

@@ -8,7 +8,7 @@
 int height;
 bool liftBool = false;
 bool timer = true;
-int angler_threshold = 1720;
+// int angler_threshold = 1720;
 int hold = 0;
 
 void lift(int moveVal, int holdVal) {
@@ -26,7 +26,8 @@ void lift_task(void*ignore) {
   float delayTime;
 
   while (true) {
-    while ((potentiometer_angler.get_value() > angler_threshold) && liftBool) {
+    // while ((potentiometer_angler.get_value() > angler_threshold) && liftBool) {
+    while (liftBool) {
       if (timer) {
         failsafe = pros::millis() + timeout + hold;
         delayTime = pros::millis() + hold;
@@ -40,7 +41,7 @@ void lift_task(void*ignore) {
       }
 
        float currentTime = pros::millis();
-       float position = potentiometer_arm.get_value();
+       float position = arm.get_position();
        float final_power = pid_calc(&lift_pid, height, position);
        arm.move(final_power);
 
