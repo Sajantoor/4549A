@@ -16,7 +16,6 @@ void opcontrol() {
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	bool liftVal = true;
-	int RX2 = 0, LY1 = 0, LX1 = 0, threshold = 20;
 
 	while (true) {
 		// printf("position.x %f \n\n", position.x);
