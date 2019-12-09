@@ -34,7 +34,7 @@ void angler_pid(float position, float delay, float speed) {
 }
 
 void angler_pid_task(void*ignore) {
-  pid_values angler_pid(0.5, 0.8, 0.8, 30, 500, 80);
+  pid_values angler_pid(0.5, 0.8, 0.8, 30, 500, 100);
   float holdTimer;
   float timeout;
   float maxTorque = 0;
@@ -43,7 +43,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 4000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + 10000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
       }
 
@@ -51,6 +51,7 @@ void angler_pid_task(void*ignore) {
       if (pros::c::motor_get_torque(11) > maxTorque) {
         maxTorque = pros::c::motor_get_torque(11);
       }
+      printf("max torque %f", maxTorque);
 
       // slightly reduces the target of a 7 stack to improve accuracy
       if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
