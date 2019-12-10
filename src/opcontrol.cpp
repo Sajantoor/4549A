@@ -77,7 +77,7 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (liftVal) {
-				angler_pid(1235, 5000);
+				angler_pid(1035, 2000);
 				angler_pid(3665, 0);
 			}
 		}
@@ -112,7 +112,6 @@ void opcontrol() {
 		  loader_left.move(0);
 		  loader_right.move(0);
 		  angler_pid(1580, 0);
-
 		}
 
 

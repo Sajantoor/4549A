@@ -11,7 +11,7 @@ float nextDelayTime;
 float currentSpeed;
 float nextSpeed;
 
-const float SEVEN_STACK_TORQUE = 1.45; // this is roughly the amount of torque on the motor for a 7 stack
+const float SEVEN_STACK_TORQUE = 1; // this is roughly the amount of torque on the motor for a 7 stack
 bool anglerBool = false;
 bool timerAng = false;
 bool torqueCheck = false;
@@ -43,19 +43,19 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 10000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + 4000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
       }
 
       // max torque value is used to calculate how many cubes are in the angler
-      if (pros::c::motor_get_torque(11) > maxTorque) {
-        maxTorque = pros::c::motor_get_torque(11);
+      if (pros::c::motor_get_torque(7) > maxTorque) {
+        maxTorque = pros::c::motor_get_torque(7);
       }
       printf("max torque %f", maxTorque);
 
       // slightly reduces the target of a 7 stack to improve accuracy
       if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-        currentTarget = currentTarget + 100;
+        currentTarget = currentTarget - 1000;
         torqueCheck = false;
       }
 
@@ -86,6 +86,7 @@ void angler_pid_task(void*ignore) {
       int final_power = pid_calc(&angler_pid, currentTarget, position);
       angler.move(final_power);
       printf("angler error: %f \n \n", angler_pid.error);
+      printf("torque: %f \n \n", maxTorque);
 
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
       if (((fabs(angler_pid.error) <= 8) && (currentTime > holdTimer)) || (currentTime > timeout))  {
