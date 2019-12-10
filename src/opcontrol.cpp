@@ -103,15 +103,14 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-			angler_pid(2480, 0);
 		  angler_pid(1580, 0);
-		  angler_pid(2480, 0);
+			pros::delay(2000);
 		  loader_left.move(-127);
 		  loader_right.move(-127);
 		  pros::delay(1500);
 		  loader_left.move(0);
 		  loader_right.move(0);
-		  angler_pid(1580, 0);
+
 
 		}
 
