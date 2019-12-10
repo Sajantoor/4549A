@@ -4,7 +4,7 @@
 
 extern float nextTarget;
 void angler_pid_task(void*ignore);
-void angler_pid(float target, float delayTime, float speed = 80);
+void angler_pid(float target, float delayTime, float speed = 80, bool ApplyTorque = true);
 
 extern pros::task_t angler_task;
 

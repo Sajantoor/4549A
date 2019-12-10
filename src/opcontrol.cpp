@@ -16,7 +16,6 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
-
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
 		stickArray[2] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), 3) / powf(127, 2);
@@ -65,11 +64,11 @@ void opcontrol() {
 			loader_left.move(-127);
 			loader_right.move(-127);
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-			loader_left.move(-43);
-			loader_right.move(-43);
+			loader_left.move(-86);
+			loader_right.move(-86);
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			loader_left.move(-43);
-			loader_right.move(-43);
+			loader_left.move(-86);
+			loader_right.move(-86);
 		} else {
 			loader_left.move(0);
 			loader_right.move(0);
@@ -78,7 +77,7 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (liftVal) {
 				angler_pid(1035, 2000);
-				angler_pid(3665, 0);
+				angler_pid(3665, 0, 80, false);
 			}
 		}
 
@@ -96,7 +95,17 @@ void opcontrol() {
 			if (liftVal) {
 				lift(2500, 20000);
 			} else {
-				lift(1100, 0);
+				lift(900, 0);
+			}
+
+			liftVal ? liftVal = false : liftVal = true;
+		}
+
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+			if (liftVal) {
+				lift(1300, 20000);
+			} else {
+				lift(900, 0);
 			}
 
 			liftVal ? liftVal = false : liftVal = true;
@@ -110,8 +119,7 @@ void opcontrol() {
 		  pros::delay(1500);
 		  loader_left.move(0);
 		  loader_right.move(0);
-
-
+			angler_pid(3665, 0, 80, false);
 		}
 
 

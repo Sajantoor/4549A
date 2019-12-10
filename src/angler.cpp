@@ -15,8 +15,9 @@ const float SEVEN_STACK_TORQUE = 1; // this is roughly the amount of torque on t
 bool anglerBool = false;
 bool timerAng = false;
 bool torqueCheck = false;
+bool applyTorque = false;
 
-void angler_pid(float position, float delay, float speed) {
+void angler_pid(float position, float delay, float speed, bool applyTorque) {
   // assigns position value based on if there is a currentTarget or not.
   if (!currentTarget) {
     currentTarget = position;
@@ -31,6 +32,7 @@ void angler_pid(float position, float delay, float speed) {
   anglerBool = true;
   timerAng = true;
   torqueCheck = true;
+  applyTorque = applyTorque;
 }
 
 void angler_pid_task(void*ignore) {
@@ -45,15 +47,15 @@ void angler_pid_task(void*ignore) {
         holdTimer = pros::millis() + delayTime; // motor hold value
         timeout = pros::millis() + 4000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
+        !applyTorque ? torqueCheck = false : torqueCheck = true;
       }
 
       // max torque value is used to calculate how many cubes are in the angler
       if (pros::c::motor_get_torque(7) > maxTorque) {
         maxTorque = pros::c::motor_get_torque(7);
       }
-      printf("max torque %f", maxTorque);
 
-      // slightly reduces the target of a 7 stack to improve accuracy
+      // slightly increases the target of a 7 stack to improve accuracy
       if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
         currentTarget = currentTarget - 1000;
         torqueCheck = false;
