@@ -19,8 +19,7 @@ void lift(int moveVal, int holdVal) {
 }
 
 void lift_task(void*ignore) {
-  int maxPower = 127;
-  pid_values lift_pid(0.5, 0.7, 0, 30, 500, maxPower);
+  pid_values lift_pid(0.5, 0.7, 0, 30, 500, 127);
   float timeout = 1000;
   float failsafe;
   float delayTime;
@@ -34,17 +33,16 @@ void lift_task(void*ignore) {
         timer = false;
       }
 
-      if (pros::c::motor_get_torque(18) > 0.8) {
-        lift_pid.max_power = 127;
-      } else {
-        lift_pid.max_power = maxPower;
-      }
-
        float currentTime = pros::millis();
        float position = arm.get_position();
        float final_power = pid_calc(&lift_pid, height, position);
        arm.move(final_power);
 
+       if (fabs(lift_pid.error) < 200) {
+         lift_pid.max_power = 30;
+       } else if (fabs(lift_pid.error) < 400) {
+         lift_pid.max_power = 60;
+       }
 
        if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
          liftBool = false;

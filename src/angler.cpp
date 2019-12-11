@@ -12,6 +12,7 @@ float currentSpeed;
 float nextSpeed;
 
 const float SEVEN_STACK_TORQUE = 1; // this is roughly the amount of torque on the motor for a 7 stack
+const float NINE_STACK_TORQUE = 4; // roughly the amount of torque for a 9 stack
 bool anglerBool = false;
 bool timerAng = false;
 bool torqueCheck = false;
@@ -45,7 +46,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 4000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + 2000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
         !applyTorque ? torqueCheck = false : torqueCheck = true;
       }
@@ -74,8 +75,14 @@ void angler_pid_task(void*ignore) {
         if (angler_pid.max_power < 40) {
           angler_pid.max_power = 40;
         } else {
+          // 9 stack torque needs the intake to run or else the bottom cube isn't in place
+          if (maxTorque > NINE_STACK_TORQUE) {
+            angler_pid.max_power = angler_pid.max_power - 25;
+            loader_left.move(90);
+            loader_right.move(90);
+          }
           // slow down faster for 7 stack or greater
-          if (maxTorque > SEVEN_STACK_TORQUE) {
+          else if (maxTorque > SEVEN_STACK_TORQUE) {
             angler_pid.max_power = angler_pid.max_power - 25;
           } else {
             angler_pid.max_power = angler_pid.max_power - 15;
@@ -93,6 +100,12 @@ void angler_pid_task(void*ignore) {
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
       if (((fabs(angler_pid.error) <= 8) && (currentTime > holdTimer)) || (currentTime > timeout))  {
         angler.move(0);
+
+        if (maxTorque > NINE_STACK_TORQUE) {
+          loader_left.move(0);
+          loader_right.move(0);
+        }
+
         maxTorque = 0;
         // if there is a next target, then switch to the next target, else clear current target and exit the loop
         if (nextTarget == 0) {
