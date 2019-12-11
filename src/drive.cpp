@@ -900,8 +900,8 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     polar rotated_positionPolar;
 
     pid_values turn_pid(0, 0, 0, 30, 100, max_power);
-    pid_values strafe_pid(20, 0, 0, 30, 100, max_power);//20
-    pid_values throttle_pid(11, 0, 0, 30, 100, max_power);
+    pid_values strafe_pid(15, 0, 0, 30, 100, max_power);//20
+    pid_values throttle_pid(11.7, 5, 0, 30, 100, max_power);
 
     int timeout = 2000;
     unsigned int net_timer;
@@ -932,8 +932,6 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       rotated_positionPolar.theta -= orientation;
       polarToVector(rotated_positionPolar, rotated_position);
 
-      rotated_position.y = final_power_throttle;
-      rotated_position.x = final_power_strafe;
       printf("final_power_turn %i \n\n", final_power_turn);
       printf("final_power_strafe %i \n\n", final_power_strafe);
       printf("final_power_throttle %i \n\n", final_power_throttle);
@@ -945,15 +943,7 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       printf("throttle_pid.error %f \n\n", throttle_pid.error);
       printf("strafe_pid.error %f \n\n", strafe_pid.error);
       printf("turn_pid.error %f \n\n", turn_pid.error);
-
-      // power_limit(max_power, final_power_turn);
-      // power_limit(max_power, final_power_strafe);
-      // power_limit(max_power, final_power_throttle);
-
-      // drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
-      // drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
-      // drive_right.move(final_power_turn - final_power_throttle + final_power_strafe);
-      // drive_right_b.move(final_power_turn - final_power_throttle - final_power_strafe);
+      printf("magnitude_of_throttleStrafe %f \n\n", magnitude_of_throttleStrafe);
 
       drive_left.move(final_power_throttle + final_power_turn + final_power_strafe);
       drive_left_b.move(final_power_throttle + final_power_turn - final_power_strafe);
@@ -961,18 +951,25 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       drive_right_b.move(final_power_throttle - final_power_turn + final_power_strafe);
 
       limit_to_val_set(final_power_throttle, abs(max_power));
-			if (final_power_throttle * sgn(max_power) < 25) //30
-      final_power_throttle = 25 * sgn(max_power);
-			int delta = final_power_throttle - last;
-			limit_to_val_set(delta, 5);
-			final_power_throttle = last += delta;
+			if (final_power_throttle * sgn(max_power) < 10) //30
+      final_power_throttle = 10 * sgn(max_power);
+			int delta_t = final_power_throttle - last;
+			limit_to_val_set(delta_t, 2);
+			final_power_throttle = last += delta_t;
+
+      limit_to_val_set(final_power_strafe, abs(max_power));
+			if (final_power_strafe * sgn(max_power) < 10) //30
+      final_power_strafe = 10 * sgn(max_power);
+			int delta_s = final_power_strafe - last;
+			limit_to_val_set(delta_s, 2);
+			final_power_strafe = last += delta_s;
 
       powf_of_throttleStrafe = powf(throttle_pid.error,2) + powf(strafe_pid.error,2);
       magnitude_of_throttleStrafe = sqrtf(powf_of_throttleStrafe);
 
       pros::delay(10);
 
-    } while ((magnitude_of_throttleStrafe > 1 || turn_pid.error > 0.02) && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+    } while (magnitude_of_throttleStrafe > 2 || radToDeg(turn_pid.error) > 4);
 
     printf("driving done\n");
     if (max_power < 0) {
