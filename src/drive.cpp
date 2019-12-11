@@ -7,9 +7,9 @@
 #include "lift.h"
 #include "pid.h"
 
-
 using namespace pros::literals;
 
+// globals
 float correction_turn;
 float degrees_flag;
 float prev_correction_turn;
@@ -25,7 +25,6 @@ float prev_inches_traveled_right;
 float prev_inches_traveled_back;
 vector position;
 sVel velocity;
-
 
 pros::task_t tracking_task;
 
@@ -61,46 +60,36 @@ void polarToVector(polar& polar, vector& vector) {
 
 void tracking_update(void*ignore) {
   while(true) {
-    // float ticks_to_degs = 3.18627451;
-    //float pi = 3.1415926535;
-    float degrees_encoder_left = (left_encoder.get_value());//* ticks_to_degs
-    float degrees_encoder_right = (right_encoder.get_value());//* ticks_to_degs
-    float degrees_encoder_back = (back_encoder.get_value());//* ticks_to_degs
+    float degrees_encoder_left = (left_encoder.get_value());// ticks_to_degs
+    float degrees_encoder_right = (right_encoder.get_value());// ticks_to_degs
+    float degrees_encoder_back = (back_encoder.get_value());// ticks_to_degs
 
     float degrees_to_rad_left = (pi/180) * degrees_encoder_left; //gives back values in radians
     float degrees_to_rad_right = (pi/180) * degrees_encoder_right; //gives back values in radians
     float degrees_to_rad_back = (pi/180) * degrees_encoder_back; //gives back values in radians
 
-    const float wheel_radius = 1.3845055; //1.4545
+    const float wheel_radius = 1.3845055;
 
     float inches_traveled_left = degrees_to_rad_left * wheel_radius; //gives back values in inches
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-    const float distance_between_centre = 1.59437;//5.49380807
-    const float distance_between_backwheel_center = 2.5;//-2.0254878
+    const float distance_between_centre = 1.59437;
+    const float distance_between_backwheel_center = 2.5;
     //CORDINATES facing the enemies side is 𝜃r = 0
-
     //beginning_orientation = 0;
-
-    float new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre)); // gives back values in radians and gives us the orientation of the bot
-
-    float change_in_angle = new_absolute_orientation - orientation; // gives back value in radians and also how much it has rotated from its previous point
-
+    // gives back values in radians and gives us the orientation of the bot
+    float new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
+    // gives back value in radians and also how much it has rotated from its previous point
+    float change_in_angle = new_absolute_orientation - orientation;
     vector local_offset;
 
     if (change_in_angle == 0) {
      local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
     } else {
-      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + distance_between_backwheel_center),//1.266666  3.54331
+      local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + distance_between_backwheel_center),
       2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
     }
-
-    // printf("local_offset %f, %f \n \n", local_offset.x, local_offset.y);
-    // printf("change_in_angle %f \n \n", change_in_angle);
-    // printf("inches_traveled_left %f \n \n", inches_traveled_left);
-    // printf("inches_traveled_right %f \n \n", inches_traveled_right);
-    // printf("inches_traveled_back %f \n \n", inches_traveled_back);
 
     float average_orientation = orientation + (change_in_angle/2);
     float rotation_amount = orientation + (change_in_angle)/2;

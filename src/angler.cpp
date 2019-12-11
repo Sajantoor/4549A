@@ -4,6 +4,7 @@
 #include "angler.h"
 #include "motor_sensor_init.h"
 
+// global variables
 float currentTarget;
 float nextTarget;
 float delayTime;

@@ -6,7 +6,7 @@
 #include "motor_sensor_init.h"
 #include "lift.h"
 
-
+// reset all position values
 void full_position_reset() {
   drive_left.tare_position();
   drive_left_b.tare_position();
@@ -23,7 +23,6 @@ void full_position_reset() {
   position.x = 0;
   orientation = 0;
 }
-
 float nearestangle(float target_angle, float reference_angle) {
   return round((reference_angle-target_angle) / (2 * pi)) *  (2 * pi) + target_angle;
 }
@@ -41,10 +40,9 @@ float radToDeg(float radians) {
 	return radians * 180 / pi;
 }
 
-void reset_position_full(float x, float y, float a)
-{
+// reset position for tracking system
+void reset_position_full(float x, float y, float a) {
 	printf("Resetting position %f %f %f | %f %f %f \n \n", position.y, position.x, radToDeg(fmod(orientation, pi * 2)), y, x, radToDeg(fmod(a, pi * 2)));
-
   left_encoder.reset();
   right_encoder.reset();
   back_encoder.reset();
@@ -52,7 +50,6 @@ void reset_position_full(float x, float y, float a)
   prev_inches_traveled_right = 0;
   prev_inches_traveled_back = 0;
   beginning_orientation = a;
-
 	position.y = y;
 	position.x = x;
 	orientation = a;

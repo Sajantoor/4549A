@@ -8,9 +8,10 @@
 int height;
 bool liftBool = false;
 bool timer = true;
-// int angler_threshold = 2400;
+// int angler_threshold = 2400; // used to run the motors after the angler has reached a certain point
 int hold = 0;
 
+// takes variables to the task
 void lift(int moveVal, int holdVal) {
   height = moveVal;
   hold = holdVal;
@@ -18,6 +19,7 @@ void lift(int moveVal, int holdVal) {
   timer = true;
 }
 
+// lift task which controls lift with PID and motor encoders
 void lift_task(void*ignore) {
   pid_values lift_pid(0.5, 0.7, 0, 30, 500, 127);
   float timeout = 1000;
@@ -27,6 +29,7 @@ void lift_task(void*ignore) {
   while (true) {
     // while ((potentiometer_angler.get_value() < angler_threshold) && liftBool) {
     while(liftBool) {
+      // calculates time for timeout
       if (timer) {
         failsafe = pros::millis() + timeout + hold;
         delayTime = pros::millis() + hold;
@@ -34,36 +37,32 @@ void lift_task(void*ignore) {
       }
 
        float currentTime = pros::millis();
-       float position = arm.get_position();
-       float final_power = pid_calc(&lift_pid, height, position);
+       float position = arm.get_position(); // mtr encoders
+       float final_power = pid_calc(&lift_pid, height, position); // final power is calculated using pid
        arm.move(final_power);
-
-       if (fabs(lift_pid.error) < 200) {
-         lift_pid.max_power = 30;
-       } else if (fabs(lift_pid.error) < 400) {
-         lift_pid.max_power = 60;
+       // slew rate to slow down the motor based on the error value
+       if (position > 1580) {
+         lift_pid.max_power = lift_pid.max_power - 5; // slew rate
+         if (lift_pid.max_power < 60) lift_pid.max_power = 60; // capping lowest possible speed
+       } else {
+         lift_pid.max_power = lift_pid.max_power + 25; // positive slew rate
+         if (lift_pid.max_power > 127) lift_pid.max_power = 127; // motor cap
        }
 
+       // exit out of the loop
        if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
-         liftBool = false;
+         lift_pid.max_power = 127;
          hold = 0;
          arm.move(0);
+         liftBool = false;
+       // exit out based off the failsafe
        } else if (failsafe < currentTime) {
-         liftBool = false;
+         lift_pid.max_power = 127;
          hold = 0;
          arm.move(0);
+         liftBool = false;
        }
-
-       printf("final power %f \n \n", final_power);
-       printf("error %f \n \n", lift_pid.error);
      }
-
-    pros::delay(20);
+     pros::delay(20);
   }
 }
-
-
-// while(anglerPot > x){
-//   run lift
-//   pros::delay(20);
-// }
