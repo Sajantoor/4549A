@@ -742,9 +742,9 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     polar positionErrPolar;
     polar rotated_positionPolar;
 
-    pid_values turn_pid(78, 0, 0, 30, 500, max_power);//13
-    pid_values strafe_pid(17.5, 0, 0, 700, 500, max_power);//20
-    pid_values throttle_pid(11.7, 5, 0, 30, 500, max_power);
+    pid_values turn_pid(78, 0, 0, 30, 500, 127);//78
+    pid_values strafe_pid(17.5, 0, 0, 700, 500, 127);//17.5
+    pid_values throttle_pid(11.7, 5, 0, 30, 500, 127);//11.7,5
 
     //timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
     int timeout = 2000;
@@ -766,9 +766,9 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
      printf("Moving to %f %f \n", ending_point_x, ending_point_y);
     do {
       //runs pid loops on the position.x and position.y and orienation
-      int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
-      int final_power_xDir = pid_calc(&strafe_pid, ending_point_x, position.x);
-      int final_power_yDir = pid_calc(&throttle_pid, ending_point_y, position.y);
+      float final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
+      float final_power_xDir = pid_calc(&strafe_pid, ending_point_x, position.x);
+      float final_power_yDir = pid_calc(&throttle_pid, ending_point_y, position.y);
 
       //assigns the final_power_strafe and throttle to a vector
       rotated_motorPower.y = final_power_yDir;
@@ -779,9 +779,9 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       rotated_positionPolar.theta -= orientation;
       polarToVector(rotated_positionPolar, rotated_motorPower);
 
-      printf("final_power_turn %i \n\n", final_power_turn);
-      printf("final_power_strafe %i \n\n", final_power_xDir);
-      printf("final_power_throttle %i \n\n", final_power_yDir);
+      printf("final_power_turn %f \n\n", final_power_turn);
+      printf("final_power_strafe %f \n\n", final_power_xDir);
+      printf("final_power_throttle %f \n\n", final_power_yDir);
       printf("position.x %f \n\n", position.x);
       printf("position.y %f \n\n", position.y);
       printf("orientation %f \n\n", orientation);
@@ -792,27 +792,29 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       printf("turn_pid.error %f \n\n", radToDeg(turn_pid.error));
       printf("magnitude_of_throttleStrafe %f \n\n", magnitude_of_throttleStrafe);
 
+
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
-      limit_to_val_set(rotated_motorPower.x, abs(max_power));
-      if (rotated_motorPower.x * sgn(max_power) < 10) //30
-      rotated_motorPower.x = 10 * sgn(max_power);
-      int delta_s = rotated_motorPower.x - last;
-      limit_to_val_set(delta_s, 2);
-      rotated_motorPower.x = last += delta_s;
-
       limit_to_val_set(rotated_motorPower.y, abs(max_power));
-      if (rotated_motorPower.y * sgn(max_power) < 10) //30
-      rotated_motorPower.y = 10 * sgn(max_power);
-      int delta_t = rotated_motorPower.y - last;
-      limit_to_val_set(delta_t, 2);
-      rotated_motorPower.y = last += delta_t;
+      if (rotated_motorPower.y * sgn(max_power) < 80){
+        rotated_motorPower.y = 80 * sgn(max_power);
+      }
+      int delta_y = rotated_motorPower.y - last;
+      limit_to_val_set(delta_y, 15);
+      rotated_motorPower.y = last += delta_y;
 
-
+      // limit_to_val_set(rotated_motorPower.x, abs(max_power));
+      // if (rotated_motorPower.x * sgn(max_power) < 25){
+      //   rotated_motorPower.x = 25 * sgn(max_power);
+      // }
+      // int delta_s = rotated_motorPower.x - last;
+      // limit_to_val_set(delta_s, 5);
+      // rotated_motorPower.x = last += delta_s;
+      //
       //applies power to the motors in mecanum formation
-      drive_left.move(rotated_motorPower.y + final_power_turn + final_power_xDir);
-      drive_left_b.move(rotated_motorPower.y + final_power_turn - final_power_xDir);
-      drive_right.move(rotated_motorPower.y - final_power_turn - final_power_xDir);
-      drive_right_b.move(rotated_motorPower.y - final_power_turn + final_power_xDir);
+      drive_left.move(rotated_motorPower.y + final_power_turn + rotated_motorPower.x);
+      drive_left_b.move(rotated_motorPower.y + final_power_turn - rotated_motorPower.x);
+      drive_right.move(rotated_motorPower.y - final_power_turn - rotated_motorPower.x);
+      drive_right_b.move(rotated_motorPower.y - final_power_turn + rotated_motorPower.x);
 
       //this gets the magnitude of our error using the error from throttle and strafe
       powf_of_throttleStrafe = powf(throttle_pid.error,2) + powf(strafe_pid.error,2);

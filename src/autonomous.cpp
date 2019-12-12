@@ -27,10 +27,11 @@ void autonomous() {
             // position_drive(-30, -10, 0, -10, 0, 90, 1, 0);
             // turn_pid_encoder_average(0, 100);
 
-     // position_drive2(-20, 0, 0, 100);
+     position_drive2(0, 20, 0, 100);
      // // position_turn(90, 500, 100);
      // // position_turn(0, 500, 100);
-     //  position_drive2(0, 0, 0, 100);
+     pros::delay(5000);
+    position_drive2(0, 0, 0, -100);
 
   // turn_pid_encoder_average(90, 100);
   // turn_pid_encoder_average(0, 100);
