@@ -889,42 +889,51 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     polar rotated_positionPolar;
 
     pid_values turn_pid(0, 0, 0, 30, 100, max_power);
-    pid_values strafe_pid(0, 0, 0, 30, 100, max_power);
+    pid_values strafe_pid(20, 0, 0, 30, 100, max_power);//20
     pid_values throttle_pid(11, 0, 0, 30, 100, max_power);
 
+    int timeout = 2000;
     unsigned int net_timer;
     int initial_millis = pros::millis();
+    net_timer = initial_millis + timeout; //just to initialize net_timer at first
     float failsafe = 2000;
+    int last = 0;
 
     float err_angle;
     //float line_ahead_point = 0.5;
     int last_error_turn = 0;
     int last_error_throttle = 0;
     int last_error_strafe = 0;
+    float powf_of_throttleStrafe;
+    float magnitude_of_throttleStrafe;
+
     // float max_speed = 100;
-    // printf("Moving to %f %f from %f %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y);
+     printf("Moving to %f %f \n", ending_point_x, ending_point_y);
     do {
       int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
       int final_power_strafe = pid_calc(&strafe_pid, ending_point_x, position.x);
       int final_power_throttle = pid_calc(&throttle_pid, ending_point_y, position.y);
 
-      rotated_position.x = final_power_throttle;
-      rotated_position.y = final_power_strafe;
+      rotated_position.y = final_power_throttle;
+      rotated_position.x = final_power_strafe;
 
       vectorToPolar(rotated_position, rotated_positionPolar);
       rotated_positionPolar.theta -= orientation;
       polarToVector(rotated_positionPolar, rotated_position);
 
-      rotated_position.x = final_power_throttle;
-      rotated_position.y = final_power_strafe;
-      printf("final_power_turn %i \n", final_power_turn);
-      printf("final_power_strafe done %i \n", final_power_strafe);
-      printf("final_power_throttle done %i \n", final_power_throttle);
-      printf("position.x %f \n", position.x);
-      printf("position.y %f \n", position.y);
-      printf("orientation %f \n", orientation);
-      printf("rotated_position.x %f \n", rotated_position.x);
-      printf("rotated_position.y %f \n", rotated_position.y);
+      rotated_position.y = final_power_throttle;
+      rotated_position.x = final_power_strafe;
+      printf("final_power_turn %i \n\n", final_power_turn);
+      printf("final_power_strafe %i \n\n", final_power_strafe);
+      printf("final_power_throttle %i \n\n", final_power_throttle);
+      printf("position.x %f \n\n", position.x);
+      printf("position.y %f \n\n", position.y);
+      printf("orientation %f \n\n", orientation);
+      printf("rotated_position.x %f \n\n", rotated_position.x);
+      printf("rotated_position.y %f \n\n", rotated_position.y);
+      printf("throttle_pid.error %f \n\n", throttle_pid.error);
+      printf("strafe_pid.error %f \n\n", strafe_pid.error);
+      printf("turn_pid.error %f \n\n", turn_pid.error);
 
       // power_limit(max_power, final_power_turn);
       // power_limit(max_power, final_power_strafe);
@@ -940,9 +949,19 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       drive_right.move(final_power_throttle - final_power_turn - final_power_strafe);
       drive_right_b.move(final_power_throttle - final_power_turn + final_power_strafe);
 
+      limit_to_val_set(final_power_throttle, abs(max_power));
+			if (final_power_throttle * sgn(max_power) < 25) //30
+      final_power_throttle = 25 * sgn(max_power);
+			int delta = final_power_throttle - last;
+			limit_to_val_set(delta, 5);
+			final_power_throttle = last += delta;
+
+      powf_of_throttleStrafe = powf(throttle_pid.error,2) + powf(strafe_pid.error,2);
+      magnitude_of_throttleStrafe = sqrtf(powf_of_throttleStrafe);
+
       pros::delay(10);
 
-    } while (rotated_position.x > 1);
+    } while ((magnitude_of_throttleStrafe > 1 || turn_pid.error > 0.02) && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     printf("driving done\n");
     if (max_power < 0) {
