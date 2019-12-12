@@ -754,11 +754,6 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     float failsafe = 2000;
     int last = 0;
 
-    float err_angle;
-    //float line_ahead_point = 0.5;
-    int last_error_turn = 0;
-    int last_error_throttle = 0;
-    int last_error_strafe = 0;
     float powf_of_throttleStrafe;
     float magnitude_of_throttleStrafe;
 
@@ -774,42 +769,56 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       rotated_motorPower.y = final_power_yDir;
       rotated_motorPower.x = final_power_xDir;
 
+      printf("shit: %f \n \n", final_power_xDir);
+
       //The vector then is rotated so the frame of reference is robot centric besides field centric
       vectorToPolar(rotated_motorPower, rotated_positionPolar);
       rotated_positionPolar.theta -= orientation;
       polarToVector(rotated_positionPolar, rotated_motorPower);
 
-      printf("final_power_turn %f \n\n", final_power_turn);
-      printf("final_power_strafe %f \n\n", final_power_xDir);
-      printf("final_power_throttle %f \n\n", final_power_yDir);
-      printf("position.x %f \n\n", position.x);
-      printf("position.y %f \n\n", position.y);
-      printf("orientation %f \n\n", orientation);
+      // printf("final_power_turn %f \n\n", final_power_turn);
+      // printf("final_power_strafe %f \n\n", final_power_xDir);
+      // printf("final_power_throttle %f \n\n", final_power_yDir);
+      // printf("position.x %f \n\n", position.x);
+      // printf("position.y %f \n\n", position.y);
+      // printf("orientation %f \n\n", orientation);
       printf("rotated_position.x %f \n\n", rotated_motorPower.x);
       printf("rotated_position.y %f \n\n", rotated_motorPower.y);
-      printf("throttle_pid.error %f \n\n", throttle_pid.error);
+      // printf("throttle_pid.error %f \n\n", throttle_pid.error);
       printf("strafe_pid.error %f \n\n", strafe_pid.error);
-      printf("turn_pid.error %f \n\n", radToDeg(turn_pid.error));
-      printf("magnitude_of_throttleStrafe %f \n\n", magnitude_of_throttleStrafe);
+      // printf("turn_pid.error %f \n\n", radToDeg(turn_pid.error));
+      // printf("magnitude_of_throttleStrafe %f \n\n", magnitude_of_throttleStrafe);
 
 
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
+
       limit_to_val_set(rotated_motorPower.y, abs(max_power));
-      if (rotated_motorPower.y * sgn(max_power) < 80){
-        rotated_motorPower.y = 80 * sgn(max_power);
+      if (abs(rotated_motorPower.y) < abs(max_power)) {
+        if (rotated_motorPower.y > 0) {
+          rotated_motorPower.y = rotated_motorPower.y - 15;
+        } else {
+          rotated_motorPower.y = rotated_motorPower.y + 15;
+        }
       }
-      int delta_y = rotated_motorPower.y - last;
-      limit_to_val_set(delta_y, 15);
-      rotated_motorPower.y = last += delta_y;
+      // limit_to_val_set(rotated_motorPower.y, abs(max_power));
+      // if (rotated_motorPower.y * sgn(max_power) < 80){
+      //   rotated_motorPower.y = 80 * sgn(max_power);
+      // }
+      // int delta_y = rotated_motorPower.y - last;
+      // limit_to_val_set(delta_y, 15);
+      // rotated_motorPower.y = last += delta_y;
 
       // limit_to_val_set(rotated_motorPower.x, abs(max_power));
-      // if (rotated_motorPower.x * sgn(max_power) < 25){
+      //
+      // if (rotated_motorPower.x * sgn(max_power) < 15) {
+      //   rotated_motorPower.x = 0 * sgn(max_power);
+      // } else if (rotated_motorPower.x * sgn(max_power) < 25) {
       //   rotated_motorPower.x = 25 * sgn(max_power);
       // }
       // int delta_s = rotated_motorPower.x - last;
       // limit_to_val_set(delta_s, 5);
       // rotated_motorPower.x = last += delta_s;
-      //
+
       //applies power to the motors in mecanum formation
       drive_left.move(rotated_motorPower.y + final_power_turn + rotated_motorPower.x);
       drive_left_b.move(rotated_motorPower.y + final_power_turn - rotated_motorPower.x);
