@@ -18,7 +18,9 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
-		// maps a control stick with slew rate to the array
+		printf("right encoder %d \n\n", right_encoder.get_value());
+		printf("position.y %f \n\n", position.y);
+
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
 		stickArray[2] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), 3) / powf(127, 2);
