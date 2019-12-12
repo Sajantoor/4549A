@@ -89,8 +89,6 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
 void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power);
 
-void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y);
-
 extern pros::task_t tracking_task;
 extern pros::task_t velocity_task;
 

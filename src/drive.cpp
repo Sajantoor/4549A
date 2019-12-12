@@ -60,33 +60,43 @@ void polarToVector(polar& polar, vector& vector) {
 
 void tracking_update(void*ignore) {
   while(true) {
-    float degrees_encoder_left = (left_encoder.get_value());// ticks_to_degs
-    float degrees_encoder_right = (right_encoder.get_value());// ticks_to_degs
-    float degrees_encoder_back = (back_encoder.get_value());// ticks_to_degs
+    //gets the ticks from the each of encoders
+    float degrees_encoder_left = (left_encoder.get_value());
+    float degrees_encoder_right = (right_encoder.get_value());
+    float degrees_encoder_back = (back_encoder.get_value());
 
-    float degrees_to_rad_left = (pi/180) * degrees_encoder_left; //gives back values in radians
-    float degrees_to_rad_right = (pi/180) * degrees_encoder_right; //gives back values in radians
-    float degrees_to_rad_back = (pi/180) * degrees_encoder_back; //gives back values in radians
+    //converts each of the encoders ticks to degrees and returns value in radians
+    float degrees_to_rad_left = (pi/180) * degrees_encoder_left;
+    float degrees_to_rad_right = (pi/180) * degrees_encoder_right;
+    float degrees_to_rad_back = (pi/180) * degrees_encoder_back;
 
+    //the radius of the tracking wheels
     const float wheel_radius = 1.3845055;
 
+    //Finds how much each tracking wheel traveled in inches
     float inches_traveled_left = degrees_to_rad_left * wheel_radius; //gives back values in inches
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
+
     const float distance_between_centre = 1.43138996;//1.59437
     const float distance_between_backwheel_center = 0.915;//2.5
-    //CORDINATES facing the enemies side is 𝜃r = 0
-    //beginning_orientation = 0;
-    // gives back values in radians and gives us the orientation of the bot
+
+    //Returns the orientation of the bot in radians
     float new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
-    // gives back value in radians and also how much it has rotated from its previous point
+
+    //Returns how much it has rotated from its previous point in radians
     float change_in_angle = new_absolute_orientation - orientation;
+
+    // The change in position from previous reset
     vector local_offset;
 
+    //if it did not rotate then it calculates the offset normally
     if (change_in_angle == 0) {
      local_offset = {inches_traveled_back - prev_inches_traveled_back , inches_traveled_right - prev_inches_traveled_right};
-    } else {
+    }
+    //otherwise calculate the inches traveled according to how much it turned
+    else {
       local_offset = { 2 * sin(change_in_angle / 2) * (((inches_traveled_back - prev_inches_traveled_back) / change_in_angle) + distance_between_backwheel_center),
       2 * sin(change_in_angle/2) * ((inches_traveled_right - prev_inches_traveled_right) / change_in_angle + distance_between_centre)};
     }
@@ -94,14 +104,17 @@ void tracking_update(void*ignore) {
     float average_orientation = orientation + (change_in_angle/2);
     float rotation_amount = orientation + (change_in_angle)/2;
 
+    //converts local_offset to polar coordinates so that we can rotate by the rotation_amount
     polar offset_polar = vector_to_polar(local_offset);
     offset_polar.theta += rotation_amount;
     vector global_offset = polar_to_vector(offset_polar);
+    //converts back to vector coordinates
 
+    //updates the position.x and position.y
     position.x += global_offset.x;
     position.y += global_offset.y;
 
-
+    //updates orienation values and the inches traveled by the tracking wheels
     orientation = new_absolute_orientation; //gives back value in radians
     prev_inches_traveled_left = inches_traveled_left;
     prev_inches_traveled_right = inches_traveled_right;
@@ -110,6 +123,7 @@ void tracking_update(void*ignore) {
   }
 }
 
+//tracks the current velocity of the bot
 void tracking_velocity(void*ignore) {
   while(true) {
   	unsigned long curTime = pros::millis();
@@ -285,6 +299,7 @@ void position_turn(float target, int timeout, int max_speed) {
 
 
     while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+      //do a basic pid loop on orientation with the target as the ending angle
       encoder_avg = orientation;
       error = degToRad(target) - encoder_avg;
       derivative = (error - last_error)*kd;
@@ -297,7 +312,7 @@ void position_turn(float target, int timeout, int max_speed) {
       printf("target %f\n", degToRad(target));
       printf("error %f\n", radToDeg(error));
 
-
+      //integral limeter
       if (fabs(error) > (degToRad(22))) integral = 0;//22
       if (integral > integral_limit) integral = integral_limit;
       if (-integral < -integral_limit) integral = -integral_limit;
@@ -340,10 +355,14 @@ void position_turn(float target, int timeout, int max_speed) {
   printf("Degrees Turned from:%f to %f\n", radToDeg(error), radToDeg(orientation));
  }
 
+//turning to a angle in a different way
 void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int coast_power, float stop_offset_deg) {
   printf("Turning to %f\n", radToDeg(target_angle));
+
+  //the actual orientation that the bot will end at, calculated based on ratio_full and the starting and ending orientations
   float endFull;
 
+  //decides which way to turn depened on which ever direction is shortest and fastest
   if (turnDir == ch) {
    	if (fmod(target_angle - orientation, pi * 2) > pi) {
       turnDir = ccw;
@@ -352,8 +371,10 @@ void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int 
     }
   }
 
+// the bot keep going at full power until after the full ratio and then it goes at coastPower until stopOffsetDeg
   switch (turnDir) {
 	   case cw:
+     //calculates the target angle
     	target_angle = orientation + flmod(target_angle - orientation, pi * 2);
     	endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
       set_drive(-80,80);
@@ -372,32 +393,11 @@ void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int 
       pros::delay(100);
       set_drive(0,0);
 
-      printf("done \n");
-      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-      printf("ENTERED SECOND STAGE \n");
-      printf(" \n");
-      printf("position.x %f\n", position.x);
-      printf(" \n");
-      printf("position.y %f\n", position.y);
-      printf(" \n");
-      printf("target_angle %f\n", target_angle);
-      printf(" \n");
-      printf("endFull %f\n", endFull);
-      printf(" \n");
-      printf("orientation %f\n", orientation);
-      printf(" \n");
-      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-      printf(" \n");
-      printf("Turning to %f\n", radToDeg(target_angle));
-      //pros::lcd::print(6,"orientation %f\n", orientation);
-      printf("DONE \n");
-      printf("--------------------------------------------------------------------------------------\n");
-      printf(" \n");
-      //pros::lcd::print(7," Moving to %f at %f \n", target_angle,radToDeg(orientation));
       break;
 
 //GOING COUNTER CLOCKWISE
 
+  // This is the code for going counter clockwise
   	case ccw:
   		target_angle = orientation - flmod(orientation - target_angle, pi * 2);
   		endFull = orientation * (1 - ratio_full) + target_angle * ratio_full;
@@ -415,27 +415,6 @@ void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int 
       pros::delay(150);
       set_drive(0, 0);
 
-      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-      printf("FINISHED TURNING \n");
-      printf(" \n");
-      printf("position.x %f\n", position.x);
-      printf(" \n");
-      printf("position.y %f\n", position.y);
-      printf(" \n");
-      printf("orientation %f\n", orientation);
-      printf(" \n");
-      printf("target_angle %f\n", target_angle);
-      printf(" \n");
-      printf("endFull %f\n", endFull);
-      printf(" \n");
-      printf("Moving to %f at %f \n", target_angle, radToDeg(orientation));
-      printf(" \n");
-      printf("Turning to %f\n", radToDeg(target_angle));
-      //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
-      printf("--------------------------------------------------------------------------------------\n");
-      printf(" \n");
-      printf("done \n");
-
       break;
 
       default:
@@ -443,8 +422,13 @@ void position_turn2(float target_angle, tTurnDir turnDir, float ratio_full, int 
     }
 }
 
+//function to turn to a specific point
 void position_face_point2(float target_x, float target_y, tTurnDir turnDir, float ratio_full, float coast_power, float offset, float stopOffsetDeg) {
-	float endFull, target;
+
+  //the actual orientation that the bot will end at, calculated based on ratio_full and the starting and ending orientations
+  float endFull, target;
+
+  //decides which way to turn depened on which ever direction is shortest and fastest
   	if (turnDir == ch) {
   		if (fmod(atan2(target_x - position.x, target_y - position.y) + offset - orientation, pi * 2) > pi) {
         turnDir = ccw;
@@ -455,6 +439,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
     switch (turnDir) {
     	case cw:
+        //calculation of the target dependent on our current position
       	target = orientation + flmod(atan2(target_x - position.x, target_y - position.y) + offset - orientation, pi * 2);
         endFull = orientation * (1 - ratio_full) + target * ratio_full;
 
@@ -473,34 +458,9 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
     		pros::delay(150);
     		set_drive(0, 0);
 
-        printf("Moving to %f at %f \n", target, radToDeg(orientation));
-        printf("ENTERED SECOND STAGE \n");
-        printf(" \n");
-        printf("position.x %f\n", position.x);
-        printf(" \n");
-        printf("position.y %f\n", position.y);
-        printf(" \n");
-        printf("orientation %f\n", orientation);
-        printf(" \n");
-        printf("target_x %f\n", target_x);
-        printf(" \n");
-        printf("target_y %f\n", target_y);
-        printf(" \n");
-        printf("target %f\n", target);
-        printf(" \n");
-        printf("endFull %f\n", endFull);
-        printf(" \n");
-        printf("Moving to %f at %f \n", target, radToDeg(orientation));
-        printf(" \n");
-        printf("Turning to %f\n", radToDeg(target));
-        //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
-        printf("--------------------------------------------------------------------------------------\n");
-        printf(" \n");
-        printf("done \n");
-
     		break;
 
-
+        //For going counter clockwise
   	case ccw:
       target = orientation - fmod(orientation - atan2(target_x - position.x, target_y - position.y) - offset, pi * 2);
       endFull = orientation * (1 - ratio_full) + (target) * ratio_full;
@@ -509,26 +469,6 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
   		set_drive(80, -80);
 
   		while (orientation > endFull /*&& (velSafety? NOT_SAFETY(power, turnToTargetNewAlg) : 1 )*/) {
-        printf("FIRST STAGE \n");
-        printf(" \n");
-        printf("position.x %f\n", position.x);
-        printf(" \n");
-        printf("position.y %f\n", position.y);
-        printf(" \n");
-        printf("orientation %f\n", orientation);
-        printf(" \n");
-        printf("target_x %f\n", target_x);
-        printf(" \n");
-        printf("target_y %f\n", target_y);
-        printf(" \n");
-        printf("target %f\n", target);
-        printf(" \n");
-        printf("endFull %f\n", endFull);
-        printf(" \n");
-        printf("Moving to %f at %f \n", target, orientation);
-        printf(" \n");
-        printf("--------------------------------------------------------------------------------------\n");
-        printf(" \n");
   			pros::delay(10);
   		}
 
@@ -565,29 +505,6 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
   		set_drive(0, 0);
 
-      printf("Moving to %f at %f \n", target, radToDeg(orientation));
-      printf("ENTERED SECOND STAGE \n");
-      printf(" \n");
-      printf("position.x %f\n", position.x);
-      printf(" \n");
-      printf("position.y %f\n", position.y);
-      printf(" \n");
-      printf("orientation %f\n", orientation);
-      printf(" \n");
-      printf("target_angle %f\n", target);
-      printf(" \n");
-      printf("target_x %f\n", target_x);
-      printf(" \n");
-      printf("target_y %f\n", target_y);
-      printf(" \n");
-      printf("endFull %f\n", endFull);
-      printf(" \n");
-      printf("Moving to %f at %f \n", target, radToDeg(orientation));
-      printf(" \n");
-      printf("Turning to %f\n", radToDeg(target));
-      //pros::lcd::print(6,"orientation %f\n", radToDeg(orientation));
-      printf("--------------------------------------------------------------------------------------\n");
-      printf(" \n");
       printf("done \n");
   		break;
 
@@ -596,6 +513,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
   	}
 }
 
+//same principle as position_face_point2 but using pid loops
 void position_face_point(float target_x, float target_y,int timeout) {
     vector error;
     float Kp = 77; //0.2
@@ -625,6 +543,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
       error.x = target_x - position.x;
       error.y = target_y - position.y;
 
+      //what direction to face (target)
       direction_face = atan2f(error.y , error.x);
 
       encoder_avg = orientation;
@@ -682,6 +601,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
+// not commented because this for omnis
 void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance) {
     vector error;
     vector positionErr;
@@ -773,67 +693,6 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       			break;
         }
 
-        // printf("back_encoder %d\n", back_encoder.get_value());
-        // printf(" \n");
-        // printf("left_encoder %d\n", left_encoder.get_value());
-        // printf(" \n");
-        // printf("right_encoder %d\n", right_encoder.get_value());
-        // printf(" \n");
-        printf("position.x %f\n", position.x);
-        printf(" \n");
-        printf("position.y %f\n", position.y);
-        printf(" \n");
-        printf("positionErr.x %f\n", positionErr.x);
-        printf(" \n");
-        printf("positionErr.y %f\n", positionErr.y);
-        printf(" \n");
-        // printf("final_power %f\n", finalpower);
-        // printf(" \n");
-        printf("err_angle %f\n", err_angle);
-        printf(" \n");
-        printf("err_x %f\n", err_x);
-        printf(" \n");
-        printf("look_ahead_point.x %f\n", look_ahead_point.x);
-        printf(" \n");
-        printf("look_ahead_point.y %f\n", look_ahead_point.y);
-        printf(" \n");
-        printf("orientation %f\n", orientation);
-        printf(" \n");
-        printf("correctA %f\n", correctA);
-        printf(" \n");
-        printf("correction %f\n", correction);
-        printf(" \n");
-        // printf("max_error %f\n", max_error);
-        // printf(" \n");
-        // printf("orientation %f\n", orientation);
-        // printf(" \n");
-        // printf("sgn(max_speed) %d\n", sgn(max_speed));
-        // printf(" \n");
-        // printf("tan(err_angle) %f \n", tan(err_angle));
-        // printf(" \n");
-        // printf("exp(correction) %f \n", exp(correction));
-        // printf(" \n");
-        // printf("last finalpower %d \n", last);
-        // printf(" \n");
-        // printf("delta %d \n", delta);
-        // printf(" \n");
-        // printf("magnPosvector %f\n", magnPosvector);
-        // printf(" \n");
-        // printf("line_length %f\n", line_length);
-        // printf(" \n");
-        // printf("positionErrPolar %f\n", positionErrPolar.theta);
-        // printf(" \n");
-        // printf("Line Angle %f\n", radToDeg(line_angle));
-        // printf(" \n");
-        // printf("angle_main_line %f\n", radToDeg(angle_main_line));
-        // printf(" \n");
-        // printf("Moving to %f , %f from %f , %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
-        // printf(" \n");
-        // printf("Moved to %f %f from %f %f at %f  || %f.x , %f.y , %f\n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed, position.x, position.y, radToDeg(orientation));
-        // printf(" \n");
-        // printf("--------------------------------------------------------------------------------------\n");
-        // printf(" \n");
-
         pros::delay(10);
 
       } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
@@ -849,11 +708,6 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
       polarToVector(positionErrPolar, positionErr);
 
       velocity_line = sin_line * velocity.x + cos_line * velocity.y;
-      //printf("driving done velocity\n");
-      // printf("position.x %f\n", position.x);
-      // printf(" \n");
-      // printf("position.y %f\n", position.y);
-      // printf(" \n");
 
       pros::delay(5);
     } while((positionErr.y < -early_stop - (velocity_line * 0.098)) && (pros::millis() < net_timer));
@@ -882,7 +736,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
 
 void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power) {
     vector positionErr;
-    vector rotated_position;
+    vector rotated_motorPower;
     vector rotation_vector;
     vector delta_main_line;
     polar positionErrPolar;
@@ -892,6 +746,7 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     pid_values strafe_pid(17.5, 0, 0, 700, 500, max_power);//20
     pid_values throttle_pid(11.7, 5, 0, 30, 500, max_power);
 
+    //timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
     int timeout = 2000;
     unsigned int net_timer;
     int initial_millis = pros::millis();
@@ -910,49 +765,56 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     // float max_speed = 100;
      printf("Moving to %f %f \n", ending_point_x, ending_point_y);
     do {
+      //runs pid loops on the position.x and position.y and orienation
       int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
-      int final_power_strafe = pid_calc(&strafe_pid, ending_point_x, position.x);
-      int final_power_throttle = pid_calc(&throttle_pid, ending_point_y, position.y);
+      int final_power_xDir = pid_calc(&strafe_pid, ending_point_x, position.x);
+      int final_power_yDir = pid_calc(&throttle_pid, ending_point_y, position.y);
 
-      rotated_position.y = final_power_throttle;
-      rotated_position.x = final_power_strafe;
+      //assigns the final_power_strafe and throttle to a vector
+      rotated_motorPower.y = final_power_yDir;
+      rotated_motorPower.x = final_power_xDir;
 
-      vectorToPolar(rotated_position, rotated_positionPolar);
+      //The vector then is rotated so the frame of reference is robot centric besides field centric
+      vectorToPolar(rotated_motorPower, rotated_positionPolar);
       rotated_positionPolar.theta -= orientation;
-      polarToVector(rotated_positionPolar, rotated_position);
+      polarToVector(rotated_positionPolar, rotated_motorPower);
 
       printf("final_power_turn %i \n\n", final_power_turn);
-      printf("final_power_strafe %i \n\n", final_power_strafe);
-      printf("final_power_throttle %i \n\n", final_power_throttle);
+      printf("final_power_strafe %i \n\n", final_power_xDir);
+      printf("final_power_throttle %i \n\n", final_power_yDir);
       printf("position.x %f \n\n", position.x);
       printf("position.y %f \n\n", position.y);
       printf("orientation %f \n\n", orientation);
-      printf("rotated_position.x %f \n\n", rotated_position.x);
-      printf("rotated_position.y %f \n\n", rotated_position.y);
+      printf("rotated_position.x %f \n\n", rotated_motorPower.x);
+      printf("rotated_position.y %f \n\n", rotated_motorPower.y);
       printf("throttle_pid.error %f \n\n", throttle_pid.error);
       printf("strafe_pid.error %f \n\n", strafe_pid.error);
       printf("turn_pid.error %f \n\n", radToDeg(turn_pid.error));
       printf("magnitude_of_throttleStrafe %f \n\n", magnitude_of_throttleStrafe);
 
-      drive_left.move(rotated_position.y + final_power_turn + final_power_strafe);
-      drive_left_b.move(rotated_position.y + final_power_turn - final_power_strafe);
-      drive_right.move(rotated_position.y - final_power_turn - final_power_strafe);
-      drive_right_b.move(rotated_position.y - final_power_turn + final_power_strafe);
+      //applying slew rate on the motors so they dont burn out and there arent sudden movements
+      limit_to_val_set(rotated_motorPower.x, abs(max_power));
+      if (rotated_motorPower.x * sgn(max_power) < 10) //30
+      rotated_motorPower.x = 10 * sgn(max_power);
+      int delta_s = rotated_motorPower.x - last;
+      limit_to_val_set(delta_s, 2);
+      rotated_motorPower.x = last += delta_s;
 
-      // limit_to_val_set(final_power_throttle, abs(max_power));
-			// if (final_power_throttle * sgn(max_power) < 10) //30
-      // final_power_throttle = 10 * sgn(max_power);
-			// int delta_t = final_power_throttle - last;
-			// limit_to_val_set(delta_t, 2);
-			// final_power_throttle = last += delta_t;
-      //
-      // limit_to_val_set(final_power_strafe, abs(max_power));
-			// if (final_power_strafe * sgn(max_power) < 10) //30
-      // final_power_strafe = 10 * sgn(max_power);
-			// int delta_s = final_power_strafe - last;
-			// limit_to_val_set(delta_s, 2);
-			// final_power_strafe = last += delta_s;
+      limit_to_val_set(rotated_motorPower.y, abs(max_power));
+      if (rotated_motorPower.y * sgn(max_power) < 10) //30
+      rotated_motorPower.y = 10 * sgn(max_power);
+      int delta_t = rotated_motorPower.y - last;
+      limit_to_val_set(delta_t, 2);
+      rotated_motorPower.y = last += delta_t;
 
+
+      //applies power to the motors in mecanum formation
+      drive_left.move(rotated_motorPower.y + final_power_turn + final_power_xDir);
+      drive_left_b.move(rotated_motorPower.y + final_power_turn - final_power_xDir);
+      drive_right.move(rotated_motorPower.y - final_power_turn - final_power_xDir);
+      drive_right_b.move(rotated_motorPower.y - final_power_turn + final_power_xDir);
+
+      //this gets the magnitude of our error using the error from throttle and strafe
       powf_of_throttleStrafe = powf(throttle_pid.error,2) + powf(strafe_pid.error,2);
       magnitude_of_throttleStrafe = sqrtf(powf_of_throttleStrafe);
 
@@ -960,162 +822,6 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 
     } while ((magnitude_of_throttleStrafe > 1 || abs(radToDeg(turn_pid.error)) > 1) && (pros::millis() < net_timer));
 
+    drive_set(0);
     printf("driving done\n");
-    // if (max_power < 0) {
-    //   drive_set(20);
-    //   pros::delay(50);
-    //   drive_set(0);
-    //   printf("driving done back\n");
-    //
-    // } else if (max_power > 0) {
-    //   drive_set(-20);
-    //   pros::delay(50);
-    //   drive_set(0);
-    //   printf("driving done forward\n");
-    //
-    // } else {
-      drive_set(0);
-    // }
-    printf("driving done\n");
-}
-
- void math_test(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y) {
-
-// //main line is the line created from the starting point to the ending point
-// //offset line is the line created from the starting point and the current position
-//
-//  	while(true) {
-//     float magn_main_line;
-//     float cross_product;
-//     float offset_distance;
-//     float line_point = 0.5; //how forward x is from P
-//     float right_angle = 1.5708;
-//
-//     float dot_product;
-//     float angle_to_turn;
-//     float angle_offset_tri;
-//     float magn_offset_line;
-//     vector main_line_vector;
-//     vector offset_line_vector;
-//     vector unit_vector;
-//     float current_position_x = position.x;
-//     float current_position_y = position.y;
-//     float current_position_x_prime =current_position_x;
-//     float current_position_y_prime = current_position_y;
-//     float starting_point_x_prime = starting_point_x;
-//     float starting_point_y_prime = starting_point_y;
-//     float ending_point_y_prime = ending_point_y;
-//     float ending_point_x_prime = ending_point_x;
-//     //------------------------------------FINDING THE LENGTH TILL P-----------------------------------------
-//         main_line_vector.x = ending_point_x - starting_point_x;//vector: x coordinate of main line
-//         main_line_vector.y = ending_point_y - starting_point_y;//vector: y coordinate of main line
-//
-//         offset_line_vector.x = position.x - starting_point_x;//vector: x coordinate of offset line
-//         offset_line_vector.y = position.y - starting_point_y;//vector: y coordinate of offset line
-//
-//         magn_main_line = sqrt(fabs((powf(ending_point_x - starting_point_x, 2) + powf(ending_point_y - starting_point_y, 2)))); //magnitude of main line
-//
-//         unit_vector.x = (main_line_vector.x / magn_main_line); //unit vector: x coordinate of the main line
-//         unit_vector.y = (main_line_vector.y / magn_main_line); //unit vector: y coordinate of the main line
-//
-//         dot_product = ((offset_line_vector.x * unit_vector.x) + (offset_line_vector.y * unit_vector.y)); //this is the distance between start point and perpendicular point from current position
-//
-//
-//         //-------------------------------------FINDING THE LENGTH TILL P-----------------------------------------
-//
-//         //-------------------------------------LEFT OR RIGHT OF LINE----------------------------------------------
-//
-//         // starting_point_x_prime -= ending_point_x;
-//         // starting_point_y_prime -= ending_point_y;
-//         //
-//         // current_position_x_prime -= ending_point_x;
-//         // current_position_y_prime -= ending_point_y;
-//
-//         //cross_product = (starting_point_x_prime * current_position_y) - (starting_point_y_prime * current_position_x);// this is to determine if current position is left or right of the main line
-//          cross_product = (current_position_x_prime - starting_point_x) * (ending_point_y_prime - starting_point_y_prime) -
-//          (current_position_y_prime - starting_point_y_prime) * (ending_point_x_prime - starting_point_x_prime);
-//
-        // if (cross_product > -10)
-        // {
-        // // printf("Right Of Line");
-        // //pros::lcd::print(1, "RIGHT OF LINE");
-        //
-        // }
-//
-//         else if (cross_product < 10)
-//         {
-//         // printf("Left Of Line");
-//         pros::lcd::print(1, "LEFT OF LINE");
-//
-//         }
-//
-//         else
-//         {
-//         // printf("On The Line");
-//         pros::lcd::print(1, "ON LINE");
-//
-//         }
-//         //-------------------------------------------FINDING HOW MUCH TO TURN TO GET ON LINE------------------------------------------------------------------
-//
-//         magn_offset_line = sqrt((powf(current_position_x - starting_point_x, 2) + powf(current_position_y - starting_point_y, 2))); // magnitude of offset line
-//
-//         offset_distance = sqrtf(powf(magn_offset_line, 2) - (powf(dot_product, 2))); // this is the perpendicular distance from current position to main line
-//
-//         angle_offset_tri =  atan2f(line_point,offset_distance);// * 180 / 3.1415
-//
-//         angle_to_turn = right_angle - angle_offset_tri; // this is how much i have to turn to get back on the line
-//
-//         //------------------------------------------------FINDING HOW MUCH TO TURN TO GET ON LINE--------------------------------------------------------------
-//         pros::lcd::print(2, "cross_product %f\n", cross_product);
-//         pros::lcd::print(4, "angle_to_turn %f\n", angle_to_turn);
-//         pros::lcd::print(5, "magn_offset_line %f\n", magn_offset_line);
-//         pros::lcd::print(6, "offset_distance %f\n", offset_distance);
-//         pros::lcd::print(7, " dot_product%f\n", dot_product);
-//         pros::delay(10);
-//
-//  }
-
-  vector rotation_vector;
-  vector delta_main_line;
-  float angle_main_line;
-  vector rotated_main_line;
-  float line_ahead_point = 0.5;
-  float target_orientation;
-  float line_point_angle;
-
-  while (true) {
-
-    // vector rotation_vector;
-    // vector delta_main_line;
-    // float angle_main_line;
-    // vector rotated_main_line;
-    // float line_ahead_point = 0.5;
-    // float target_orientation;
-    // float line_point_angle;
-
-    delta_main_line.x = ending_point_x - starting_point_x;
-  	delta_main_line.y = ending_point_y - starting_point_y;
-
-  	angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
-
-  	rotation_vector.x = position.x - ending_point_x;
-  	rotation_vector.y = position.y - ending_point_y;
-
-  	rotated_main_line.x = (rotation_vector.x * cosf(angle_main_line)) - (rotation_vector.y * sinf(angle_main_line));
-  	rotated_main_line.y = (rotation_vector.x * sinf(angle_main_line)) + (rotation_vector.y * cosf(angle_main_line));
-
-    line_point_angle = atanf(rotated_main_line.x / line_ahead_point);
-    target_orientation = angle_main_line + line_point_angle;
-
-      //pros::lcd::print(2, "delta_main_line.x %f\n", delta_main_line.x);
-      //pros::lcd::print(3, "delta_main_line.y %f\n", delta_main_line.y);
-
-      //pros::lcd::print(4, "angle_main_line %f\n", angle_main_line);
-
-      //pros::lcd::print(5, "orientation %f\n", orientation);
-      //pros::lcd::print(6, "rotation_vector.y %f\n", rotation_vector.y);
-      //pros::lcd::print(7, " target_orientation %f\n", target_orientation);
-
-    pros::delay(10);
-  }
 }

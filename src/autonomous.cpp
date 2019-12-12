@@ -77,7 +77,7 @@ void autonomous() {
     position_drive2(110, 50, 0, 100);
     position_drive2(110, 20, 0, 100);
     position_turn(90, 500, 100);
-    position_drive2(110, 10, 90, 100);
+    position_drive2(110, 5, 90, 100);
     //position_drive(118, 20, 126, 16, 0, 100, 1, 10);// pick up cubes
   }
 
