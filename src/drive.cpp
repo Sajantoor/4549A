@@ -74,13 +74,8 @@ void tracking_update(void*ignore) {
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-<<<<<<< HEAD
-    const float distance_between_centre = 1.59437;
-    const float distance_between_backwheel_center = 2.5;
-=======
     const float distance_between_centre = 1.43138996;//1.59437
     const float distance_between_backwheel_center = 0.915;//2.5
->>>>>>> origin/mecanum
     //CORDINATES facing the enemies side is 𝜃r = 0
     //beginning_orientation = 0;
     // gives back values in radians and gives us the orientation of the bot
