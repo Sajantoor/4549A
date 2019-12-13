@@ -602,134 +602,47 @@ void position_face_point(float target_x, float target_y,int timeout) {
 }
 
 // not commented because this for omnis
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance) {
-    vector error;
+void position_drive(float ending_point_x, float ending_point_y, int target_angle, int max_speed, int timeout) {
     vector positionErr;
-    vector rotation_vector;
-    vector delta_main_line;
-    vector rotated_main_line;
-    vector look_ahead_point;
-    polar look_ahead_point_polar;
     polar positionErrPolar;
+    float err_angle;
 
+    pid_values turn_pid(78, 0, 0, 30, 500, max_speed);//78
+    pid_values strafe_pid(17.5, 0, 0, 700, 500, max_speed);//17.5
+    pid_values throttle_pid(11.7, 5, 0, 30, 500, max_speed);//11.7,5
+    
+    float powf_of_throttleStrafe;
+    float magnitude_of_throttleStrafe;
     unsigned int net_timer;
     int initial_millis = pros::millis();
     net_timer = initial_millis + timeout; //just to initialize net_timer at first
     float failsafe = 2000;
-
-    float magnPosvector;
-    float angle_main_line;
-    //float line_ahead_point = 0.5;
-    float line_point_angle;
-    float line_angle;
-    float correction = 0;
-    float finalpower;
-    float err_angle;
-    float err_x;
-    float correctA;
-    int last = startpower;
-    float line_length;
-    float sin_line;
-    float cos_line;
-    float velocity_line;
-    printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
-    delta_main_line.x = ending_point_x - starting_point_x;
-    delta_main_line.y = ending_point_y - starting_point_y;
-
     do {
-      angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
-      look_ahead_point.x = 0;
-      look_ahead_point.y = positionErr.y + look_ahead_distance;
-      vectorToPolar(look_ahead_point, look_ahead_point_polar);
-      look_ahead_point_polar.theta -= angle_main_line;
-      polarToVector(look_ahead_point_polar, look_ahead_point);
-      look_ahead_point.x += ending_point_x;
-      look_ahead_point.y += ending_point_y;
+        positionErr.x = position.x - ending_point_x;
+        positionErr.y = position.y - ending_point_y;
+        err_angle = target_angle - orientation;
+        vectorToPolar(positionErr, positionErrPolar);
+        positionErrPolar.theta -= err_angle;
+        polarToVector(positionErrPolar, positionErr);
 
-      positionErr.x = position.x - ending_point_x;
-      positionErr.y = position.y - ending_point_y;
-      line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
-      line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
-      magnPosvector = sqrt(line_length);
-      sin_line = sin(angle_main_line);
-      cos_line = cos(angle_main_line);
-      vectorToPolar(positionErr, positionErrPolar);
-      positionErrPolar.theta += angle_main_line;
-      polarToVector(positionErrPolar, positionErr);
+        int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
+        int final_power_strafe = pid_calc(&strafe_pid, positionErr.y, 0);
+        int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, 0);
 
-      if (max_error) {
-  			err_angle = orientation - line_angle;
-  			err_x = positionErr.x + positionErr.y * tan(err_angle);
-  			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
-  			if (max_speed < 0)
-  				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 6 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
-        printf(" \n");//5.3
-      }
+        drive_left.move(final_power_turn + final_power_throttle + final_power_strafe);
+        drive_left_b.move(final_power_turn + final_power_throttle - final_power_strafe);
+        drive_right.move(final_power_turn - final_power_throttle + final_power_strafe);
+        drive_right_b.move(final_power_turn - final_power_throttle - final_power_strafe);
 
-    //------------------------------------------------------------math--------------------------------------------------------
-
-      finalpower = round(-127.0 / 30 * positionErr.y) * sgn(max_speed); //17
-
-      limit_to_val_set(finalpower, abs(max_speed));
-			if (finalpower * sgn(max_speed) < 30) //30
-      finalpower = 30 * sgn(max_speed);
-			int delta = finalpower - last;
-			limit_to_val_set(delta, 5);
-			finalpower = last += delta;
-
-      switch (sgn(correction)) {
-    		case 0:
-            left_drive_set(finalpower);
-            right_drive_set(finalpower);
-      			break;
-    		case 1:
-            left_drive_set(finalpower);
-            right_drive_set(finalpower * exp(-correction));
-      			break;
-    		case -1:
-            left_drive_set(finalpower * exp(correction));
-            right_drive_set(finalpower);
-      			break;
-        }
+        powf_of_throttleStrafe = powf(throttle_pid.error,2) + powf(strafe_pid.error,2);
+        magnitude_of_throttleStrafe = sqrtf(powf_of_throttleStrafe);
 
         pros::delay(10);
-
-      } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
-
-      drive_set(25 * sgn(max_speed));
-
-    do {
-      positionErr.x = position.x - ending_point_x;
-      positionErr.y = position.y - ending_point_y;
-
-      vectorToPolar(positionErr, positionErrPolar);
-      positionErrPolar.theta += angle_main_line;
-      polarToVector(positionErrPolar, positionErr);
-
-      velocity_line = sin_line * velocity.x + cos_line * velocity.y;
-
-      pros::delay(5);
-    } while((positionErr.y < -early_stop - (velocity_line * 0.098)) && (pros::millis() < net_timer));
+      } while ((magnitude_of_throttleStrafe > 1 || abs(radToDeg(turn_pid.error)) > 1) && (pros::millis() < net_timer));
 
     printf("driving done\n");
-    printf("velocity_line %f \n", velocity_line);
 
-    if (max_speed < 0) {
-      drive_set(20);
-      pros::delay(50);
       drive_set(0);
-      printf("driving done back\n");
-
-    } else if (max_speed > 0) {
-      drive_set(-20);
-      pros::delay(50);
-      drive_set(0);
-      printf("driving done forward\n");
-
-    } else {
-      drive_set(0);
-    }
     // drive_set(0);
     printf("driving done\n");
 }

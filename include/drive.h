@@ -85,7 +85,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance);
+void position_drive(float ending_point_x, float ending_point_y, int target_angle, int max_speed, int timeout);
 
 void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power, int timeout);
 
