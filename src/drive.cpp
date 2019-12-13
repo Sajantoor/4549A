@@ -610,7 +610,7 @@ void position_drive(float ending_point_x, float ending_point_y, int target_angle
     pid_values turn_pid(78, 0, 0, 30, 500, max_speed);//78
     pid_values strafe_pid(17.5, 0, 0, 700, 500, max_speed);//17.5
     pid_values throttle_pid(11.7, 5, 0, 30, 500, max_speed);//11.7,5
-    
+
     float powf_of_throttleStrafe;
     float magnitude_of_throttleStrafe;
     unsigned int net_timer;
@@ -656,7 +656,7 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     polar rotated_positionPolar;
 
     pid_values turn_pid(78, 0, 0, 30, 500, max_power);//78
-    pid_values strafe_pid(17.5, 0, 0, 700, 500, max_power);//17.5
+    pid_values strafe_pid(11.7, 5, 0, 700, 500, max_power);//17.5
     pid_values throttle_pid(11.7, 5, 0, 30, 500, max_power);//11.7,5
 
     //timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
@@ -665,7 +665,8 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     int initial_millis = pros::millis();
     net_timer = initial_millis + timeout; //just to initialize net_timer at first
     float failsafe = 10000;
-    int last = 0;
+    int last_y = 0;
+    int last_x = 0;
 
     float powf_of_throttleStrafe;
     float magnitude_of_throttleStrafe;
@@ -705,34 +706,20 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
 
-      // limit_to_val_set(rotated_motorPower.y, abs(max_power));
-      // if (abs(rotated_motorPower.y) < abs(max_power)) {
-      //   if (rotated_motorPower.y > 0) {
-      //     rotated_motorPower.y = rotated_motorPower.y - 15;
-      //   } else {
-      //     rotated_motorPower.y = rotated_motorPower.y + 15;
-      //   }
-      // }
 
+      limit_to_val_set(rotated_motorPower.y, abs(max_power));
+      if (rotated_motorPower.y * sgn(max_power) < 80)
+        rotated_motorPower.y = 80 * sgn(max_power);
+      int delta_y = rotated_motorPower.y - last_y;
+      limit_to_val_set(delta_y, 15);
+      rotated_motorPower.y = last_y += delta_y;
 
-      // limit_to_val_set(rotated_motorPower.y, abs(max_power));
-      // if (rotated_motorPower.y * sgn(max_power) < 80){
-      //   rotated_motorPower.y = 80 * sgn(max_power);
-      // }
-      // int delta_y = rotated_motorPower.y - last;
-      // limit_to_val_set(delta_y, 15);
-      // rotated_motorPower.y = last += delta_y;
-
-      // limit_to_val_set(rotated_motorPower.x, abs(max_power));
-      //
-      // if (rotated_motorPower.x * sgn(max_power) < 15) {
-      //   rotated_motorPower.x = 0 * sgn(max_power);
-      // } else if (rotated_motorPower.x * sgn(max_power) < 25) {
-      //   rotated_motorPower.x = 25 * sgn(max_power);
-      // }
-      // int delta_s = rotated_motorPower.x - last;
-      // limit_to_val_set(delta_s, 5);
-      // rotated_motorPower.x = last += delta_s;
+      limit_to_val_set(rotated_motorPower.x, abs(max_power));
+      if (rotated_motorPower.x * sgn(max_power) < 80)
+        rotated_motorPower.x = 80 * sgn(max_power);
+      int delta_x = rotated_motorPower.x - last_x;
+      limit_to_val_set(delta_x, 15);
+      rotated_motorPower.x = last_x += delta_x;
 
       //applies power to the motors in mecanum formation
       drive_left.move(rotated_motorPower.y + final_power_turn + rotated_motorPower.x);
