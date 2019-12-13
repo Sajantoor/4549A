@@ -734,7 +734,7 @@ void position_drive(float starting_point_x, float starting_point_y, float ending
     printf("driving done\n");
 }
 
-void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power) {
+void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power, int timeout) {
     vector positionErr;
     vector rotated_motorPower;
     vector rotation_vector;
@@ -742,16 +742,16 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     polar positionErrPolar;
     polar rotated_positionPolar;
 
-    pid_values turn_pid(78, 0, 0, 30, 500, 127);//78
-    pid_values strafe_pid(17.5, 0, 0, 700, 500, 127);//17.5
-    pid_values throttle_pid(11.7, 5, 0, 30, 500, 127);//11.7,5
+    pid_values turn_pid(78, 0, 0, 30, 500, max_power);//78
+    pid_values strafe_pid(17.5, 0, 0, 700, 500, max_power);//17.5
+    pid_values throttle_pid(11.7, 5, 0, 30, 500, max_power);//11.7,5
 
     //timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
-    int timeout = 2000;
+    //int timeout = 9000;
     unsigned int net_timer;
     int initial_millis = pros::millis();
     net_timer = initial_millis + timeout; //just to initialize net_timer at first
-    float failsafe = 2000;
+    float failsafe = 10000;
     int last = 0;
 
     float powf_of_throttleStrafe;
@@ -792,14 +792,16 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
 
-      limit_to_val_set(rotated_motorPower.y, abs(max_power));
-      if (abs(rotated_motorPower.y) < abs(max_power)) {
-        if (rotated_motorPower.y > 0) {
-          rotated_motorPower.y = rotated_motorPower.y - 15;
-        } else {
-          rotated_motorPower.y = rotated_motorPower.y + 15;
-        }
-      }
+      // limit_to_val_set(rotated_motorPower.y, abs(max_power));
+      // if (abs(rotated_motorPower.y) < abs(max_power)) {
+      //   if (rotated_motorPower.y > 0) {
+      //     rotated_motorPower.y = rotated_motorPower.y - 15;
+      //   } else {
+      //     rotated_motorPower.y = rotated_motorPower.y + 15;
+      //   }
+      // }
+
+
       // limit_to_val_set(rotated_motorPower.y, abs(max_power));
       // if (rotated_motorPower.y * sgn(max_power) < 80){
       //   rotated_motorPower.y = 80 * sgn(max_power);

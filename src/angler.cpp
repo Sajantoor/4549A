@@ -101,12 +101,22 @@ void angler_pid_task(void*ignore) {
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
       if (((fabs(angler_pid.error) <= 8) && (currentTime > holdTimer)) || (currentTime > timeout))  {
         angler.move(0);
-
-        if (maxTorque > NINE_STACK_TORQUE) {
-          loader_left.move(0);
-          loader_right.move(0);
+        maxTorque = 0;
+        // if there is a next target, then switch to the next target, else clear current target and exit the loop
+        if (nextTarget == 0) {
+          currentTarget = 0;
+          currentSpeed = 0;
+          delayTime = 0;
+          anglerBool = false;
+        } else {
+          currentTarget = nextTarget;
+          currentSpeed = nextSpeed;
+          nextSpeed = 0;
+          nextTarget = 0;
+          timerAng = true;
         }
-
+      } else if ((fabs(angler_pid.error) <= 8) && applyTorque) {
+        angler.move(0);
         maxTorque = 0;
         // if there is a next target, then switch to the next target, else clear current target and exit the loop
         if (nextTarget == 0) {
