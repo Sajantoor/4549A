@@ -122,6 +122,9 @@ void autonomous() {
   }              //
 
   if(switcher == 2){
+
+    position_drive2(-16, 0, 0, 127, 1500);
+    position_drive2(0, 0, 0, 127, 1200);
     angler_pid(1580, 0);
     pros::delay(2000);
     loader_left.move(-127);
@@ -131,8 +134,6 @@ void autonomous() {
     loader_right.move(0);
     angler_pid(3665, 0, 80, false);
 
-    position_drive2(-16, 0, 0, 127, 1500);
-    position_drive2(0, 0, 0, 127, 1200);
   }
 
   if(switcher == 3){
@@ -150,7 +151,7 @@ void autonomous() {
     position_drive2(0, 55, 0, 70,3000);
     loader_left.move(0);
     loader_right.move(0);
-    position_drive2(0, 5, 0, 63,3000);
+    position_drive2(0, 5, 0, 110,2500);
     position_turn(90,2000,100);
     reset_position_full(0, 5, 0);
     position_drive2(30, 5, 0, 100,1500);
@@ -179,11 +180,11 @@ void autonomous() {
 
     loader_left.move(127);
     loader_right.move(127);
-    position_drive2(0, 45, 0, 40,3000);
+    position_drive2(0, 40, 0, 40,3000);
     loader_left.move(0);
     loader_right.move(0);
-    position_drive2(0, 5, 0, 70,3000);
-    position_turn(-90,2000,100);
+    position_drive2(0, 5, 0, 127,3000);
+    position_turn(-90,1500,100);
     reset_position_full(0, 5, 0);
     position_drive2(-30, 5, 0, 100,1500);
     reset_position_full(0, 0, 0);
