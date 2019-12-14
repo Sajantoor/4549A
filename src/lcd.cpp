@@ -173,17 +173,17 @@ static lv_res_t red_tile_screen(lv_obj_t * btn) {
 
   lv_obj_set_size(front_middle, 200, 100);//change name when making auto
   lv_obj_align(front_middle, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10);
-  lv_label_set_text(front_middle_label, "Front MIDDLE");
+  lv_label_set_text(front_middle_label, "Strafe RIGHT");
   lv_btn_set_style(front_middle, LV_BTN_STYLE_REL, &red_autos_button_style);
 
   lv_obj_set_size(auto1, 200, 100); //change name when making auto
   lv_obj_align(auto1, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
-  lv_label_set_text(auto1_label, "1 point LOL");
+  lv_label_set_text(auto1_label, "Strafe LEFT");
   lv_btn_set_style(auto1, LV_BTN_STYLE_REL, &red_autos_button_style);
 
   lv_obj_set_size(auto2, 200, 100); //change name when making auto
   lv_obj_align(auto2, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
-  lv_label_set_text(auto2_label, "AUTO 2");
+  lv_label_set_text(auto2_label, "PICKUP CUBES");
   lv_btn_set_style(auto2, LV_BTN_STYLE_REL, &red_autos_button_style);
 
   lv_obj_set_size(auto3, 200, 100); //change name when making auto
