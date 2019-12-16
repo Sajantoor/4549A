@@ -108,6 +108,9 @@ void autonomous() {
                   // pros::delay(1000);
                   // drive_line_up(-100,500);
   if(switcher == 1){
+    position_drive2(16, 0, 0, 127, 1500);
+    position_drive2(0, 0, 0, 127, 1200);
+
     angler_pid(1580, 0);
     pros::delay(2000);
     loader_left.move(-127);
@@ -117,8 +120,6 @@ void autonomous() {
     loader_right.move(0);
     angler_pid(3665, 0, 80, false);
 
-    position_drive2(16, 0, 0, 127, 1500);
-    position_drive2(0, 0, 0, 127, 1200);
   }              //
 
   if(switcher == 2){
@@ -148,13 +149,13 @@ void autonomous() {
 
     loader_left.move(127);
     loader_right.move(127);
-    position_drive2(0, 55, 0, 70,3000);
+    position_drive2(0, 40, 0, 70,2500);
     loader_left.move(0);
     loader_right.move(0);
-    position_drive2(0, 5, 0, 110,2500);
-    position_turn(90,2000,100);
+    position_drive2(0, 5, 0, 110,1700);
+    position_turn(90,1100,110);
     reset_position_full(0, 5, 0);
-    position_drive2(30, 5, 0, 100,1500);
+    position_drive2(30, 5, 0, 100,1000);
     reset_position_full(0, 0, 0);
     position_drive2(0, 18, 0, 100, 1500);
     angler_pid(900, 20000);
@@ -175,26 +176,23 @@ void autonomous() {
     loader_right.move(0);
     angler_pid(3665, 0, 80, false);
 
-    reset_position_full(0, 0, 0);
-    beginning_orientation = 0;
-
     loader_left.move(127);
     loader_right.move(127);
-    position_drive2(0, 40, 0, 40,3000);
+    position_drive2(0, 35, 0, 70,2000);
     loader_left.move(0);
     loader_right.move(0);
-    position_drive2(0, 5, 0, 127,3000);
-    position_turn(-90,1500,100);
+    position_drive2(0, 5, 0, 110,1700);
+    position_turn(-90,1100,110);
     reset_position_full(0, 5, 0);
-    position_drive2(-30, 5, 0, 100,1500);
+    position_drive2(30, 5, 0, 100,1000);
     reset_position_full(0, 0, 0);
-    position_drive2(0, 12, 0, 80, 1500);
+    position_drive2(0, 18, 0, 100, 1500);
     angler_pid(900, 20000);
-    pros::delay(1200);
+    pros::delay(1800);
     loader_left.move(-90);
     loader_right.move(-90);
-    pros::delay(1700);
-    drive_line_up(-90, 1000);
+    pros::delay(1800);
+    drive_line_up(-100, 1000);
   }
   printf("orientation %f \n", orientation);
   printf("position.x %f \n", position.x);
