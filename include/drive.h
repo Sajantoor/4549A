@@ -87,13 +87,7 @@ void position_face_point(float target_x, float target_y , int timeout);
 
 void position_drive(float ending_point_x, float ending_point_y, int target_angle, int max_speed, int timeout);
 
-void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power, int timeout);
-
-void drive_turn(int speed, int encoders);
-
-void drive_strafe(int speed, int encoders);
-
-void drive_straight(int speed, int encoders);
+void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power, unsigned int timeout);
 extern pros::task_t tracking_task;
 extern pros::task_t velocity_task;
 

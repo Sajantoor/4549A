@@ -55,7 +55,7 @@ void autonomous() {
   // angler_pid(3665, 0, 80, false);
   // pros::delay(1000);
 
-  //position_drive2(20,0,0,100,4000);
+  position_drive2(0,20,0,100,4000);
 
  // position_drive2(0, 50, 0, 63,3000);
  // loader_left.move(0);
@@ -74,39 +74,6 @@ void autonomous() {
  // angler_pid(3665, 0, 80, false);
  // pros::delay(6000);
  // drive_line_up(-100,500);
-
-                  //
-                  // reset_position_full(119, 10, 0);
-                  // beginning_orientation = 0;
-                  // loader_left.move(120);
-                  // loader_right.move(120);
-                  // // position_drive2(93, 70, 0, 63);
-                  // // position_drive2(93, 10, 0, 63);
-                  // // position_drive2(116, 10, 0, 63);
-                  // // drive_line_up(-90,350);
-                  // // // reset_position_full(119,10,0);
-                  // // //position_drive2(119, 50, 0, 100);
-                  // reset_position_full(119,10,0);
-                  // position_drive2(119,63,0,40,6000);
-                  // loader_left.move(0);
-                  // loader_right.move(0);
-                  // //position_drive(119, 10, 119, 50, 0, 127, 1, 0, 2000, 60);// pick up cubes
-                  // position_drive2(119, 10, 0, 80,9000);
-                  // position_turn(90, 500, 100);
-                  // //reset_position_full(119,10,0);
-                  // reset_position_full(119,10,0);
-                  // position_drive2(130, 10, 0, 110, 1500);
-                  // reset_position_full(119,0,0);
-                  // position_drive2(119, 12, 0, 60,1000);
-                  // loader_left.move(-60);
-                  // loader_right.move(-63);
-                  // pros::delay(1500);
-                  // angler_pid(1000, 20000);
-                  // loader_left.move(0);
-                  // loader_right.move(0);
-                  // angler_pid(3665, 0, 80, false);
-                  // pros::delay(1000);
-                  // drive_line_up(-100,500);
   if(switcher == 1){
     angler_pid(1580, 0);
     pros::delay(2000);
