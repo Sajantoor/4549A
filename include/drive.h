@@ -52,6 +52,9 @@ typedef enum turnDir
 	ch
 } tTurnDir;
 
+void vectorToPolar(vector& vector, polar& polar);
+
+void polarToVector(polar& polar, vector& vector);
 
 void drive_line_up (int speed, int run_time_drive);
 

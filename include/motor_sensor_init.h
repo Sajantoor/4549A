@@ -2,10 +2,10 @@
 #define MOTOR_SETUP_INIT_H
 #include "main.h"
 
-#define DRIVE_LEFT 10
-#define DRIVE_LEFT_B 6
-#define DRIVE_RIGHT 1
-#define DRIVE_RIGHT_B 5
+#define DRIVE_LEFT 1
+#define DRIVE_LEFT_B 11
+#define DRIVE_RIGHT 10
+#define DRIVE_RIGHT_B 20
 
 #define LOADER_RIGHT 4
 #define LOADER_LEFT 9

@@ -56,6 +56,13 @@ void autonomous() {
   // pros::delay(1000);
 
   position_drive2(0,20,0,100,4000);
+  position_drive2(-20,20,0,90,4000);
+  position_drive2(-20,0,0,100,4000);
+  position_drive2(0,0,0,90,4000);
+  position_drive2(0,20,0,100,4000);
+  position_drive2(-20,20,0,90,4000);
+  position_drive2(-20,0,0,100,4000);
+  position_drive2(0,0,0,90,4000);
 
  // position_drive2(0, 50, 0, 63,3000);
  // loader_left.move(0);
