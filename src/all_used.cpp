@@ -44,7 +44,7 @@ float degToRad(float degrees) {
 float radToDeg(float radians) {
 	return radians * 180 / pi;
 }
-void applyHarshStop()
+void HarshStop()
 {
 	vector vel;
 	vel.x = velocity.x;
@@ -53,23 +53,23 @@ void applyHarshStop()
 	vectorToPolar(vel, polarVel);
 	polarVel.theta += orientation;
 	polarToVector(polarVel, vel);
-	float yPow = vel.y, aPow = orientation, xPow = vel.x;
+	float yStop = vel.y, aStop = orientation, xStop = vel.x;
 
-	printf("Vel y: %f | a: %f | x: %f \n \n", yPow, aPow, xPow);
+	printf("Vel y: %f | a: %f | x: %f \n \n", yStop, aStop, xStop);
 
-	yPow *= -0.7;
-	aPow *= -6.3;
-  xPow *= -0.7;
+	yStop *= -0.1;
+	aStop *= -6.3;
+  xStop *= -0.1;
 
-  int left_b = yPow + aPow - xPow;
-  int right_b = yPow - aPow + xPow;
-	int left = yPow + aPow + xPow;
-	int right = yPow - aPow - xPow;
+  int left_b = yStop + aStop - xStop;
+  int right_b = yStop - aStop + xStop;
+	int left = yStop + aStop + xStop;
+	int right = yStop - aStop - xStop;
 
-  limit_to_val_set(left, 7);
-  limit_to_val_set(right, 7);
-  limit_to_val_set(left_b, 7);
-  limit_to_val_set(right_b, 7);
+  limit_to_val_set(left, 3);
+  limit_to_val_set(right, 3);
+  limit_to_val_set(left_b, 3);
+  limit_to_val_set(right_b, 3);
 
 	printf("Applying harsh stop: %d %d %d %d\n \n", left, right, left_b, right_b);
   drive_left.move(left);

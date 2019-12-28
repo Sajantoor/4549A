@@ -54,15 +54,32 @@ void autonomous() {
   // loader_right.move(0);
   // angler_pid(3665, 0, 80, false);
   // pros::delay(1000);
+  // position_turn(-90, 1000, 100);
+  //reset_position_full(0, 0, 0);
 
-  position_drive2(0,20,0,100,4000);
-  position_drive2(-20,20,0,90,4000);
-  position_drive2(-20,0,0,100,4000);
-  position_drive2(0,0,0,90,4000);
-  position_drive2(0,20,0,100,4000);
-  position_drive2(-20,20,0,90,4000);
-  position_drive2(-20,0,0,100,4000);
-  position_drive2(0,0,0,90,4000);
+  position_drive2(0,20,0,100,3000);
+  position_turn(90, 1000, 100);
+  position_drive2(10,20,90,100,3000);
+  // reset_position_full(0, 20, 0);
+  //position_drive2(0,0,90,100,3000);
+  // position_drive2(20,40,0,100,2000);
+  // position_drive2(20,20,0,100,2000);
+  // position_turn(-90, 1000, 100);
+
+//mini auto
+   // position_drive2(0,20,0,100,2000);
+   // position_drive2(20,0,0,100,2000);
+   // position_drive2(20,20,0,100,2000);
+   // position_drive2(20,0,0,100,2000);
+   // position_turn(90, 1000, 100);
+   // reset_position_full(20, 0, 0);
+   // position_drive2(20,5,0,100,2000);
+
+  // position_drive2(0,0,0,70,2000);
+  // position_drive2(0,20,0,100,2000);
+  // position_drive2(20,20,0,100,2000);
+  // position_drive2(20,0,0,100,2000);
+  // position_drive2(0,0,0,70,2000);
 
  // position_drive2(0, 50, 0, 63,3000);
  // loader_left.move(0);
@@ -170,7 +187,7 @@ void autonomous() {
     pros::delay(1700);
     drive_line_up(-90, 1000);
   }
-  printf("orientation %f \n", orientation);
+  printf("orientation %f \n", radToDeg(orientation));
   printf("position.x %f \n", position.x);
   printf("position.y %f \n", position.y);
 }

@@ -79,7 +79,7 @@ void tracking_update(void*ignore) {
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
 
-    const float distance_between_centre = 5.14239034;//1.59437
+    const float distance_between_centre = 4.60091565;//1.59437
     const float distance_between_backwheel_center = 4.913425;//2.5
 
     //Returns the orientation of the bot in radians
@@ -277,7 +277,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    float kp = 115;//75.6
+    float kp = 125;//75.6
     float kd = 0;
     float ki = 0;
     float proportional, derivative, integral;
@@ -338,17 +338,7 @@ void position_turn(float target, int timeout, int max_speed) {
       pros::delay(20);
     }
 
-  if (final_power > 0) {
-    set_drive(20,-20);
-    pros::delay(100);
-    drive_set(0);
-  } else if (final_power < 0) {
-    set_drive(-20,20);
-    pros::delay(100);
-    drive_set(0);
-  } else {
-    set_drive(0,0);
-  }
+    HarshStop();
 
   printf("target %f\n", degToRad(target));
   printf("Degrees Turned from: %f to %f\n", error, orientation);
@@ -582,19 +572,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
       pros::delay(20);
   }
 
-   if (final_power > 0) {
-     set_drive(20,-20);
-     pros::delay(95);
-     drive_set(0);
-   }  else if (final_power < 0) {
-     set_drive(-20,20);
-     pros::delay(95);
-     drive_set(0);
-   } else {
-     set_drive(0,0);
-   }
-
-   turn_set(0);
+    HarshStop();
     printf("target %f\n", radToDeg(direction_face));
     printf("target radians %f\n", direction_face);
     printf("Degrees Turned from: %f to %f\n", error_p, orientation);
@@ -627,7 +605,7 @@ void position_drive(float ending_point_x, float ending_point_y, int target_angle
 
         int final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
         int final_power_strafe = pid_calc(&strafe_pid, positionErr.y, 0);
-        int final_power_throttle = pid_calc(&throttle_pid, ending_point_x, 0);
+        int final_power_throttle = pid_calc(&throttle_pid, positionErr.x, 0);
 
         drive_left.move(final_power_throttle + final_power_turn + final_power_strafe);
         drive_left_b.move(final_power_throttle + final_power_turn - final_power_strafe);
@@ -656,9 +634,9 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(200, 3, 0, 30, 500, 100);//78
-    pid_values xDir_pid(16, 4, 0, 30, 500, 100);//17.5
-    pid_values yDir_pid(16, 4, 0, 30, 500, 100);//11.7,5
+    pid_values turn_pid(300, 3, 6, 30, 500, 127);//78
+    pid_values xDir_pid(28, 0, 0, 30, 500, 127);//17.5
+    pid_values yDir_pid(12, 8, 0, 30, 500, 127);//11.7,5
 
     //timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
     //int timeout = 9000;
@@ -672,9 +650,14 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 
     float powf_of_X_Y;
     float magnitude_of_X_Y;
-
+    float drive_left_power;
+    float drive_left_b_power;
+    float drive_right_power;
+    float drive_right_b_power;
+    float largestVal = 0;
      printf("Moving to %f %f \n", ending_point_x, ending_point_y);
     do {
+      largestVal = 0;
       //runs pid loops on the position.x and position.y and orienation
       float final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
       float final_power_xDir = pid_calc(&xDir_pid, ending_point_x, position.x);
@@ -686,7 +669,7 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 
       //The vector then is rotated so the frame of reference is robot centric besides field centric
       vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
-      rotated_motorPowerPolar.theta -= orientation;
+      rotated_motorPowerPolar.theta += orientation;
       polarToVector(rotated_motorPowerPolar, rotated_motorPower);
 
       // printf("final_power_turn %f \n\n", final_power_turn);
@@ -702,12 +685,15 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       printf("strafe_pid.error %f \n\n", xDir_pid.error);
       printf("turn_pid.error %f \n\n", radToDeg(turn_pid.error));
       printf("magnitude_of_throttleStrafe %f \n\n", magnitude_of_X_Y);
-
+      printf("drive_left power %f \n \n", rotated_motorPower.y + final_power_turn + rotated_motorPower.x);
+      printf("drive_left_b power %f \n \n", rotated_motorPower.y + final_power_turn - rotated_motorPower.x);
+      printf("drive_right power %f \n \n", rotated_motorPower.y - final_power_turn - rotated_motorPower.x);
+      printf("drive_right_b power %f \n \n", rotated_motorPower.y - final_power_turn + rotated_motorPower.x);
 
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
       limit_to_val_set(rotated_motorPower.y, abs(max_power));
       int delta_y = rotated_motorPower.y - last_y;
-      limit_to_val_set(delta_y, 5);
+      limit_to_val_set(delta_y, 3);
       rotated_motorPower.y = last_y += delta_y;
 
       limit_to_val_set(rotated_motorPower.x, abs(max_power));
@@ -715,19 +701,53 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
       limit_to_val_set(delta_x, 5);
       rotated_motorPower.x = last_x += delta_x;
 
-      //applies power to the motors in mecanum formation
-      drive_left.move(rotated_motorPower.y + final_power_turn + rotated_motorPower.x);
-      drive_left_b.move(rotated_motorPower.y + final_power_turn - rotated_motorPower.x);
-      drive_right.move(rotated_motorPower.y - final_power_turn - rotated_motorPower.x);
-      drive_right_b.move(rotated_motorPower.y - final_power_turn + rotated_motorPower.x);
+      drive_left_power = rotated_motorPower.y + final_power_turn + rotated_motorPower.x;
+      drive_left_b_power = rotated_motorPower.y + final_power_turn - rotated_motorPower.x;
+      drive_right_power = rotated_motorPower.y - final_power_turn - rotated_motorPower.x;
+      drive_right_b_power = rotated_motorPower.y - final_power_turn + rotated_motorPower.x;
 
-      //this gets the magnitude of our error using the error from throttle and strafe
+
+      float motor_power_array [4] = {drive_left_power, drive_left_b_power, drive_right_power, drive_right_b_power};
+      printf("motor_power_array[0] %f \n \n", motor_power_array[0]);
+      printf("motor_power_array[1] %f \n \n", motor_power_array[1]);
+      printf("motor_power_array[2] %f \n \n", motor_power_array[2]);
+      printf("motor_power_array[3] %f \n \n", motor_power_array[3]);
+
+      //assigns largestVal to the highest value of the motor powers
+      for (size_t i = 0; i < 4; i++) {
+        if (abs(motor_power_array[i]) > largestVal) {
+          largestVal = abs(motor_power_array[i]);
+        }
+        printf("in the 1st for loop\n \n");
+      }
+
+      //Scales down all the motor_power if the largestVal is over 127, this is to make sure the motors arent getting power over 127
+      printf("largestVal %f \n \n", largestVal);
+        if (largestVal > 127) {
+          motor_power_array[0] = (motor_power_array[0] * 127) / abs(largestVal);
+          motor_power_array[1] = (motor_power_array[1] * 127) / abs(largestVal);
+          motor_power_array[2] = (motor_power_array[2] * 127) / abs(largestVal);
+          motor_power_array[3] = (motor_power_array[3] * 127) / abs(largestVal);
+
+          printf("in the 2nd loop \n \n");
+        }
+
+      //applies power to the motors in mecanum formation
+      drive_left.move(motor_power_array [0]);
+      drive_left_b.move(motor_power_array [1]);
+      drive_right.move(motor_power_array [2]);
+      drive_right_b.move(motor_power_array [3]);
+
+      //this gets the magnitude of the error using the error from throttle and strafe
       powf_of_X_Y = powf(yDir_pid.error,2) + powf(xDir_pid.error,2);
       magnitude_of_X_Y = sqrtf(powf_of_X_Y);
 
       pros::delay(10);
 
-    } while ((magnitude_of_X_Y > 2 || abs(radToDeg(turn_pid.error)) > 2) /*&& (pros::millis() < net_timer)*/);
-    applyHarshStop();
+    } while ((magnitude_of_X_Y > 1 || abs(radToDeg(turn_pid.error)) > 0.5) && (pros::millis() < net_timer));
+
+    //applies harsh stop depending on how fast the robot was moving
+    HarshStop();
     printf("driving done\n");
+    printf("magnitude_of_throttleStrafe %f \n\n", magnitude_of_X_Y);
 }
