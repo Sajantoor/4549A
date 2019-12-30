@@ -8,10 +8,13 @@
 #include "angler.h"
 
 void autonomous() {
+  // reset_position_full(0, 0, 0);
+  basicMovement(20, 20, 0);
+
 //   printf("PositionX: %f || PositionY: %f || Orientation: %f \n \n", position.x, position.y, orientation);
 //   printf("position.x %f \n", position.x);
 //   printf("position.y %f \n", position.y);
-//   reset_position_full(0, 0, 0);
+
 //   beginning_orientation = 0;
 //
 //   position_drive2(0,20,0,100,3000);

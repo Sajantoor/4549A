@@ -131,13 +131,13 @@ static lv_res_t reset_values (lv_obj_t * btn) {
   left_encoder.reset();
   right_encoder.reset();
   back_encoder.reset();
-  beginning_orientation = 0;
-  prevEncoderLeft = 0;
-  prevEncoderRight = 0;
-  prevEncoderBack = 0;
-  position.y = 0;
-  position.x = 0;
-  orientation = 0;
+  trackingValues.beginningOrientation = 0;
+  trackingValues.initialEncoderLeft = 0;
+  trackingValues.initialEncoderRight = 0;
+  trackingValues.initialEncoderBack = 0;
+  trackingValues.position.y = 0;
+  trackingValues.position.x = 0;
+  trackingValues.orientation = 0;
   return LV_RES_OK;
 }
 //--------------------------------------------------------------
@@ -303,19 +303,19 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_obj_align(encoder_back_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 66);
 
     std::ostringstream position_x;
-    position_x << "Position.x: " << std::setprecision(3) << position.x;
+    position_x << "Position.x: " << std::setprecision(3) << trackingValues.position.x;
     auto px = position_x.str();
     lv_label_set_text(position_x_label, px.c_str());
     lv_obj_align(position_x_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 88);
 
     std::ostringstream position_y;
-    position_y << "Position.y: " << std::setprecision(3) << position.y;
+    position_y << "Position.y: " << std::setprecision(3) << trackingValues.position.y;
     auto py = position_y.str();
     lv_label_set_text(position_y_label, py.c_str());
     lv_obj_align(position_y_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 110);
 
     std::ostringstream orientationL;
-    orientationL << "Orientation: " << std::setprecision(3) << orientation << " , " << radToDeg(orientation);
+    orientationL << "Orientation: " << std::setprecision(3) << trackingValues.orientation << " , " << radToDeg(trackingValues.orientation);
     auto o = orientationL.str();
     lv_label_set_text(orientation_label, o.c_str());
     lv_obj_align(orientation_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 132);

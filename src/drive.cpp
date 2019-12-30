@@ -16,12 +16,7 @@ const float WHEEL_RADIUS = 1.3845055;
 const float DISTANCE_BETWEEN_CENTER = 4.60091565;
 const float DISTANCE_BETWEEN_BACKWHEEL_CENTER = 4.913425;
 
-vector position;
-float prevEncoderBack = 0;
-float prevEncoderLeft = 0;
-float prevEncoderRight = 0;
-float orientation;
-float beginning_orientation;
+tracking trackingValues;
 
 // ----------- CONVERSIONS -------------------------------------------
 // converts vector to polar with input and return
@@ -58,59 +53,94 @@ float radToDegrees(float radians) {
 	return (radians * (180/ PI));
 }
 
+float ticksToInches(float ticks) {
+  return (ticks * WHEEL_RADIUS);
+}
+
+float inchesToTicks(float inches) {
+  return (inches / WHEEL_RADIUS);
+}
+
 // --------------- TRACKING ------------------------------
+void tracking_func(tracking * v) {
+  // encoder values coverted to radians, to inches
+  v-> encoderLeft = ticksToInches(degreesToRad(left_encoder.get_value()));
+  v-> encoderRight = ticksToInches(degreesToRad(right_encoder.get_value()));
+  v-> encoderBack = ticksToInches(degreesToRad(back_encoder.get_value()));
+
+  v-> changeInLeft = v-> encoderLeft - v-> initialEncoderLeft;
+  v-> changeInRight = v-> encoderRight - v-> initialEncoderRight;
+  v-> changeInBack = v-> encoderBack - v-> initialEncoderBack;
+
+  // calculates the change in angle and updates the orientation value
+  v-> changeInAngle = (v-> changeInLeft - v-> changeInRight) / (DISTANCE_BETWEEN_CENTER * 2);
+  v-> orientation = v-> changeInAngle + v-> initialOrientation;
+
+  // change in x and y
+  vector localOffset;
+
+  if (v-> changeInAngle == 0) {
+    localOffset = { v-> changeInBack, v-> changeInRight };
+  } else {
+    // uses chord length value if change in angle
+    // OPTIMIZE: Chord length formula could be a function
+    localOffset = {
+      2 * sin(v-> changeInAngle / 2) * ((v-> changeInBack / v-> changeInAngle) + DISTANCE_BETWEEN_BACKWHEEL_CENTER), // x value
+      2 * sin(v-> changeInAngle / 2) * ((v-> changeInRight / v-> changeInAngle) + DISTANCE_BETWEEN_CENTER) // y value
+    };
+  }
+
+  // orientation of the bot
+  v-> averageOrientation = v-> initialOrientation + (v-> changeInAngle / 2 );
+  // convert from polar to get vector
+  polar polarOffset = vector_to_polar(localOffset);
+  polarOffset.theta += v-> changeInAngle;
+  vector globalOffset = polar_to_vector(polarOffset);
+  //updates the x and y
+  v-> position.x += globalOffset.x;
+  v-> position.y += globalOffset.y;
+  // reset for next cycle
+  v-> initialOrientation = v-> orientation;
+  v-> initialEncoderLeft = v-> encoderLeft;
+  v-> initialEncoderRight = v-> encoderRight;
+  v-> initialEncoderBack = v-> encoderBack;
+}
+
 void tracking_update(void*ignore) {
 	while(true) {
-		// encoder values coverted to radians, to inches
-		float encoderLeft = degreesToRad(left_encoder.get_value()) * WHEEL_RADIUS;
-		float encoderRight = degreesToRad(right_encoder.get_value()) * WHEEL_RADIUS;
-		float encoderBack = degreesToRad(back_encoder.get_value()) * WHEEL_RADIUS;
-
-		float changeInLeft = encoderLeft - prevEncoderLeft;
-		float changeInRight = encoderRight - prevEncoderRight;
-		float changeInBack = encoderBack - prevEncoderBack;
-
-		// calculates the change in angle and updates the orientation value
-		float changeInAngle = (changeInLeft - changeInRight) / (DISTANCE_BETWEEN_CENTER * 2);
-		float newOrientation = changeInAngle + orientation;
-
-		// change in x and y
-		vector localOffset;
-
-		if (changeInAngle == 0) {
-			localOffset = { changeInBack, changeInRight };
-		} else {
-			// uses chord length value if change in angle
-			// OPTIMIZE: Chord length formula could be a function
-			localOffset = {
-				2 * sin(changeInAngle / 2) * ((changeInBack / changeInAngle) + DISTANCE_BETWEEN_BACKWHEEL_CENTER), // x value
-				2 * sin(changeInAngle / 2) * ((changeInRight / changeInAngle) + DISTANCE_BETWEEN_CENTER) // y value
-			};
-		}
-
-		// orientation of the bot
-		float averageOrientation = orientation + (changeInAngle / 2 );
-		// convert from polar to get vector
-		polar polarOffset = vector_to_polar(localOffset);
-    polarOffset.theta += changeInAngle;
-		vector globalOffset = polar_to_vector(polarOffset);
-		//updates the x and y
-		position.x += globalOffset.x;
-		position.y += globalOffset.y;
-		// reset for next cycle
-		orientation = newOrientation;
-		prevEncoderLeft = encoderLeft;
-		prevEncoderRight = encoderRight;
-		prevEncoderBack = encoderBack;
-		pros::delay(10);
+	   tracking_func(&trackingValues);
+     printf("values %f %f \n \n", trackingValues.position.x, trackingValues.encoderLeft);
+     pros::delay(10);
 	}
 }
 
-void moveAndShit(float x, float y) {
+void basicMovement(float x, float y, float angle) {
 	// pid to move the shit for x and y
 	// mecanum shit with torque, strafe and throttle => 3 pid loops
 	// target is x and y => point on field
 	// x = strafe
-	// y = ??
+	// y = torque
 
+  while (true) {
+    pid_values xDirPID(28, 0, 0, 30, 500, 127);
+    pid_values yDirPID(12, 8, 0, 30, 500, 127);
+    pid_values rotationPID(300, 3, 6, 30, 500, 127);
+
+    float xDir = pid_calc(&xDirPID, x, trackingValues.position.x);
+    float yDir = pid_calc(&yDirPID, y, trackingValues.position.y);
+    float rotation = pid_calc(&rotationPID, degreesToRad(angle), trackingValues.orientation);
+
+    // vector error = { xDirPID.error, yDir.error }
+
+    float drive_left_power = xDir + yDir + rotation;
+    float drive_left_b_power = -xDir + yDir + rotation;
+    float drive_right_power = -xDir + yDir - rotation;
+    float drive_right_b_power = xDir + yDir - rotation;
+
+    drive_left.move(drive_left_power);
+    drive_left_b.move(drive_left_b_power);
+    drive_right.move(drive_right_power);
+    drive_right_b.move(drive_right_b_power);
+    pros::delay(20);
+  }
 }
