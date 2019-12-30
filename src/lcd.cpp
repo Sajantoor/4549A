@@ -132,9 +132,9 @@ static lv_res_t reset_values (lv_obj_t * btn) {
   right_encoder.reset();
   back_encoder.reset();
   beginning_orientation = 0;
-  prev_inches_traveled_left = 0;
-  prev_inches_traveled_right = 0;
-  prev_inches_traveled_back = 0;
+  prevEncoderLeft = 0;
+  prevEncoderRight = 0;
+  prevEncoderBack = 0;
   position.y = 0;
   position.x = 0;
   orientation = 0;
@@ -320,17 +320,17 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_label_set_text(orientation_label, o.c_str());
     lv_obj_align(orientation_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 132);
 
-    std::ostringstream vel_x;
-    vel_x << "Velocity.x: " << std::setprecision(3) << velocity.x;
-    auto vx = vel_x.str();
-    lv_label_set_text(velocity_x_label, vx.c_str());
-    lv_obj_align(velocity_x_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 154);
-
-    std::ostringstream vel_y;
-    vel_y << "Velocity.y: " << std::setprecision(3) << velocity.y;
-    auto vy = vel_x.str();
-    lv_label_set_text(velocity_y_label, vy.c_str());
-    lv_obj_align(velocity_y_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 176);
+    // std::ostringstream vel_x;
+    // vel_x << "Velocity.x: " << std::setprecision(3) << velocity.x;
+    // auto vx = vel_x.str();
+    // lv_label_set_text(velocity_x_label, vx.c_str());
+    // lv_obj_align(velocity_x_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 154);
+    //
+    // std::ostringstream vel_y;
+    // vel_y << "Velocity.y: " << std::setprecision(3) << velocity.y;
+    // auto vy = vel_x.str();
+    // lv_label_set_text(velocity_y_label, vy.c_str());
+    // lv_obj_align(velocity_y_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 176);
 
     std::ostringstream switcherV;
     switcherV << "Switcher: " << std::setprecision(3) << switcher;

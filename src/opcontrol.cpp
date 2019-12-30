@@ -18,9 +18,9 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
-		printf("right encoder %d \n\n", right_encoder.get_value());
-		printf("left encoder %d \n\n", left_encoder.get_value());
-		printf("back encoder %d \n\n", back_encoder.get_value());
+		// printf("right encoder %d \n\n", right_encoder.get_value());
+		// printf("left encoder %d \n\n", left_encoder.get_value());
+		// printf("back encoder %d \n\n", back_encoder.get_value());
 
 		//printf("position.y %f \n\n", position.y);
 

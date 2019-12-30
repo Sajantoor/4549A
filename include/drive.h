@@ -3,36 +3,35 @@
 
 #include "main.h"
 
-#define pi 3.14159265
-extern float correction_turn;
-extern float degrees_flag;
-extern float prev_correction_turn;
+#define PI 3.14159265
+// extern float correction_turn;
+// extern float degrees_flag;
+// extern float prev_correction_turn;
 
-extern float correction_drive;
-extern float prev_correction_drive;
-extern float drive_distance_correction;
-extern float degrees_to_rad_left;
-extern float degrees_to_rad_right;
+// extern float correction_drive;
+// extern float prev_correction_drive;
+// extern float drive_distance_correction;
+extern float encoderLeft;
+extern float encoderRight;
 extern float beginning_orientation;
-extern float prev_inches_traveled_left;
-extern float prev_inches_traveled_right;
-extern float prev_inches_traveled_back;
+extern float prevEncoderLeft;
+extern float prevEncoderRight;
+extern float prevEncoderBack;
 extern float orientation;
-struct vector
-{
+
+struct vector {
   float x;
   float y;
 };
+
 extern vector position;
 
-struct polar
-{
-  float r;
+struct polar {
+  float radius;
   float theta;
 };
 
-typedef struct _vel
-{
+typedef struct _vel {
 	float a;
 	float y;
 	float x;
