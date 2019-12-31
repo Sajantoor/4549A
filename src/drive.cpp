@@ -109,7 +109,6 @@ void tracking_func(tracking * v) {
 void tracking_update(void*ignore) {
 	while(true) {
 	   tracking_func(&trackingValues);
-     printf("values %f %f \n \n", trackingValues.position.x, trackingValues.encoderLeft);
      pros::delay(10);
 	}
 }
@@ -121,16 +120,22 @@ void basicMovement(float x, float y, float angle) {
 	// x = strafe
 	// y = torque
 
-  while (true) {
-    pid_values xDirPID(28, 0, 0, 30, 500, 127);
-    pid_values yDirPID(12, 8, 0, 30, 500, 127);
-    pid_values rotationPID(300, 3, 6, 30, 500, 127);
+  polar absoluteError = {25, 25};
+  float timeout = pros::millis() + 8000;
+
+  while (((absoluteError.radius > 0.22) || (fabs(absoluteError.theta) > 0.15)) && (timeout > pros::millis())) {
+    pid_values xDirPID(25, 1, 0, 30, 500, 127);
+    pid_values yDirPID(14.5, 0, 1, 30, 500, 127);
+    pid_values rotationPID(150, 1, 10, 30, 500, 127);
 
     float xDir = pid_calc(&xDirPID, x, trackingValues.position.x);
     float yDir = pid_calc(&yDirPID, y, trackingValues.position.y);
     float rotation = pid_calc(&rotationPID, degreesToRad(angle), trackingValues.orientation);
-
-    // vector error = { xDirPID.error, yDir.error }
+    // error
+    trackingValues.error.x = xDirPID.error;
+    trackingValues.error.y = yDirPID.error;
+    absoluteError = vector_to_polar(trackingValues.error);
+    absoluteError.theta += rotationPID.error;
 
     float drive_left_power = xDir + yDir + rotation;
     float drive_left_b_power = -xDir + yDir + rotation;
@@ -141,6 +146,13 @@ void basicMovement(float x, float y, float angle) {
     drive_left_b.move(drive_left_b_power);
     drive_right.move(drive_right_power);
     drive_right_b.move(drive_right_b_power);
+
+    printf("x: %f \n \n y: %f \n \n rotation: %f \n \n", trackingValues.error.x, trackingValues.error.y, absoluteError.theta);
     pros::delay(20);
   }
+  printf("done driving \n \n");
+  drive_left.move(0);
+  drive_left_b.move(0);
+  drive_right.move(0);
+  drive_right_b.move(0);
 }
