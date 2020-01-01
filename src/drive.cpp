@@ -440,6 +440,11 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 	pid_values xDir_pid(28, 0, 0, 30, 500, 127);//17.5
 	pid_values yDir_pid(12, 8, 0, 30, 500, 127);//11.7,5
 
+	if(target_angle != 0) {
+		turn_pid.Kp = 90;
+		xDir_pid.Kp = 31;
+		yDir_pid.Kp = 14;
+	}
 	//timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
 	//int timeout = 9000;
 	unsigned int net_timer;
