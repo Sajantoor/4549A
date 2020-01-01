@@ -15,8 +15,8 @@ void autonomous() {
   beginning_orientation = 0;
 
   position_drive2(0,20,0,100,3000);
-  position_turn(90, 1000, 100);
-  position_drive2(10,20,90,100,3000);
+  // position_turn(90, 1000, 100);
+  // position_drive2(10,20,90,100,3000);
   // reset_position_full(0, 20, 0);
   //position_drive2(0,0,90,100,3000);
   // position_drive2(20,40,0,100,2000);
@@ -50,7 +50,7 @@ void autonomous() {
 
     position_drive2(16, 0, 0, 127, 1500);
     position_drive2(0, 0, 0, 127, 1200);
-  }             
+  }
 
   if(switcher == 2){
 
