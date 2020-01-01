@@ -514,6 +514,27 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 		drive_right.move(motor_power_array[2]);
 		drive_right_b.move(motor_power_array[3]);
 
+		if(magnitude_of_X_Y < 5) {
+			limit_to_val_set(rotated_motorPower.y, abs(max_power));
+			if (abs(rotated_motorPower.y) < abs(max_power)) {
+				if (rotated_motorPower.y > 0) {
+					rotated_motorPower.y -= 15;
+				} else {
+					rotated_motorPower.y += 15;
+				}
+			}
+
+			limit_to_val_set(rotated_motorPower.x, abs(max_power));
+			if (abs(rotated_motorPower.x) < abs(max_power)) {
+				if (rotated_motorPower.x > 0) {
+					rotated_motorPower.x -= 15;
+				} else {
+					rotated_motorPower.x += 15;
+				}
+			}
+
+		}
+
 		//this gets the magnitude of the error using the error from throttle and strafe
 		powf_of_X_Y = powf(yDir_pid.error, 2) + powf(xDir_pid.error, 2);
 		magnitude_of_X_Y = sqrtf(powf_of_X_Y);
