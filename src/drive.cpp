@@ -532,7 +532,6 @@ void position_drive2(float ending_point_x, float ending_point_y, float target_an
 					rotated_motorPower.x += 15;
 				}
 			}
-
 		}
 
 		//this gets the magnitude of the error using the error from throttle and strafe
