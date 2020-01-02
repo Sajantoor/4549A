@@ -11,6 +11,7 @@
 #define LOADER_LEFT 9
 #define ANGLER 7
 #define ARM 3
+#define VISION_PORT 4
 
 extern pros::Motor drive_left;
 extern pros::Motor drive_left_b;
@@ -35,6 +36,8 @@ extern pros::ADIPort potentiometer_angler;
 extern pros::ADIEncoder left_encoder;
 extern pros::ADIEncoder right_encoder;
 extern pros::ADIEncoder back_encoder;
+
+extern pros::Vision vision_sensor;
 
 
 #endif
