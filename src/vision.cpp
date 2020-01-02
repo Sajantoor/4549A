@@ -21,6 +21,7 @@ int falsePositiveCheck[3]; // false positive detections for each tracking color,
 int cubeColor = 0; // ID of targeted cube color
 int largestCube = 0; // largest cube of all tracked colors
 bool target = false; // used to check if a color is being tracked or not
+int targetedCube = 0; // cube currently being targeted (by ID)
 
 // return area of the cube using width and height
 float sizeCheck(float x, float width, float height, int id) {
@@ -39,7 +40,7 @@ float sizeCheck(float x, float width, float height, int id) {
   }
 }
 
-// ENHANCE: arguments could be taken to detect a certain color or something => ignore certain colors
+// ignore the targeted cube
 float targetSelection() {
   float detectionValues[3]; // area of all detection colors
   // detecting values
@@ -83,15 +84,25 @@ void vision_tracking(void*ignore) {
     if (!target) {
       // detect all colours of cubes
       targetSelection();
+      targetedCube = cubeColor;
       // turns until cube detected
       turn_set(30);
     } else {
       // targeted cube
-      pros::vision_object_s_t cube = vision_sensor.get_by_sig(0, cubeColor);
+      pros::vision_object_s_t cube = vision_sensor.get_by_sig(0, targetedCube);
       int direction;  // direction of turning
-      float x = cube.x_middle_coord;  // x is used to calculate turning, x direction
       float sizeValue = cube.width * cube.height; // y is used to calculate how far forward or backward to move, y direction
 
+      printf("size value: %f \n \n", sizeValue);
+      // compares targeted cubes to other cubes
+      if ((sizeValue < targetSelection()) && (cubeColor != targetedCube && cubeColor != 0)) {
+        pros::vision_object_s_t cube = vision_sensor.get_by_sig(0, cubeColor);
+        sizeValue = cube.width * cube.height;
+        printf("switched to a closer cube %f \n \n", cubeColor);
+        printf("bigger size: %f \n \n", targetSelection());
+      }
+
+      float x = cube.x_middle_coord;  // x is used to calculate turning, x direction
       // used for testing
       // if (sizeValue > largestSize) {
       //   largestSize = sizeValue;
