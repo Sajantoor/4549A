@@ -8,11 +8,11 @@
 #include "vision.h"
 
 // signature IDs
-const int PURPLE = 1;
+const int GREEN = 1;
 const int ORANGE = 2;
-const int GREEN = 3;
+const int PURPLE = 3;
 
-const int DETECTION_THRESHOLD = 0; // area of smallest possible acceptable cube
+const int DETECTION_THRESHOLD = 6664; // area of smallest possible acceptable cube
 const int MAX_CUBE_SIZE = 45264; // stop before cube gets this big
 const int ERROR_X = -32084; // -32084 is the error value for x
 const int FALSE_POSITIVE_THRESHOLD = 100; // threshold to confirm something has been detected
@@ -20,7 +20,7 @@ const int FALSE_POSITIVE_THRESHOLD = 100; // threshold to confirm something has 
 int falsePositiveCheck[3]; // false positive detections for each tracking color, to confirm something is detected a threshold must be reached
 int cubeColor = 0; // ID of targeted cube color
 int largestCube = 0; // largest cube of all tracked colors
-bool target = false; // used to check if a color is being tracked or not
+// bool target = false; // used to check if a color is being tracked or not
 int targetedCube = 0; // cube currently being targeted (by ID)
 
 // return area of the cube using width and height
@@ -60,8 +60,8 @@ float targetSelection() {
   }
   // if the cube is bigger than smallest possible cube, target is selected
   if (largestCube > DETECTION_THRESHOLD) {
-    printf("target selected: %i \n \n", cubeColor);
-    target = true;
+   printf("target selected: %i \n \n", cubeColor);
+//    target = true;
   } else {
     largestCube = 0;
     cubeColor = 0;
@@ -72,34 +72,36 @@ float targetSelection() {
 
 void vision_tracking(void*ignore) {
   // init
+  vision_sensor.set_exposure(150);
   // color signiatures
-  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 643, 1735, 1188, 12159, 15089, 13624, 3.000, 0);
-  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 9263, 11967, 10614, -3327, -2175, -2750, 3.000, 0);
-  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -10151, -7167, -8658, -5641, -2415, -4028, 3.000, 0);
+  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -9567, -7177, -8372, -3137, -993, -2066, 4.300, 0);
+  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 7125, 8759, 7942, -2631, -1647, -2138, 2.500, 0);
+  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, -143, 1049, 454, 8523, 12759, 10640, 3.200, 0);
 
   float largestSize;
   // zero point on sensor is the middle
   vision_sensor.set_zero_point(pros::E_VISION_ZERO_CENTER);
   while(true) {
-    if (!target) {
+    // printf("object count: %i \n \n", vision_sensor.get_object_count());
+
+
+    if (!targetedCube) {
       // detect all colours of cubes
       targetSelection();
       targetedCube = cubeColor;
       // turns until cube detected
-      turn_set(30);
+     // turn_set(30);
     } else {
       // targeted cube
       pros::vision_object_s_t cube = vision_sensor.get_by_sig(0, targetedCube);
       int direction;  // direction of turning
       float sizeValue = cube.width * cube.height; // y is used to calculate how far forward or backward to move, y direction
-
-      printf("size value: %f \n \n", sizeValue);
       // compares targeted cubes to other cubes
       if ((sizeValue < targetSelection()) && (cubeColor != targetedCube && cubeColor != 0)) {
         pros::vision_object_s_t cube = vision_sensor.get_by_sig(0, cubeColor);
         sizeValue = cube.width * cube.height;
-        printf("switched to a closer cube %f \n \n", cubeColor);
-        printf("bigger size: %f \n \n", targetSelection());
+       printf("switched to a closer cube %f \n \n", cubeColor);
+       printf("bigger size: %f \n \n", targetSelection());
       }
 
       float x = cube.x_middle_coord;  // x is used to calculate turning, x direction
@@ -107,8 +109,8 @@ void vision_tracking(void*ignore) {
       // if (sizeValue > largestSize) {
       //   largestSize = sizeValue;
       // }
-
-      // printf("size value: %f \n \n", largestSize);
+      //
+      // printf("size value: %f \n \n", sizeValue);
 
       // checks if cube still exists
       if (cube.width != 0) {
@@ -134,10 +136,11 @@ void vision_tracking(void*ignore) {
       } else {
         // lost target
         printf("target lost! \n \n");
-        set_drive(0, 0);
+        // set_drive(0, 0);
         cubeColor = 0;
         largestCube = 0;
-        target = false;
+        targetedCube = 0;
+        // target = false;
       }
     }
 
