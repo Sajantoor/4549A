@@ -63,6 +63,27 @@ void autonomous() {
     pros::delay(1800);
     position_drive2(27,20,90,127,3000);//drive back
 
+
+    //second possible autonomous
+    loader_left.move(127);
+    loader_right.move(127);
+    angler_pid(3100, 5000);
+    lift(1780, 5000);
+    position_drive2(0,40,0,100,3000);//drive towards tower
+    lift(900, 0);//pick up cubes
+    pros::delay(1000);
+    position_drive2(0,35,0,100,3000);//back up to pick up final tower cube
+    position_drive2(0,43,0,100,3000);//pick up final tower cube
+    position_drive2(0,30,90,100,3000);//come back and line up with 5th cubes
+    position_drive2(15,30,90,100,3000);//pick up 5th cube
+    position_drive2(25,43,180,100,3000);//line up with wall and face scoring zone
+    position_drive2(25,10,180,100,3000);//drive towards the scoring zone
+    angler_pid(900, 20000);//Score
+    pros::delay(1800);
+    loader_left.move(-90);
+    loader_right.move(-90);
+    pros::delay(1800);
+    position_drive2(25,20,90,127,3000);//drive back
   }
 
 //RED BACK AUTO
