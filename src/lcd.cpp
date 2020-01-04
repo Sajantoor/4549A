@@ -352,7 +352,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
 
     std::ostringstream timerV;
-    timerV << "Auto Time: " << std::setprecision(3) << timer;
+    timerV << "Auto Time: " << std::setprecision(3) << (timer/1000);
     auto tv = timerV.str();
     lv_label_set_text(timer_label, tv.c_str());
     lv_obj_align(timer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);

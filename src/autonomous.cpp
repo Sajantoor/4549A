@@ -13,8 +13,12 @@ void autonomous() {
   printf("position.y %f \n", position.y);
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
-  float previousTime;
+  float initial_time;
   timer = 0;
+
+  initial_time = pros::millis();
+  pros::delay(1000);
+  timer = pros::millis() - initial_time;
 
   // position_drive2(0,20,0,100,3000);
   // position_turn(90, 1000, 100);
@@ -90,7 +94,7 @@ void autonomous() {
 
 //RED BACK AUTO
   if(switcher == 2){
-    previousTime = pros::millis();
+    initial_time = pros::millis();
     angler_pid(1580, 0);
     pros::delay(2000);
     loader_left.move(-127);
@@ -116,7 +120,7 @@ void autonomous() {
     loader_right.move(-90);
     pros::delay(1800);
     position_drive2(15,position.y,90,127,3000);
-    timer = pros::millis() - previousTime;
+    timer = pros::millis() - initial_time;
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT
