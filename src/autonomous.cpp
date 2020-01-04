@@ -13,6 +13,8 @@ void autonomous() {
   printf("position.y %f \n", position.y);
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
+  float previousTime;
+  timer = 0;
 
   // position_drive2(0,20,0,100,3000);
   // position_turn(90, 1000, 100);
@@ -88,6 +90,7 @@ void autonomous() {
 
 //RED BACK AUTO
   if(switcher == 2){
+    previousTime = pros::millis();
     angler_pid(1580, 0);
     pros::delay(2000);
     loader_left.move(-127);
@@ -113,6 +116,7 @@ void autonomous() {
     loader_right.move(-90);
     pros::delay(1800);
     position_drive2(15,position.y,90,127,3000);
+    timer = pros::millis() - previousTime;
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT
@@ -239,6 +243,39 @@ void autonomous() {
 
     //SKILLS
     if(switcher == 9) {
+      angler_pid(1580, 0);
+      pros::delay(2000);
+      loader_left.move(-127);
+      loader_right.move(-127);
+      pros::delay(1500);
+      loader_left.move(0);
+      loader_right.move(0);
+      angler_pid(3665, 0, 80, false);
+
+      loader_left.move(127);
+      loader_right.move(127);
+      position_drive2(0,125,0,100,3000);//pick up first set of cubes
+      position_drive2(15,125,0,100,3000);//
+      angler_pid(900, 20000);//Score
+      pros::delay(1800);
+      loader_left.move(-90);
+      loader_right.move(-90);
+      pros::delay(1800);
+      loader_left.move(127);
+      loader_right.move(127);
+      position_drive2(15,115,0,100,3000);//
+      position_drive2(-5,115,180,100,3000);//
+      position_drive2(-5,140,180,100,3000);//
+      position_drive2(-5,80,180,100,3000);//
+      position_drive2(-5,85,180,100,3000);//
+      lift(1780, 5000);
+      loader_left.move(-90);
+      loader_right.move(-90);
+      lift(900, 0);
+      position_drive2(-5,120,-90,100,3000);//
+      loader_left.move(127);
+      loader_right.move(127);
+      position_drive2(-20,120,-90,100,3000);//
 
     }
   printf("orientation %f \n", radToDeg(orientation));

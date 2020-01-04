@@ -48,6 +48,7 @@ lv_obj_t * velocity_y_label = lv_label_create(scr4, NULL);
 lv_obj_t * switcher_label = lv_label_create(scr4, NULL);
 lv_obj_t * arm_potentiometer_label = lv_label_create(scr4, NULL);
 lv_obj_t * angler_potentiometer_label = lv_label_create(scr4, NULL);
+lv_obj_t * timer_label = lv_label_create(scr4, NULL);
 
 
 lv_obj_t * reset = lv_btn_create (scr4, NULL);
@@ -350,6 +351,11 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_label_set_text(angler_potentiometer_label, anpv.c_str());
     lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
 
+    std::ostringstream timerV;
+    timerV << "Auto Time: " << std::setprecision(3) << timer;
+    auto tv = timerV.str();
+    lv_label_set_text(timer_label, tv.c_str());
+    lv_obj_align(timer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);
 
 
     lv_obj_set_size(reset, 75, 75);
