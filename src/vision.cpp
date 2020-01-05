@@ -12,11 +12,11 @@ const int GREEN = 1;
 const int ORANGE = 2;
 const int PURPLE = 3;
 
-const int DETECTION_THRESHOLD = 1000; // area of smallest possible acceptable cube
+const int DETECTION_THRESHOLD = 0; // area of smallest possible acceptable cube
 const int FALSE_POSITIVE_THRESHOLD = 50; // threshold to confirm something has been detected
 const int DEEP_VISION_THRESHOLD = 300; // apply deep detection algorithm if size is above this value and multiple objects detected
 const int MIN_DEEP_VISION_THRESHOLD = 100; // min size to be considered to be considered apart of deep vision
-const int MAX_CUBE_SIZE = 45264; // stop before cube gets this big
+const int MAX_Y = 45264; // stop before cube gets this big
 const int ERROR_X = -32084; // -32084 is the error value for x
 
 struct data {
@@ -24,6 +24,7 @@ struct data {
   int height; // effective height of the cube
   int size; // area, width * height
   int x;
+  int y;
   int id;
   bool deepVisionCheck;
 };
@@ -33,7 +34,6 @@ data currentCube;
 
 int falsePositiveCheck[3]; // false positive detections for each tracking color, to confirm something is detected a threshold must be reached
 int cubeColor = 0; // ID of targeted cube color
-int largestCube = 0; // largest cube of all tracked colors
 // bool target = false; // used to check if a color is being tracked or not
 int targetedCube = 0; // cube currently being targeted (by ID)
 
@@ -43,6 +43,7 @@ void clearData(data * x) {
   x-> height = 0;
   x-> size = 0;
   x-> x = 0;
+  x -> y = 0;
   x-> deepVisionCheck = 0;
 }
 
@@ -121,52 +122,53 @@ int deepVision(int id) {
   deepVisionData.height = largestTop - (smallestTop - smallestTopHeight);
   deepVisionData.size = deepVisionData.width * deepVisionData.height;
   deepVisionData.x = smallestLeft + (deepVisionData.width / 2);
+  deepVisionData.y = largestTop - (deepVisionData.height /2);
 
   if (deepVisionData.size < 0) {
     return 0;
   }
 
-  return deepVisionData.size;
+  return deepVisionData.y;
 }
 
 // ignore the targeted cube
 int targetSelection() {
   int detectionValues[3]; // area of all detection colors
-  int largestCube = 0;
+  int closestCube = 0;
   // detecting values
   pros::vision_object_s_t purpleDetection = vision_sensor.get_by_sig(0, PURPLE);
   pros::vision_object_s_t orangeDetection = vision_sensor.get_by_sig(0, ORANGE);
   pros::vision_object_s_t greenDetection = vision_sensor.get_by_sig(0, GREEN);
 
   // check size of all detections
-  detectionValues[0] = sizeCheck(purpleDetection.x_middle_coord, purpleDetection.width, purpleDetection.height, 0);
-  detectionValues[1] = sizeCheck(orangeDetection.x_middle_coord, orangeDetection.width, orangeDetection.height, 1);
-  detectionValues[2] = sizeCheck(greenDetection.x_middle_coord, greenDetection.width, greenDetection.height, 2);
+  detectionValues[0] = greenDetection.y_middle_coord;
+  detectionValues[1] = orangeDetection.y_middle_coord;
+  detectionValues[2] = purpleDetection.y_middle_coord;
   // gets the largest cube from the array and the color id
   for (size_t i = 0; i < 3; i++) {
     if ((vision_sensor.get_object_count() > 1) && (detectionValues[i] > DEEP_VISION_THRESHOLD)) {
       detectionValues[i] = deepVision(i + 1);
     }
 
-    if (detectionValues[i] > largestCube) {
-      largestCube = detectionValues[i];
+    if (detectionValues[i] > closestCube) {
+      closestCube = detectionValues[i];
       cubeColor = i + 1;
     }
   }
   // if the cube is bigger than smallest possible cube, target is selected
-  if (largestCube > DETECTION_THRESHOLD) {
-    if (largestCube == deepVisionData.size) {
+  if (closestCube > DETECTION_THRESHOLD) {
+    if (closestCube == deepVisionData.y) {
       currentCube = deepVisionData;
     } else {
       clearData(&deepVisionData);
     }
   } else {
-    largestCube = 0;
+    closestCube = 0;
     cubeColor = 0;
     return 0;
   }
 
-  return largestCube;
+  return closestCube;
 }
 
 void vision_tracking(void*ignore) {
@@ -183,11 +185,11 @@ void vision_tracking(void*ignore) {
   while(true) {
     if (targetedCube == 0) { // any cube 1 - 3 would be true, 0 is false
       // detect all colours of cubes
-      int cubeSize = targetSelection();
+      int closestCube = targetSelection();
       if (cubeColor != 0) {
         targetedCube = cubeColor;
-        printf("targeted cube size: %i \n \n", cubeSize);
-        set_drive(0, 0);
+        printf("targeted cube y: %i \n \n", closestCube);
+        // set_drive(0, 0);
       } else {
         cubeSize = 0;
         // turns until cube detected
@@ -209,6 +211,7 @@ void vision_tracking(void*ignore) {
         currentCube.height = trackingCube.height;
         currentCube.size = trackingCube.width * trackingCube.height;
         currentCube.x = trackingCube.x_middle_coord;
+        currentCube.y = trackingCube.y_middle_coord;
         printf("in loop width %i \n \n", trackingCube.width);
      }
 
@@ -236,11 +239,11 @@ void vision_tracking(void*ignore) {
         // basic movement
         // if (fabs(currentCube.x) > 100) {
         //   turn_set(20 * direction);
-        // } else if (currentCube.size >= MAX_CUBE_SIZE) {
+        // } else if (currentCube.size >= MAX_Y) {
         //   set_drive(0, 0);
-        // } else if (currentCube.size < MAX_CUBE_SIZE) {
+        // } else if (currentCube.size < MAX_Y) {
         //   set_drive(30, 30);
-        // } /* else if (currentCube.size > MAX_CUBE_SIZE) {
+        // } /* else if (currentCube.size > MAX_Y) {
         //   set_drive(-30, -30);
         // } */ else {
         //   set_drive(0, 0);
@@ -252,7 +255,6 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         // set_drive(0, 0);
         cubeColor = 0;
-        largestCube = 0;
         targetedCube = 0;
       }
     }
