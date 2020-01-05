@@ -50,7 +50,7 @@ void autonomous() {
 
     position_drive2(16, 0, 0, 127, 1500);
     position_drive2(0, 0, 0, 127, 1200);
-  }             
+  }
 
   if(switcher == 2){
 
