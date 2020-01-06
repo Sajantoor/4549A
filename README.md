@@ -13,7 +13,7 @@
  * [Tracking Task](#Tracking-Task)
  * [Turn PIDs](#Turn-PIDs)
  * [Drive PID](#Drive-PID)
- * [Vision Sensor Cube Tracking](#Vision-Sensor)
+ * [Vision Sensor Cube Tracking](#Vision-Sensor-Cube-Tracking)
  * [Motor Sensor Init](#Motor-Sensor-Init)
  * [Autonomous](#Autonomous)
  
@@ -454,7 +454,7 @@ int deepVision(int id) {
 ``` 
 > The deep vision function is used for cubes that are darker, when the vision sensor is lacking light. When multiple smaller cubes of the same colour are detected. This uses a geometry to piece together a bigger cube. 
 
-[View opcontrol](../master/src/vision.cpp)
+[View vision sensor code](../master/src/vision.cpp)
 
 ## Motor Sensor Init
 > This is very all the motors, sensors and ports for the motors are defined. 
