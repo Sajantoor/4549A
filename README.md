@@ -13,8 +13,10 @@
  * [Tracking Task](#Tracking-Task)
  * [Turn PIDs](#Turn-PIDs)
  * [Drive PID](#Drive-PID)
+ * [Vision Sensor Cube Tracking](#Vision-Sensor)
  * [Motor Sensor Init](#Motor-Sensor-Init)
  * [Autonomous](#Autonomous)
+ 
  
  ## Initialize
  > The initalize file is used to define tasks for future use. 
@@ -335,6 +337,124 @@ switch (sgn(correction)) {
 }
 ```
 [View Drive PID](../master/src/drive.cpp#L666)
+
+### Vision Sensor Cube Tracking
+> Vision sensor is used to recognize, track and follow cubes. It uses 3 signatures, one for each cube colour and then uses drive functions to follow the cubes. 
+
+```cpp
+struct data {
+  int width; // effective width of the cube
+  int height; // effective height of the cube
+  int size; // area, width * height
+  int x; // x value
+  int y; // y value
+  int id; // id for the cube color
+  bool deepVisionCheck; // see if the deep vision function is used
+};
+```
+
+> This code is used for to manage data for the cube using a struct, this data is manipulated in the following functions. 
+
+```cpp
+int targetSelection() {
+  int detectionValues[3]; // y value of all detection colors
+  int closestCube = 0;
+  // detecting values
+  pros::vision_object_s_t purpleDetection = vision_sensor.get_by_sig(0, PURPLE);
+  pros::vision_object_s_t orangeDetection = vision_sensor.get_by_sig(0, ORANGE);
+  pros::vision_object_s_t greenDetection = vision_sensor.get_by_sig(0, GREEN);
+
+  // check size of all detections
+  detectionValues[0] = greenDetection.y_middle_coord;
+  detectionValues[1] = orangeDetection.y_middle_coord;
+  detectionValues[2] = purpleDetection.y_middle_coord;
+  // gets the closest cube from the array and the color id
+  for (size_t i = 0; i < 3; i++) {
+    if ((vision_sensor.get_object_count() > 1) && (detectionValues[i] > DEEP_VISION_THRESHOLD)) {
+      detectionValues[i] = deepVision(i + 1);
+    }
+
+    if (detectionValues[i] > closestCube) {
+      closestCube = detectionValues[i];
+      cubeColor = i + 1;
+    }
+  }
+  // if the cube is bigger than smallest possible cube, target is selected
+  if (closestCube > DETECTION_THRESHOLD) {
+    if (closestCube == deepVisionData.y) {
+      currentCube = deepVisionData;
+    } else {
+      clearData(&deepVisionData);
+    }
+  } else {
+    closestCube = 0;
+    cubeColor = 0;
+    return 0;
+  }
+
+  return closestCube;
+}
+``` 
+> This code selects a target cube colour to be the closest cube from the for loop and that cubes's coordinates are used in the motion and tracking part of the code. It also has to meet specfic thresholds to see if the cube is close enough to track for example `DETECTION_THRESHOLD`
+
+```cpp
+int deepVision(int id) {
+  int numObjects = vision_sensor.get_object_count();
+  float smallestLeft; // smallest left coordinate
+  float largestLeft; // largest
+  float largestLeftWidth; // width of largest to calculate the right coordinate
+  float largestTop; // largest top coordinate
+  float smallestTop; //smallest
+  float smallestTopHeight; // height of smallest top to calculate bottom coordinate
+
+  if (numObjects > 3) numObjects = 3;
+
+  pros::vision_object_s_t partArray[numObjects];
+
+  for (size_t i = 0; i < numObjects; i++) {
+    partArray[i] = vision_sensor.get_by_sig(i, id);
+
+    if (partArray[i].width * partArray[i].height < MIN_DEEP_VISION_THRESHOLD) {
+      // printf("Deep vision cancelled \n \n");
+      break;
+    }
+
+    if (partArray[i].left_coord > largestLeft) {
+      largestLeft = partArray[i].left_coord;
+      largestLeftWidth = partArray[i].width;
+    }
+    // not else if here because what if smallest left is the first value, will cause bugs
+    if (partArray[i].left_coord < smallestLeft) {
+      smallestLeft = partArray[i].left_coord;
+    }
+
+    if (partArray[i].top_coord > largestTop) {
+      largestTop = partArray[i].top_coord;
+    }
+
+    if (partArray[i].top_coord < smallestTop) {
+      smallestTop = partArray[i].top_coord;
+      smallestTopHeight = partArray[i].height;
+    }
+  }
+
+  deepVisionData.deepVisionCheck = true;
+  deepVisionData.width = (largestLeft + largestLeftWidth) - smallestLeft;
+  deepVisionData.height = largestTop - (smallestTop - smallestTopHeight);
+  deepVisionData.size = deepVisionData.width * deepVisionData.height;
+  deepVisionData.x = smallestLeft + (deepVisionData.width / 2);
+  deepVisionData.y = largestTop - (deepVisionData.height /2);
+
+  if (deepVisionData.size < 0) {
+    return 0;
+  }
+
+  return deepVisionData.y;
+}
+``` 
+> The deep vision function is used for cubes that are darker, when the vision sensor is lacking light. When multiple smaller cubes of the same colour are detected. This uses a geometry to piece together a bigger cube. 
+
+[View opcontrol](../master/src/vision.cpp)
 
 ## Motor Sensor Init
 > This is very all the motors, sensors and ports for the motors are defined. 
