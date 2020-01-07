@@ -339,7 +339,7 @@ switch (sgn(correction)) {
 [View Drive PID](../master/src/drive.cpp#L666)
 
 ### Vision Sensor Cube Tracking
-> Vision sensor is used to recognize, track and follow cubes. It uses 3 signatures, one for each cube colour and then uses drive functions to follow the cubes. 
+> Vision sensor is used to recognize, track and follow cubes. It uses 3 signatures, one for each cube colour and then uses drive functions to follow the cubes. It allows us to dynamically make adjustments to our autonomous based on field conditions, an example of this would be cubes are setup with a margin of error or for cubes falling unpredictably. This allows for us to maximize the number of cubes we get during the autonomous period.
 
 ```cpp
 struct data {
@@ -395,8 +395,9 @@ int targetSelection() {
   return closestCube;
 }
 ``` 
-> This code selects a target cube colour to be the closest cube from the for loop and that cubes's coordinates are used in the motion and tracking part of the code. It also has to meet specfic thresholds to see if the cube is close enough to track for example `DETECTION_THRESHOLD`
+> This code selects a target cube colour to be the closest cube from the for loop and that cubes's coordinates are used in the motion and tracking part of the code. It also has to meet specfic thresholds to see if the cube is close enough to track for example `DETECTION_THRESHOLD` 
 
+#### Deep Vision Algorithm
 ```cpp
 int deepVision(int id) {
   int numObjects = vision_sensor.get_object_count();
@@ -452,7 +453,7 @@ int deepVision(int id) {
   return deepVisionData.y;
 }
 ``` 
-> The deep vision function is used for cubes that are darker, when the vision sensor is lacking light. When multiple smaller cubes of the same colour are detected. This uses a geometry to piece together a bigger cube. 
+> Due to low lighting conditions the vision sensor may not detect the whole cube, there may be multiple smaller detections. Then this algorithm steps in. This algorithm applies basic geometric operations to calculate the full width of the cube based on these smaller detected pieces. This improves the performance of cube tracking in these low lighting condtions.
 
 [View vision sensor code](../master/src/vision.cpp)
 
