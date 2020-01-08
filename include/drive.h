@@ -58,20 +58,6 @@ void polarToVector(polar& polar, vector& vector);
 
 void drive_line_up (int speed, int run_time_drive);
 
-void drive_pid(float target, unsigned int timeout = 150, int max_speed = 100);
-
-void drive_pid_correction_switch(float target, unsigned int timeout, int max_speed, bool correction_switch);
-
-void turn_pid(float degs, float Ki,  unsigned int timeout = 100);
-
-//--------------------------------------ENCODERS-------------------------------------------------------
-
-void drive_pid_encoder(float targetVal, unsigned int timeout, int max_speed = 110);
-
-void turn_pid_encoder_average(double target, unsigned int timeout);
-
-void intake_run(int speed_intake, int run_time_intake);
-
 //--------------------------------------POSITION-------------------------------------------------------
 
 float nearestangle(float target_angle, float reference_angle);
@@ -88,9 +74,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float ending_point_x, float ending_point_y, int target_angle, int max_speed, int timeout);
-
-void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power, unsigned int timeout);
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, float max_power, unsigned int timeout);
 extern pros::task_t tracking_task;
 extern pros::task_t velocity_task;
 

@@ -428,7 +428,7 @@ void position_face_point(float target_x, float target_y, int timeout) {
 	printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive2(float ending_point_x, float ending_point_y, float target_angle, float max_power, unsigned int timeout) {
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, float max_power, unsigned int timeout) {
 	vector positionErr;
 	vector rotated_motorPower;
 	vector rotation_vector;

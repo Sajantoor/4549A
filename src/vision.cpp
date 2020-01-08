@@ -191,7 +191,6 @@ void vision_tracking(void*ignore) {
         printf("targeted cube y: %i \n \n", closestCube);
         // set_drive(0, 0);
       } else {
-        cubeSize = 0;
         // turns until cube detected
         // turn_set(30);
       }
