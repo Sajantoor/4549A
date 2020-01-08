@@ -7,6 +7,8 @@
 #include "lift.h"
 #include "angler.h"
 
+float timerAuto;
+
 void autonomous() {
   printf("PositionX: %f || PositionY: %f || Orientation: %f \n \n", position.x, position.y, orientation);
   printf("position.x %f \n", position.x);
@@ -14,7 +16,7 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time = pros::millis();
-  timer = pros::millis() - initial_time;
+  timerAuto = pros::millis() - initial_time;
 
   // position_drive(0,20,0,100,3000);
   // position_turn(90, 1000, 100);
@@ -119,7 +121,7 @@ void autonomous() {
     loader_right.move(-90);
     pros::delay(1800);
     position_drive(15,position.y,90,127,3000);
-    timer = pros::millis() - initial_time;
+    timerAuto = pros::millis() - initial_time;
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT

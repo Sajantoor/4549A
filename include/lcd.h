@@ -8,6 +8,6 @@ extern pros::task_t auto_selecter_task;
 // void front_middle_auto();
 
 extern int switcher;
-float timer;
+extern float timerAuto;
 
 #endif
