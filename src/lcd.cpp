@@ -48,6 +48,7 @@ lv_obj_t * velocity_y_label = lv_label_create(scr4, NULL);
 lv_obj_t * switcher_label = lv_label_create(scr4, NULL);
 lv_obj_t * arm_potentiometer_label = lv_label_create(scr4, NULL);
 lv_obj_t * angler_potentiometer_label = lv_label_create(scr4, NULL);
+lv_obj_t * timer_label = lv_label_create(scr4, NULL);
 
 
 lv_obj_t * reset = lv_btn_create (scr4, NULL);
@@ -67,50 +68,50 @@ lv_style_t blue_autos_button_style;
 //ALL AUTOS-----------------------------------------------------
 
 //RED AUTOS
-static lv_res_t front_middle_red_auto (lv_obj_t * btn) {
+static lv_res_t red_auto1 (lv_obj_t * btn) {
   switcher = 1;
   //printf("switcher red %d\n", switcher);
   return LV_RES_OK;
 }
 
-static lv_res_t auto1_auto (lv_obj_t * btn) {
+static lv_res_t red_auto2 (lv_obj_t * btn) {
   switcher = 2;
   //printf("switcher red %d\n", switcher);
   return LV_RES_OK;
 }
 
-static lv_res_t auto2_auto (lv_obj_t * btn) {
+static lv_res_t red_auto3 (lv_obj_t * btn) {
   switcher = 3;
   //printf("switcher red %d\n", switcher);
   return LV_RES_OK;
 }
 
-static lv_res_t auto3_auto (lv_obj_t * btn)  {
+static lv_res_t red_auto4 (lv_obj_t * btn)  {
   switcher = 4;
   //printf("switcher red %d\n", switcher);
   return LV_RES_OK;
 }
 
 //BLUE AUTOS
-static lv_res_t front_middle_blue_auto (lv_obj_t * btn) {
+static lv_res_t blue_auto1 (lv_obj_t * btn) {
   switcher = 5;
   //printf("switcher  %d\n", switcher);
   return LV_RES_OK;
 }
 
-static lv_res_t auto1_auto_blue (lv_obj_t * btn) {
+static lv_res_t blue_auto2 (lv_obj_t * btn) {
   switcher = 6;
   //printf("switcher red %d\n", switcher);
   return LV_RES_OK;
 }
 
-static lv_res_t auto2_auto_blue (lv_obj_t * btn) {
+static lv_res_t blue_auto3 (lv_obj_t * btn) {
   switcher = 7;
   //printf("switcher red %d\n", switcher);
   return LV_RES_OK;
 }
 
-static lv_res_t auto3_auto_blue (lv_obj_t * btn) {
+static lv_res_t blue_auto4 (lv_obj_t * btn) {
   switcher = 8;
   //printf("switcher red %d\n", switcher);
   return LV_RES_OK;
@@ -118,12 +119,12 @@ static lv_res_t auto3_auto_blue (lv_obj_t * btn) {
 
 //OTHER AUTOS
 static lv_res_t skills_auto (lv_obj_t * btn) {
-  switcher = 10;
+  switcher = 9;
   return LV_RES_OK;
 }
 
 static lv_res_t testing_auto (lv_obj_t * btn) {
-  switcher = 11;
+  switcher = 10;
   return LV_RES_OK;
 }
 
@@ -152,17 +153,17 @@ static lv_res_t home_screen(lv_obj_t * btn2) {
 
 static lv_res_t red_tile_screen(lv_obj_t * btn) {
   lv_scr_load(scr2);
-  lv_obj_t * front_middle = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
-  lv_obj_t * front_middle_label = lv_label_create(front_middle, NULL);
+  lv_obj_t * red_auto_1 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
+  lv_obj_t * red_auto_1_label = lv_label_create(red_auto_1, NULL);
 
-  lv_obj_t * auto1 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
-  lv_obj_t * auto1_label = lv_label_create(auto1, NULL);
+  lv_obj_t * red_auto_2 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
+  lv_obj_t * red_auto_2_label = lv_label_create(red_auto_2, NULL);
 
-  lv_obj_t * auto2 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
-  lv_obj_t * auto2_label = lv_label_create(auto2, NULL);
+  lv_obj_t * red_auto_3 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
+  lv_obj_t * red_auto_3_label = lv_label_create(red_auto_3, NULL);
 
-  lv_obj_t * auto3 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
-  lv_obj_t * auto3_label = lv_label_create(auto3, NULL);
+  lv_obj_t * red_auto_4 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
+  lv_obj_t * red_auto_4_label = lv_label_create(red_auto_4, NULL);
 
 
   lv_style_copy(&red_autos_button_style, &lv_style_plain);
@@ -171,25 +172,25 @@ static lv_res_t red_tile_screen(lv_obj_t * btn) {
   red_autos_button_style.body.radius = LV_RADIUS_CIRCLE;
   red_autos_button_style.text.color = LV_COLOR_MAKE(0, 0, 0);
 
-  lv_obj_set_size(front_middle, 200, 100);//change name when making auto
-  lv_obj_align(front_middle, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10);
-  lv_label_set_text(front_middle_label, "Strafe RIGHT");
-  lv_btn_set_style(front_middle, LV_BTN_STYLE_REL, &red_autos_button_style);
+  lv_obj_set_size(red_auto_1, 200, 100);//change name when making auto
+  lv_obj_align(red_auto_1, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10);
+  lv_label_set_text(red_auto_1_label, "Red Front");
+  lv_btn_set_style(red_auto_1, LV_BTN_STYLE_REL, &red_autos_button_style);
 
-  lv_obj_set_size(auto1, 200, 100); //change name when making auto
-  lv_obj_align(auto1, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
-  lv_label_set_text(auto1_label, "Strafe LEFT");
-  lv_btn_set_style(auto1, LV_BTN_STYLE_REL, &red_autos_button_style);
+  lv_obj_set_size(red_auto_2, 200, 100); //change name when making auto
+  lv_obj_align(red_auto_2, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
+  lv_label_set_text(red_auto_2_label, "Red Back");
+  lv_btn_set_style(red_auto_2, LV_BTN_STYLE_REL, &red_autos_button_style);
 
-  lv_obj_set_size(auto2, 200, 100); //change name when making auto
-  lv_obj_align(auto2, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
-  lv_label_set_text(auto2_label, "PICKUP CUBES");
-  lv_btn_set_style(auto2, LV_BTN_STYLE_REL, &red_autos_button_style);
+  lv_obj_set_size(red_auto_3, 200, 100); //change name when making auto
+  lv_obj_align(red_auto_3, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
+  lv_label_set_text(red_auto_3_label, "Right 1 Point Unlock");
+  lv_btn_set_style(red_auto_3, LV_BTN_STYLE_REL, &red_autos_button_style);
 
-  lv_obj_set_size(auto3, 200, 100); //change name when making auto
-  lv_obj_align(auto3, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
-  lv_label_set_text(auto3_label, "AUTO 3");
-  lv_btn_set_style(auto3, LV_BTN_STYLE_REL, &red_autos_button_style);
+  lv_obj_set_size(red_auto_4, 200, 100); //change name when making auto
+  lv_obj_align(red_auto_4, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
+  lv_label_set_text(red_auto_4_label, "Left 1 Point Unlock");
+  lv_btn_set_style(red_auto_4, LV_BTN_STYLE_REL, &red_autos_button_style);
 
   //HOME
   lv_style_copy(&home_button_style, &lv_style_plain);
@@ -204,27 +205,27 @@ static lv_res_t red_tile_screen(lv_obj_t * btn) {
   lv_btn_set_style(home_button_red, LV_BTN_STYLE_REL, &home_button_style);
 
   lv_btn_set_action(home_button_red, LV_BTN_ACTION_CLICK, home_screen);
-  lv_btn_set_action(front_middle, LV_BTN_ACTION_CLICK, front_middle_red_auto);
-  lv_btn_set_action(auto1, LV_BTN_ACTION_CLICK, auto1_auto);
-  lv_btn_set_action(auto2, LV_BTN_ACTION_CLICK, auto2_auto);
-  lv_btn_set_action(auto3, LV_BTN_ACTION_CLICK, auto3_auto);
+  lv_btn_set_action(red_auto_1, LV_BTN_ACTION_CLICK, red_auto1);
+  lv_btn_set_action(red_auto_2, LV_BTN_ACTION_CLICK, red_auto2);
+  lv_btn_set_action(red_auto_3, LV_BTN_ACTION_CLICK, red_auto3);
+  lv_btn_set_action(red_auto_4, LV_BTN_ACTION_CLICK, red_auto4);
   return LV_RES_OK;   /*The button is not deleted*/
 }
 
 static lv_res_t blue_tile_screen(lv_obj_t * btn1) {
 
   lv_scr_load(scr3);
-  lv_obj_t * front_middle_blue = lv_btn_create (lv_scr_act(), NULL);
-  lv_obj_t * front_middle_blue_label = lv_label_create(front_middle_blue, NULL);
+  lv_obj_t * blue_auto_1 = lv_btn_create (lv_scr_act(), NULL);
+  lv_obj_t * blue_auto_1_label = lv_label_create(blue_auto_1, NULL);
 
-  lv_obj_t * auto1_blue = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
-  lv_obj_t * auto1_label_blue = lv_label_create(auto1_blue, NULL);
+  lv_obj_t * blue_auto_2 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
+  lv_obj_t * blue_auto_2_label = lv_label_create(blue_auto_2, NULL);
 
-  lv_obj_t * auto2_blue = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
-  lv_obj_t * auto2_label_blue = lv_label_create(auto2_blue, NULL);
+  lv_obj_t * blue_auto_3 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
+  lv_obj_t * blue_auto_3_label = lv_label_create(blue_auto_3, NULL);
 
-  lv_obj_t * auto3_blue = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
-  lv_obj_t * auto3_label_blue = lv_label_create(auto3_blue, NULL);
+  lv_obj_t * blue_auto_4 = lv_btn_create (lv_scr_act(), NULL);//change name when making auto
+  lv_obj_t * blue_auto_4_label = lv_label_create(blue_auto_4, NULL);
 
 
   lv_style_copy(&blue_autos_button_style, &lv_style_plain);
@@ -234,25 +235,25 @@ static lv_res_t blue_tile_screen(lv_obj_t * btn1) {
   blue_autos_button_style.text.color = LV_COLOR_MAKE(0, 0, 0);
 
 
-  lv_obj_set_size(front_middle_blue, 200, 100);
-  lv_obj_align(front_middle_blue, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10);
-  lv_label_set_text(front_middle_blue_label, "Front CENTER");
-  lv_btn_set_style(front_middle_blue, LV_BTN_STYLE_REL, &blue_autos_button_style);
+  lv_obj_set_size(blue_auto_1, 200, 100);
+  lv_obj_align(blue_auto_1, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10);
+  lv_label_set_text(blue_auto_1_label, "Red Front");
+  lv_btn_set_style(blue_auto_1, LV_BTN_STYLE_REL, &blue_autos_button_style);
 
-  lv_obj_set_size(auto1_blue, 200, 100); //change name when making auto
-  lv_obj_align(auto1_blue, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
-  lv_label_set_text(auto1_label_blue, "AUTO 1");
-  lv_btn_set_style(auto1_blue, LV_BTN_STYLE_REL, &blue_autos_button_style);
+  lv_obj_set_size(blue_auto_2, 200, 100); //change name when making auto
+  lv_obj_align(blue_auto_2, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
+  lv_label_set_text(blue_auto_2_label, "Red Back");
+  lv_btn_set_style(blue_auto_2, LV_BTN_STYLE_REL, &blue_autos_button_style);
 
-  lv_obj_set_size(auto2_blue, 200, 100); //change name when making auto
-  lv_obj_align(auto2_blue, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
-  lv_label_set_text(auto2_label_blue, "AUTO 2");
-  lv_btn_set_style(auto2_blue, LV_BTN_STYLE_REL, &blue_autos_button_style);
+  lv_obj_set_size(blue_auto_3, 200, 100); //change name when making auto
+  lv_obj_align(blue_auto_3, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
+  lv_label_set_text(blue_auto_3_label, "Right 1 Point Unlock");
+  lv_btn_set_style(blue_auto_3, LV_BTN_STYLE_REL, &blue_autos_button_style);
 
-  lv_obj_set_size(auto3_blue, 200, 100); //change name when making auto
-  lv_obj_align(auto3_blue, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
-  lv_label_set_text(auto3_label_blue, "AUTO 3");
-  lv_btn_set_style(auto3_blue, LV_BTN_STYLE_REL, &blue_autos_button_style);
+  lv_obj_set_size(blue_auto_4, 200, 100); //change name when making auto
+  lv_obj_align(blue_auto_4, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
+  lv_label_set_text(blue_auto_4_label, "Left 1 Point Unlock");
+  lv_btn_set_style(blue_auto_4, LV_BTN_STYLE_REL, &blue_autos_button_style);
 
   //HOME
   lv_style_copy(&home_button_style, &lv_style_plain);
@@ -267,10 +268,10 @@ static lv_res_t blue_tile_screen(lv_obj_t * btn1) {
   lv_btn_set_style(home_button_blue, LV_BTN_STYLE_REL, &home_button_style);
 
   lv_btn_set_action(home_button_blue, LV_BTN_ACTION_CLICK, home_screen);
-  lv_btn_set_action(front_middle_blue, LV_BTN_ACTION_CLICK, front_middle_blue_auto);
-  lv_btn_set_action(auto1_blue, LV_BTN_ACTION_CLICK, auto1_auto_blue);
-  lv_btn_set_action(auto2_blue, LV_BTN_ACTION_CLICK, auto2_auto_blue);
-  lv_btn_set_action(auto3_blue, LV_BTN_ACTION_CLICK, auto3_auto_blue);
+  lv_btn_set_action(blue_auto_1, LV_BTN_ACTION_CLICK, blue_auto1);
+  lv_btn_set_action(blue_auto_2, LV_BTN_ACTION_CLICK, blue_auto2);
+  lv_btn_set_action(blue_auto_3, LV_BTN_ACTION_CLICK, blue_auto3);
+  lv_btn_set_action(blue_auto_4, LV_BTN_ACTION_CLICK, blue_auto4);
   return LV_RES_OK;   /*The button is not deleted*/
 }
 
@@ -350,6 +351,11 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_label_set_text(angler_potentiometer_label, anpv.c_str());
     lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
 
+    std::ostringstream timerV;
+    timerV << "Auto Time: " << std::setprecision(3) << (timer/1000);
+    auto tv = timerV.str();
+    lv_label_set_text(timer_label, tv.c_str());
+    lv_obj_align(timer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);
 
 
     lv_obj_set_size(reset, 75, 75);
