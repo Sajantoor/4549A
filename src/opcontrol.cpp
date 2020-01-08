@@ -18,12 +18,7 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
-		// printf("right encoder %d \n\n", right_encoder.get_value());
-		// printf("left encoder %d \n\n", left_encoder.get_value());
-		// printf("back encoder %d \n\n", back_encoder.get_value());
-
-		//printf("position.y %f \n\n", position.y);
-
+		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
 		stickArray[2] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), 3) / powf(127, 2);
@@ -97,6 +92,10 @@ void opcontrol() {
 			if (liftVal) {
 				angler_pid(3100, 20000);
 				lift(1780, 20000);
+			} else if (!liftVal && armPosition < 1780) {
+				angler_pid(3100, 20000);
+				lift(1780, 20000);
+				liftVal = true;
 			} else {
 				angler_pid(3665, 0, 80, false);
 				lift(0, 0);
@@ -109,6 +108,10 @@ void opcontrol() {
 			if (liftVal) {
 				angler_pid(3100, 20000);
 				lift(2500, 20000);
+			} else if (!liftVal && armPosition < 2500) {
+				angler_pid(3100, 20000);
+				lift(2500, 20000);
+				liftVal = true;
 			} else {
 				angler_pid(3665, 0, 80, false);
 				lift(900, 0);
@@ -121,6 +124,10 @@ void opcontrol() {
 			if (liftVal) {
 				angler_pid(3100, 20000);
 				lift(1600, 20000);
+			} else if (!liftVal && armPosition < 1600) {
+				angler_pid(3100, 20000);
+				lift(1600, 20000);
+				liftVal = true;
 			} else {
 				angler_pid(3665, 0, 80, false);
 				lift(900, 0);
