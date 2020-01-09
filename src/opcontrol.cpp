@@ -89,7 +89,7 @@ void opcontrol() {
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if ((1880 > armPosition > 1680)) {
+			if ((1680 > armPosition > 1880)) {
 				// angler_pid(3100, 20000);
 				lift(1780, 20000);
 			} else if (!(1880 > armPosition > 1680)) {
