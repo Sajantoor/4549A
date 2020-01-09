@@ -154,11 +154,6 @@ void autonomous() {
     angler_pid(3665, 0, 80, false);
   }
 
-
-
-
-
-
   //BLUE FRONT AUTO
     if(switcher == 5){
       angler_pid(1580, 0);

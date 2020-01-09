@@ -53,7 +53,7 @@ void angler_pid_task(void*ignore) {
       }
 
       // max torque value is used to calculate how many cubes are in the angler
-      if (pros::c::motor_get_torque(7) > maxTorque) {
+      if (pros::c::motor_get_torque(ANGLER) > maxTorque) {
         maxTorque = pros::c::motor_get_torque(7);
       }
 
@@ -65,7 +65,7 @@ void angler_pid_task(void*ignore) {
 
       // run motors faster depending on the amount of torque applied on the motor
       // based on the number of cubes, the max power needs to be greater
-      if (pros::c::motor_get_torque(11) > 0.7) {
+      if (pros::c::motor_get_torque(ANGLER) > 0.7) {
         angler_pid.max_power = 100;
       } else {
         angler_pid.max_power = 80;
@@ -78,15 +78,15 @@ void angler_pid_task(void*ignore) {
         } else {
           // 9 stack torque needs the intake to run or else the bottom cube isn't in place
           if (maxTorque > NINE_STACK_TORQUE) {
-            angler_pid.max_power = angler_pid.max_power - 25;
+            angler_pid.max_power = angler_pid.max_power - 35;
             loader_left.move(90);
             loader_right.move(90);
           }
           // slow down faster for 7 stack or greater
           else if (maxTorque > SEVEN_STACK_TORQUE) {
-            angler_pid.max_power = angler_pid.max_power - 25;
+            angler_pid.max_power = angler_pid.max_power - 35;
           } else {
-            angler_pid.max_power = angler_pid.max_power - 15;
+            angler_pid.max_power = angler_pid.max_power - 20;
           }
         }
       }

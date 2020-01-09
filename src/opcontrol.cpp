@@ -79,61 +79,47 @@ void opcontrol() {
 
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			if (liftVal && anglerVal) {
-				angler_pid(1035, 20000);
+			if (anglerVal) {
+				angler_pid(2425, 20000);
 			} else if (liftVal) {
-				angler_pid(3665, 0, 80, false);
+				angler_pid(817, 0, 80, false);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (liftVal) {
-				angler_pid(3100, 20000);
+			if ((1880 > armPosition > 1680)) {
+				// angler_pid(3100, 20000);
 				lift(1780, 20000);
-			} else if (!liftVal && armPosition < 1780) {
-				angler_pid(3100, 20000);
+			} else if (!(1880 > armPosition > 1680)) {
+				// angler_pid(3100, 20000);
 				lift(1780, 20000);
-				liftVal = true;
-			} else {
-				angler_pid(3665, 0, 80, false);
-				lift(0, 0);
 			}
-			// same button to return
-			liftVal ? liftVal = false : liftVal = true;
 		}
 		// lift low scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			if (liftVal) {
-				angler_pid(3100, 20000);
+			if ((2600 > armPosition > 2400)) {
+				// angler_pid(3100, 20000);
 				lift(2500, 20000);
-			} else if (!liftVal && armPosition < 2500) {
-				angler_pid(3100, 20000);
+			} else if (!(2600 > armPosition > 2400)) {
+				// angler_pid(3100, 20000);
 				lift(2500, 20000);
-				liftVal = true;
-			} else {
-				angler_pid(3665, 0, 80, false);
-				lift(900, 0);
 			}
-			// same button to return
-			liftVal ? liftVal = false : liftVal = true;
+		}
+
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+			lift(0, 0);
 		}
 		// lift descore value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-			if (liftVal) {
-				angler_pid(3100, 20000);
+			if ((1880 > armPosition > 1680)) {
+				// angler_pid(3100, 20000);
 				lift(1600, 20000);
-			} else if (!liftVal && armPosition < 1600) {
-				angler_pid(3100, 20000);
+			} else if (!(1880 > armPosition > 1680)) {
+				// angler_pid(3100, 20000);
 				lift(1600, 20000);
-				liftVal = true;
-			} else {
-				angler_pid(3665, 0, 80, false);
-				lift(900, 0);
 			}
-			// same button to return
-			liftVal ? liftVal = false : liftVal = true;
 		}
 		// unlocking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
