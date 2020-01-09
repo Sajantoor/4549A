@@ -8,15 +8,15 @@
 #include "vision.h"
 
 // signature IDs
-const int GREEN = 1;
+const int PURPLE = 1;
 const int ORANGE = 2;
-const int PURPLE = 3;
+const int GREEN = 3;
 
-const int DETECTION_THRESHOLD = 0; // area of smallest possible acceptable cube
+const int DETECTION_THRESHOLD = 500; // area of smallest possible acceptable cube
 const int FALSE_POSITIVE_THRESHOLD = 50; // threshold to confirm something has been detected
-const int DEEP_VISION_THRESHOLD = 300; // apply deep detection algorithm if size is above this value and multiple objects detected
-const int MIN_DEEP_VISION_THRESHOLD = 100; // min size to be considered to be considered apart of deep vision
-const int MAX_Y = 45264; // stop before cube gets this big
+const int DEEP_VISION_THRESHOLD = 1000; // apply deep detection algorithm if size is above this value and multiple objects detected
+const int MIN_DEEP_VISION_THRESHOLD = 500; // min size to be considered to be considered apart of deep vision
+const int MAX_SIZE = 45264; // stop before cube gets this big
 const int ERROR_X = -32084; // -32084 is the error value for x
 
 struct data {
@@ -128,7 +128,7 @@ int deepVision(int id) {
     return 0;
   }
 
-  return deepVisionData.y;
+  return deepVisionData.size;
 }
 
 // ignore the targeted cube
@@ -141,9 +141,9 @@ int targetSelection() {
   pros::vision_object_s_t greenDetection = vision_sensor.get_by_sig(0, GREEN);
 
   // check size of all detections
-  detectionValues[0] = greenDetection.y_middle_coord;
-  detectionValues[1] = orangeDetection.y_middle_coord;
-  detectionValues[2] = purpleDetection.y_middle_coord;
+  detectionValues[0] = sizeCheck(purpleDetection.x_middle_coord, purpleDetection.width, purpleDetection.height, 0);
+  detectionValues[1] = sizeCheck(orangeDetection.x_middle_coord, orangeDetection.width, orangeDetection.height, 1);
+  detectionValues[2] = sizeCheck(greenDetection.x_middle_coord, greenDetection.width, greenDetection.height, 2);
   // gets the largest cube from the array and the color id
   for (size_t i = 0; i < 3; i++) {
     if ((vision_sensor.get_object_count() > 1) && (detectionValues[i] > DEEP_VISION_THRESHOLD)) {
@@ -157,7 +157,7 @@ int targetSelection() {
   }
   // if the cube is bigger than smallest possible cube, target is selected
   if (closestCube > DETECTION_THRESHOLD) {
-    if (closestCube == deepVisionData.y) {
+    if (closestCube == deepVisionData.size) {
       currentCube = deepVisionData;
     } else {
       clearData(&deepVisionData);
@@ -175,9 +175,9 @@ void vision_tracking(void*ignore) {
   // init
   vision_sensor.set_exposure(150);
   // color signatures
-  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -7755, -5119, -6436, -4297, -2363, -3330, 3.500, 0);
-  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 11299, 13297, 12298, -3073, -2449, -2762, 3.700, 0);
-  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 2335, 4353, 3344, 6017, 9951, 7984, 2.500, 0);
+  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 881, 1903, 1392, 6711, 9709, 8210, 2.400, 0);
+  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 4653, 8133, 6394, -2039, -1471, -1754, 2.000, 0);
+  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -7545, -5649, -6598, -3855, -2305, -3080, 1.100, 0);
 
   // float largestSize;
   // // zero point on sensor is the middle
@@ -192,7 +192,7 @@ void vision_tracking(void*ignore) {
         // set_drive(0, 0);
       } else {
         // turns until cube detected
-        // turn_set(30);
+        turn_set(60);
       }
 
     } else {
@@ -236,17 +236,17 @@ void vision_tracking(void*ignore) {
           direction = -1;
         }
         // basic movement
-        // if (fabs(currentCube.x) > 100) {
-        //   turn_set(20 * direction);
-        // } else if (currentCube.size >= MAX_Y) {
-        //   set_drive(0, 0);
-        // } else if (currentCube.size < MAX_Y) {
-        //   set_drive(30, 30);
-        // } /* else if (currentCube.size > MAX_Y) {
-        //   set_drive(-30, -30);
-        // } */ else {
-        //   set_drive(0, 0);
-        // }
+        if (fabs(currentCube.x) > 100) {
+          turn_set(80 * direction);
+        } else if (currentCube.size >= MAX_SIZE) {
+          set_drive(0, 0);
+        } else if (currentCube.size < MAX_SIZE) {
+          set_drive(80, 80);
+        } /* else if (currentCube.size > MAX_SIZE) {
+          set_drive(-30, -30);
+        } */ else {
+          set_drive(0, 0);
+        }
 
       } else {
         // lost target

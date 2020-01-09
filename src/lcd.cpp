@@ -12,7 +12,7 @@
 //ALL DECLARATIONS OF BUTTONS_____________________________________
 int switcher;
 //test comment
-LV_IMG_DECLARE(logo);
+// LV_IMG_DECLARE(logo);
 lv_obj_t * scr1  = lv_obj_create(NULL, NULL);
 lv_obj_t * scr2  = lv_obj_create(NULL, NULL);
 lv_obj_t * scr3  = lv_obj_create(NULL, NULL);
@@ -391,10 +391,10 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
   lv_scr_load(scr1);
   // while (true)
   // {
-  lv_obj_t * img1 = lv_img_create(lv_scr_act(), NULL);
-  lv_img_set_src(img1, &logo);
-  lv_obj_align(img1, NULL, LV_ALIGN_CENTER, 0, 0);
-  
+  // lv_obj_t * img1 = lv_img_create(lv_scr_act(), NULL);
+  // lv_img_set_src(img1, &logo);
+  // lv_obj_align(img1, NULL, LV_ALIGN_CENTER, 0, 0);
+
   switcher = 0;
   lv_style_copy(&red_button_style, &lv_style_plain);
   red_button_style.body.main_color = LV_COLOR_MAKE(200, 0, 0);

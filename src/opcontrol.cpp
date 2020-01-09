@@ -87,7 +87,7 @@ void opcontrol() {
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (!(1680 > armPosition && armPostion > 1880)) {
+			if (!(1680 > armPosition && armPosition > 1880)) {
 				lift(1780, 20000);
 			}
 		}
@@ -100,7 +100,7 @@ void opcontrol() {
 
 		// lift descore value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-			if (!(1880 > armPosition && armPostion > 1680)) {
+			if (!(1880 > armPosition && armPosition > 1680)) {
 				lift(1600, 20000);
 			}
 		}
