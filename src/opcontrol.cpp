@@ -8,11 +8,9 @@
 
 void opcontrol() {
 	// global variables
-	//full_position_reset();
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 	pros::Controller controller (pros::E_CONTROLLER_MASTER);
-	bool liftVal = true;
 	bool anglerVal = true;
 	int stickArray[4];
 	int power[4];
@@ -81,7 +79,7 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (anglerVal) {
 				angler_pid(2425, 20000);
-			} else if (liftVal) {
+			} else if (anglerVal) {
 				angler_pid(817, 0, 80, false);
 			}
 			// same button to return
@@ -89,40 +87,31 @@ void opcontrol() {
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if ((1680 > armPosition > 1880)) {
-				// angler_pid(3100, 20000);
-				lift(1780, 20000);
-			} else if (!(1880 > armPosition > 1680)) {
-				// angler_pid(3100, 20000);
+			if (!(1680 > armPosition && armPostion > 1880)) {
 				lift(1780, 20000);
 			}
 		}
 		// lift low scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			if ((2600 > armPosition > 2400)) {
-				// angler_pid(3100, 20000);
-				lift(2500, 20000);
-			} else if (!(2600 > armPosition > 2400)) {
-				// angler_pid(3100, 20000);
+			if (!(2600 > armPosition && armPosition > 2400)) {
 				lift(2500, 20000);
 			}
 		}
 
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-			lift(0, 0);
-		}
 		// lift descore value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-			if ((1880 > armPosition > 1680)) {
-				// angler_pid(3100, 20000);
-				lift(1600, 20000);
-			} else if (!(1880 > armPosition > 1680)) {
-				// angler_pid(3100, 20000);
+			if (!(1880 > armPosition && armPostion > 1680)) {
 				lift(1600, 20000);
 			}
 		}
-		// unlocking mechanism
+
+		// drop lift
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+			lift(0, 0);
+		}
+
+		// unlocking mechanism
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 		  angler_pid(1580, 0);
 			pros::delay(2000);
 		  loader_left.move(-127);
