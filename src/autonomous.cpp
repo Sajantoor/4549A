@@ -18,7 +18,7 @@ void autonomous() {
   float initial_time = pros::millis();
   timerAuto = pros::millis() - initial_time;
 
-  // position_drive(0,20,0,100,3000);
+   position_drive(0,20,0,100,3000);
   // position_turn(90, 1000, 100);
   // position_drive(10,20,90,100,3000);
   // reset_position_full(0, 20, 0);
