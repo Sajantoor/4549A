@@ -74,7 +74,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, float max_power, unsigned int timeout);
+void position_drive(float ending_point_x, float ending_point_y, float target_angl, bool cool_turn, float max_power, unsigned int timeout);
 extern pros::task_t tracking_task;
 extern pros::task_t velocity_task;
 
