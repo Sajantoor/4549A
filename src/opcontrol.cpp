@@ -79,7 +79,7 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (anglerVal) {
 				angler_pid(2625, 20000);
-			} else if (anglerVal) {
+			} else if (!anglerVal) {
 				angler_pid(817, 0, 80, false);
 			}
 			// same button to return

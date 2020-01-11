@@ -12,7 +12,6 @@
 //ALL DECLARATIONS OF BUTTONS_____________________________________
 int switcher;
 //test comment
-// LV_IMG_DECLARE(logo);
 lv_obj_t * scr1  = lv_obj_create(NULL, NULL);
 lv_obj_t * scr2  = lv_obj_create(NULL, NULL);
 lv_obj_t * scr3  = lv_obj_create(NULL, NULL);
@@ -352,7 +351,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
 
     std::ostringstream timerV;
-    timerV << "Auto Time: " << std::setprecision(3) << (timerAuto/1000);
+    timerV << "Auto Time: " << std::setprecision(3) << timerAuto;
     auto tv = timerV.str();
     lv_label_set_text(timer_label, tv.c_str());
     lv_obj_align(timer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);
@@ -389,11 +388,6 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
   void auto_selecter (void*ignore)
   {
   lv_scr_load(scr1);
-  // while (true)
-  // {
-  // lv_obj_t * img1 = lv_img_create(lv_scr_act(), NULL);
-  // lv_img_set_src(img1, &logo);
-  // lv_obj_align(img1, NULL, LV_ALIGN_CENTER, 0, 0);
 
   switcher = 0;
   lv_style_copy(&red_button_style, &lv_style_plain);
