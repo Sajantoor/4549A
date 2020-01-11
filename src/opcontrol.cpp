@@ -78,7 +78,7 @@ void opcontrol() {
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (anglerVal) {
-				angler_pid(2425, 20000);
+				angler_pid(2625, 20000);
 			} else if (anglerVal) {
 				angler_pid(817, 0, 80, false);
 			}
@@ -106,12 +106,12 @@ void opcontrol() {
 		}
 
 		// drop lift
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 			lift(0, 0);
 		}
 
 		// unlocking mechanism
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
 		  angler_pid(1580, 0);
 			pros::delay(2000);
 		  loader_left.move(-127);

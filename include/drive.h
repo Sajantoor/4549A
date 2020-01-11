@@ -52,6 +52,10 @@ typedef enum turnDir
 	ch
 } tTurnDir;
 
+polar vector_to_polar(vector v);
+
+vector polar_to_vector(polar p);
+
 void vectorToPolar(vector& vector, polar& polar);
 
 void polarToVector(polar& polar, vector& vector);
