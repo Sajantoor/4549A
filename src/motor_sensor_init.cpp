@@ -18,3 +18,4 @@ pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 pros::ADIEncoder left_encoder(top_port,bottom_port,false);
 pros::ADIEncoder right_encoder(top_port_right,bottom_port_right,false);
 pros::ADIEncoder back_encoder(top_port_back,bottom_port_back,true);
+pros::Controller controller (pros::E_CONTROLLER_MASTER);

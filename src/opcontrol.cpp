@@ -9,10 +9,10 @@
 
 void opcontrol() {
 	// global variables
-	pros::Controller controller (pros::E_CONTROLLER_MASTER);
+	// pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
-	bool anglerVal = true;
+	int anglerVal = 0;
 	int stickArray[4];
 	int power[4];
 
@@ -60,15 +60,12 @@ void opcontrol() {
 
 		// intake on triggers
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-			loader_left.move(127);
-			loader_right.move(127);
+			loader_left.move_voltage(12000);
+			loader_right.move_voltage(12000);
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-			loader_left.move(-127);
-			loader_right.move(-127);
+			loader_left.move_velocity(-12000);
+			loader_right.move_velocity(-12000);
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-			loader_left.move(-86);
-			loader_right.move(-86);
-		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 			loader_left.move(-86);
 			loader_right.move(-86);
 		} else {
@@ -78,14 +75,31 @@ void opcontrol() {
 
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			if (anglerVal) {
-				angler_pid(2625, 20000);
-				controller.rumble(". - . -");
-			} else if (!anglerVal) {
-				angler_pid(817, 0, 80, false);
+			if (anglerVal == 0) {
+				angler_pid(1500, 2000, 127, false);
+			} else if (anglerVal == 1) {
+				angler_pid(2925, 20000);
+			} else if (anglerVal == 3) {
+				angler_pid(870, 900, 127, false);
 			}
 			// same button to return
-			anglerVal ? anglerVal = false : anglerVal = true;
+			if (anglerVal == 3) {
+				anglerVal = 0;
+			} else {
+				anglerVal++;
+			}
+		}
+
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+			anglerBool = false;
+			angler.move(50);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+			anglerBool = false;
+			angler.move(-50);
+		} else {
+			if (!anglerBool) {
+				angler.move(0);
+			}
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {

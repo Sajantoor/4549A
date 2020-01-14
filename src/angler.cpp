@@ -47,7 +47,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 500 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + 100 + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
         !applyTorque ? torqueCheck = false : torqueCheck = true;
       }

@@ -38,6 +38,7 @@ extern pros::ADIEncoder right_encoder;
 extern pros::ADIEncoder back_encoder;
 
 extern pros::Vision vision_sensor;
+extern pros::Controller controller;
 
 
 #endif

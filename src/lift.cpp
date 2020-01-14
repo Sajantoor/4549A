@@ -41,7 +41,7 @@ void lift_task(void*ignore) {
        float final_power = pid_calc(&lift_pid, height, position); // final power is calculated using pid
        arm.move(final_power);
        // slew rate to slow down the motor based on the error value
-       if (position > 1580) {
+       if (position > 1980) {
          lift_pid.max_power = lift_pid.max_power - 5; // slew rate
          if (lift_pid.max_power < 60) lift_pid.max_power = 60; // capping lowest possible speed
        } else {
