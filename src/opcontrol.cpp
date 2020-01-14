@@ -75,19 +75,13 @@ void opcontrol() {
 
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-			if (anglerVal == 0) {
-				angler_pid(1500, 2000, 127, false);
-			} else if (anglerVal == 1) {
-				angler_pid(2925, 20000);
-			} else if (anglerVal == 3) {
-				angler_pid(870, 900, 127, false);
+			if (!anglerVal) {
+				angler_pid(2600, 20000);
+			} else if (anglerVal) {
+				angler_pid(870, 500, 127, false);
 			}
 			// same button to return
-			if (anglerVal == 3) {
-				anglerVal = 0;
-			} else {
-				anglerVal++;
-			}
+			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {

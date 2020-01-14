@@ -47,7 +47,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 100 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
         !applyTorque ? torqueCheck = false : torqueCheck = true;
       }
@@ -73,18 +73,16 @@ void angler_pid_task(void*ignore) {
 
       // slows down near the end of the stack
       if (fabs(angler_pid.error) < 600) {
-        if (angler_pid.max_power < 40) {
-          angler_pid.max_power = 40;
+        if (angler_pid.max_power < 60) {
+          angler_pid.max_power = 60;
         } else {
           // 9 stack torque needs the intake to run or else the bottom cube isn't in place
           if (maxTorque > NINE_STACK_TORQUE) {
-            angler_pid.max_power = angler_pid.max_power - 35;
-            loader_left.move(90);
-            loader_right.move(90);
+            angler_pid.max_power = angler_pid.max_power - 25;
           }
           // slow down faster for 7 stack or greater
           else if (maxTorque > SEVEN_STACK_TORQUE) {
-            angler_pid.max_power = angler_pid.max_power - 35;
+            angler_pid.max_power = angler_pid.max_power - 25;
           } else {
             angler_pid.max_power = angler_pid.max_power - 20;
           }
