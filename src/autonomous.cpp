@@ -20,21 +20,37 @@ void autonomous() {
   initial_time = pros::millis();
   loader_left.move(127);
   loader_right.move(127);
-  position_drive(0,45,0,false,100,3000);//pick up first set of cubes
-  position_drive(0,5,0,false,100,3000);//pick up first set of cubes
-  position_drive(23,5,0,false,110,3000);//strafe to the second set
-  position_drive(23,45,0,false,100,3000);//pick up second set of cubes
+  position_drive(0,53,0,false,50,3000);//pick up first set of cubes
+  loader_left.move(40);
+  loader_right.move(40);
+  // position_drive(0,8,0,false,115,3000);//pick up first set of cubes
+  // reset_position_full(0, 8, 0);
+  // position_drive(25,5,0,false,90,3000);//strafe to the second set
+  // position_drive(25,45,0,false,100,3000);//pick up second set of cubes
+  // loader_left.move(0);
+  // loader_right.move(0);
+  position_drive(-2,10,0,false,127,4500);//come back facing the scoring zone
   loader_left.move(0);
   loader_right.move(0);
-  position_drive(20,5,90,false,110,3000);//come back facing the scoring zone
-  position_drive(20,-5,90,false,100,500);//strafe to line up with wall
-  position_drive(25,position.y,90,false,127,3000);//drive to scoring zone
-  angler_pid(2425, 20000);
-  angler_pid(817, 0, 80, false);
-  loader_left.move(-90);
-  loader_right.move(-90);
-  pros::delay(1800);
-  position_drive(15,position.y,false,90,127,3000);
+  position_turn(90, 3000, 110);
+  loader_left.move(-50);
+  loader_right.move(-50);
+  pros::delay(300);
+  loader_left.move(0);
+  loader_right.move(0);
+  position_drive(0,-20,90,false,127,1500);//strafe to line up with wall
+  reset_position_full(0,0,0);
+  position_drive(0,9,0,false,127,1000);//strafe to line up with wall
+  angler_pid(2625, 20000);
+  pros::delay(3000);
+  position_drive(0,-5,0,false,127,1000);//strafe to line up with wall
+  // position_drive(25,position.y,90,false,100,3000);//drive to scoring zone
+  // angler_pid(2425, 20000);
+  // angler_pid(817, 0, 80, false);
+  // loader_left.move(-90);
+  // loader_right.move(-90);
+  // pros::delay(1800);
+  // position_drive(15,position.y,false,90,127,3000);
   timerAuto = pros::millis() - initial_time;
 
   // // position_drive(0,20,0,110,3000);//pick up first set of cubes

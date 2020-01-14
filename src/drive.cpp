@@ -565,8 +565,8 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 
     if(cool_turn) {
       turn_pid.Kp = 90;
-      xDir_pid.Kp = 37;
-      yDir_pid.Kp = 17;
+      xDir_pid.Kp = 40;
+      yDir_pid.Kp = 19;
     }
 
     //timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
