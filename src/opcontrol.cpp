@@ -6,11 +6,12 @@
 #include "lift.h"
 #include "angler.h"
 
+
 void opcontrol() {
 	// global variables
+	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
-	pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	bool anglerVal = true;
 	int stickArray[4];
 	int power[4];
@@ -79,6 +80,7 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (anglerVal) {
 				angler_pid(2625, 20000);
+				controller.rumble(". - . -");
 			} else if (!anglerVal) {
 				angler_pid(817, 0, 80, false);
 			}
