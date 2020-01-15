@@ -12,7 +12,8 @@ void opcontrol() {
 	// pros::Controller controller (pros::E_CONTROLLER_MASTER);
 	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
 	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
-	int anglerVal = 0;
+	bool anglerVal = false;
+	bool midStack = false;
 	int stickArray[4];
 	int power[4];
 
@@ -78,10 +79,20 @@ void opcontrol() {
 			if (!anglerVal) {
 				angler_pid(2600, 20000);
 			} else if (anglerVal) {
-				angler_pid(870, 500, 127, false);
+				angler_pid(870, 900, 127, false);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
+		}
+
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+			if (!midStack) {
+				angler_pid(1200, 20000);
+			} else if (midStack) {
+				angler_pid(870, 500, 127, false);
+			}
+			// same button to return
+			midStack ? midStack = false : midStack = true;
 		}
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {

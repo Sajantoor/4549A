@@ -277,7 +277,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    float kp = 125;//75.6
+    float kp = 130;//75.6
     float kd = 0;
     float ki = 0;
     float proportional, derivative, integral;
@@ -292,13 +292,15 @@ void position_turn(float target, int timeout, int max_speed) {
     bool timer_turn = true;
     unsigned int net_timer;
 
-    int failsafe = 1500;
+    int failsafe = timeout;
     int initial_millis = pros::millis();
+    net_timer = initial_millis + timeout; //just to initialize net_timer at first
+
     printf("orientation %f\n", orientation);
     printf("timer %i\n", pros::millis());
 
 
-    while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+    while((pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
       //do a basic pid loop on orientation with the target as the ending angle
       encoder_avg = orientation;
       error = degToRad(target) - encoder_avg;
@@ -311,6 +313,7 @@ void position_turn(float target, int timeout, int max_speed) {
       //pros::lcd::print(1, "error %f\n", error);
       printf("target %f\n", degToRad(target));
       printf("error %f\n", radToDeg(error));
+      printf("aoijfeosigo \n\n");
 
       //integral limeter
       if (fabs(error) > (degToRad(22))) integral = 0;//22
