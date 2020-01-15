@@ -554,7 +554,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout) {
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float intake_transition_point) {
     vector positionErr;
     vector rotated_motorPower;
     vector rotation_vector;
@@ -588,11 +588,13 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     float drive_right_power;
     float drive_right_b_power;
     float largestVal = 0;
-     printf("Moving to %f %f \n", ending_point_x, ending_point_y);
+    float intakeSpeed = initial_intake;
+    printf("Moving to %f %f \n", ending_point_x, ending_point_y);
+
     do {
       largestVal = 0;
 
-      if(magnitude_of_X_Y < 2) {
+      if (magnitude_of_X_Y < 2) {
         limit_to_val_set(rotated_motorPower.y, abs(max_power));
         if (abs(rotated_motorPower.y) < abs(max_power)) {
           if (rotated_motorPower.y > 0) {
@@ -630,6 +632,17 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       }
     }
 
+
+      // intake speed transition
+      // transition point is the magnitude x, y error away intakes transition speeds
+      if ((magnitude_of_X_Y < intake_transition_point) && (intake_transition_point != 0)) {
+        if (intakeSpeed > final_intake) {
+          intakeSpeed = final_intake;
+        } else {
+          // probably a smoother transition here
+          intakeSpeed += 20;
+        }
+      }
       //runs pid loops on the position.x and position.y and orienation
       float final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
       float final_power_xDir = pid_calc(&xDir_pid, ending_point_x, position.x);
@@ -685,9 +698,11 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       drive_left_b.move(motor_power_array [1]);
       drive_right.move(motor_power_array [2]);
       drive_right_b.move(motor_power_array [3]);
+      loader_right.move(intakeSpeed);
+      loader_left.move(intakeSpeed);
 
       //this gets the magnitude of the error using the error from throttle and strafe
-      powf_of_X_Y = powf(yDir_pid.error,2) + powf(xDir_pid.error,2);
+      powf_of_X_Y = powf(yDir_pid.error, 2) + powf(xDir_pid.error, 2);
       magnitude_of_X_Y = sqrtf(powf_of_X_Y);
 
 			printf("magnitude_of_X_Y %f \n", magnitude_of_X_Y);
