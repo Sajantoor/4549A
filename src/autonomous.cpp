@@ -18,27 +18,27 @@ void autonomous() {
   float initial_time;
   loader_left.move(127);
   loader_right.move(127);
-  position_drive(0,15,0,false,100,1500);//pick up first set of cubes
-  position_turn(90,500,100);
-  position_drive(8,15,90,false,60,1500);//pick up first set of cubes
+  position_drive(0,15,0,false,127,1200);//pick up first set of cubes
+  position_turn(90,400,100);
+  position_drive(8,15,90,false,70,1500);//pick up first set of cubes
   loader_left.move(100);
   loader_right.move(100);
-  position_turn(45,600,100);
+  position_turn(45,500,100);
   // angler_pid(1100, 20000);
-  position_drive(30,40,45,false,50,2500);//pick up first set of cubes
+  position_drive(33,43,45,false,60,2500);//pick up first set of cubes
   // angler_pid(870, 500, 127, false);
   loader_left.move(110);
   loader_right.move(110);
-  position_drive(0,40,-90,false,40,4000);//pick up first set of cubes
+  position_drive(0,40,-90,false,80,3800);//pick up first set of cubes
   loader_left.move(100);
   loader_right.move(100);
   //angler_pid(1000, 3000);
-  position_drive(-22,3,-150,false,100,3800);//pick up first set of cubes
+  position_drive(-22,3,-150,false,100,3700);//pick up first set of cubes
   loader_left.move(0);
   loader_right.move(0);
-  angler_pid(2600, 5000);
+  angler_pid(2600, 4500);
   pros::delay(3000);
-  position_drive(-15,15,-150,false,100,3800);//pick up first set of cube
+  position_drive(-16,14,-150,false,100,3800);//pick up first set of cube
   //position_drive(15,20,90,false,100,3000);//come back and line up with the 5th cube
   // position_drive(15,40,10,true,100,3000);//pick up the 5th cube
   // position_drive(-5,25,-90,true,100,3000);//line up with the wall and face scoring
