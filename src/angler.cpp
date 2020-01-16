@@ -47,7 +47,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         holdTimer = pros::millis() + delayTime; // motor hold value
-        timeout = pros::millis() + 1000 + delayTime; // timeout value to exit out of the loop, if something goes wrong
+        timeout = pros::millis() + delayTime; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
         !applyTorque ? torqueCheck = false : torqueCheck = true;
       }
@@ -73,16 +73,18 @@ void angler_pid_task(void*ignore) {
 
       // slows down near the end of the stack
       if (fabs(angler_pid.error) < 600) {
-        if (angler_pid.max_power < 60) {
-          angler_pid.max_power = 60;
+        if (angler_pid.max_power < 40) {
+          angler_pid.max_power = 40;
         } else {
           // 9 stack torque needs the intake to run or else the bottom cube isn't in place
           if (maxTorque > NINE_STACK_TORQUE) {
-            angler_pid.max_power = angler_pid.max_power - 25;
+            angler_pid.max_power = angler_pid.max_power - 35;
+            loader_left.move(90);
+            loader_right.move(90);
           }
           // slow down faster for 7 stack or greater
           else if (maxTorque > SEVEN_STACK_TORQUE) {
-            angler_pid.max_power = angler_pid.max_power - 25;
+            angler_pid.max_power = angler_pid.max_power - 35;
           } else {
             angler_pid.max_power = angler_pid.max_power - 20;
           }
@@ -95,11 +97,13 @@ void angler_pid_task(void*ignore) {
       angler.move(final_power);
       printf("angler error: %f \n \n", angler_pid.error);
       printf("torque: %f \n \n", maxTorque);
+      printf("timeout: %f \n \n", timeout - pros::millis());
 
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
-      if (((fabs(angler_pid.error) <= 8) && (currentTime > holdTimer)) || (currentTime > timeout))  {
+      if (((fabs(angler_pid.error) <= 10) || (currentTime > holdTimer)) || (currentTime > timeout))  {
         angler.move(0);
         maxTorque = 0;
+        printf("exited loop: %f \n \n", timeout);
         // if there is a next target, then switch to the next target, else clear current target and exit the loop
         if (nextTarget == 0) {
           currentTarget = 0;
@@ -113,9 +117,10 @@ void angler_pid_task(void*ignore) {
           nextTarget = 0;
           timerAng = true;
         }
-      } else if ((fabs(angler_pid.error) <= 8) && applyTorque) {
+      } else if ((fabs(angler_pid.error) <= 12) && applyTorque) {
         angler.move(0);
         maxTorque = 0;
+                  printf("exited loop: %f \n \n", timeout);
         // if there is a next target, then switch to the next target, else clear current target and exit the loop
         if (nextTarget == 0) {
           currentTarget = 0;

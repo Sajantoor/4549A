@@ -77,9 +77,9 @@ void opcontrol() {
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (!anglerVal) {
-				angler_pid(2600, 20000);
+				angler_pid(2570, 20000);
 			} else if (anglerVal) {
-				angler_pid(870, 900, 127, false);
+				angler_pid(870, 1500, 127, false);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
@@ -108,8 +108,8 @@ void opcontrol() {
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (!(1680 > armPosition && armPosition > 1880)) {
-				lift(1780, 20000);
+			if (!(2100 > armPosition && armPosition > 1900)) {
+				lift(2000, 20000);
 			}
 		}
 		// lift low scoring value
