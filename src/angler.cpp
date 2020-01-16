@@ -5,7 +5,7 @@
 #include "motor_sensor_init.h"
 
 // global variables
-const float SEVEN_STACK_TORQUE = 1; // this is roughly the amount of torque on the motor for a 7 stack
+const float SEVEN_STACK_TORQUE = 5; // this is roughly the amount of torque on the motor for a 7 stack
 const float NINE_STACK_TORQUE = 4; // roughly the amount of torque for a 9 stack
 
 float currentTarget;
@@ -48,6 +48,7 @@ void angler_pid_task(void*ignore) {
     while (anglerBool) {
       if (timerAng) {
         // holdTimer = pros::millis() + delayTime; // motor hold value
+        angler_pid.max_power = currentSpeed;
         timeout = pros::millis() + anglerDelay; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
         !applyTorque ? torqueCheck = false : torqueCheck = true;
@@ -75,24 +76,19 @@ void angler_pid_task(void*ignore) {
       // }
 
       // slows down near the end of the stack
-      // if (fabs(angler_pid.error) < 600) {
-      //   if (angler_pid.max_power < 50) {
-      //     angler_pid.max_power = 50;
-      //   } else {
-      //     // 9 stack torque needs the intake to run or else the bottom cube isn't in place
-      //     if (maxTorque > NINE_STACK_TORQUE) {
-      //       angler_pid.max_power = angler_pid.max_power - 5;
-      //       loader_left.move(90);
-      //       loader_right.move(90);
-      //     }
-      //     // slow down faster for 7 stack or greater
-      //     else if (maxTorque > SEVEN_STACK_TORQUE) {
-      //       angler_pid.max_power = angler_pid.max_power - 5;
-      //     } else {
-      //       angler_pid.max_power = angler_pid.max_power - 5;
-      //     }
-      //   }
-      // }
+      if (fabs(angler_pid.error) < 500) {
+        printf("slowing down");
+        if (angler_pid.max_power < currentSpeed * 0.5) {
+          angler_pid.max_power = currentSpeed * 0.5;
+        } else {
+          // slow down faster for 7 stack or greater
+          if (maxTorque > SEVEN_STACK_TORQUE) {
+            angler_pid.max_power = angler_pid.max_power - 20;
+          } else {
+            angler_pid.max_power = angler_pid.max_power - 20;
+          }
+        }
+      }
 
       float currentTime = pros::millis();
       float position = potentiometer_angler.get_value();

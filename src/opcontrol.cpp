@@ -15,8 +15,6 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
-
-		 printf("angler pot: %i \n \n", potentiometer_angler.get_value());
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
@@ -81,11 +79,11 @@ void opcontrol() {
 			if (!anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(1189, true, 100, true);
+				angler_pid(1189, true, 127, true);
 			} else if (anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(3000, true, 127, false, 2000);
+				angler_pid(3000, true, 100, false, 2000);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
