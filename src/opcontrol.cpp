@@ -77,9 +77,9 @@ void opcontrol() {
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (!anglerVal) {
-				angler_pid(2570, 20000);
+				angler_pid(2570, true, 80);
 			} else if (anglerVal) {
-				angler_pid(870, 1500, 127, false);
+				angler_pid(870, false, 127, false);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
@@ -87,9 +87,9 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
 			if (!midStack) {
-				angler_pid(1200, 20000);
+				angler_pid(1200, true, 80);
 			} else if (midStack) {
-				angler_pid(870, 500, 127, false);
+				angler_pid(870, false, 127, false);
 			}
 			// same button to return
 			midStack ? midStack = false : midStack = true;
