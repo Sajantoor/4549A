@@ -8,7 +8,7 @@ pros::Motor drive_right_b(DRIVE_RIGHT_B, MOTOR_GEARSET_18, true, pros::E_MOTOR_E
 
 pros::Motor loader_right(LOADER_RIGHT, MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor loader_left(LOADER_LEFT, MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor angler(ANGLER, MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::Motor angler(ANGLER, MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor arm(ARM, MOTOR_GEARSET_6, true, pros::E_MOTOR_ENCODER_COUNTS);
 
 pros::Vision vision_sensor(VISION_PORT);

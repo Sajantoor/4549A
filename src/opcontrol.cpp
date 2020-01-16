@@ -9,15 +9,14 @@
 
 void opcontrol() {
 	// global variables
-	// pros::Controller controller (pros::E_CONTROLLER_MASTER);
-	pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
-	pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 	bool anglerVal = false;
 	bool midStack = false;
 	int stickArray[4];
 	int power[4];
 
 	while (true) {
+
+		 printf("angler pot: %i \n \n", potentiometer_angler.get_value());
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
@@ -69,6 +68,9 @@ void opcontrol() {
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 			loader_left.move(-86);
 			loader_right.move(-86);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			loader_left.move(-86);
+			loader_right.move(-86);
 		} else {
 			loader_left.move(0);
 			loader_right.move(0);
@@ -77,22 +79,16 @@ void opcontrol() {
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (!anglerVal) {
-				angler_pid(2570, true, 80);
+				anglerHold = false;
+				pros::delay(20);
+				angler_pid(1189, true, 100, true);
 			} else if (anglerVal) {
-				angler_pid(870, false, 127, false);
+				anglerHold = false;
+				pros::delay(20);
+				angler_pid(3000, true, 127, false, 2000);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
-		}
-
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-			if (!midStack) {
-				angler_pid(1200, true, 80);
-			} else if (midStack) {
-				angler_pid(870, false, 127, false);
-			}
-			// same button to return
-			midStack ? midStack = false : midStack = true;
 		}
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
@@ -108,8 +104,8 @@ void opcontrol() {
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (!(2100 > armPosition && armPosition > 1900)) {
-				lift(2000, 20000);
+			if (!(2050 > armPosition && armPosition > 1850)) {
+				lift(1950, 20000);
 			}
 		}
 		// lift low scoring value
