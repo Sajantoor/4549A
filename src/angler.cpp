@@ -5,8 +5,10 @@
 #include "motor_sensor_init.h"
 
 // global variables
-const float SEVEN_STACK_TORQUE = 5; // this is roughly the amount of torque on the motor for a 7 stack
-const float NINE_STACK_TORQUE = 4; // roughly the amount of torque for a 9 stack
+const float SEVEN_STACK_TORQUE = 1.50;
+const float EIGHT_STACK_TORQUE = 1.59; // this is roughly the amount of torque on the motor for a 7 stack
+const float NINE_STACK_TORQUE = 1.93; // roughly the amount of torque for a 9 stack
+const float TEN_STACK_TORQUE = 2.10;
 
 float currentTarget;
 float nextTarget;
@@ -64,28 +66,32 @@ void angler_pid_task(void*ignore) {
       }
 
       // slightly increases the target of a 7 stack to improve accuracy
-      if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-        currentTarget = currentTarget - 1000;
-        torqueCheck = false;
-      }
-
-      // run motors faster depending on the amount of torque applied on the motor
-      // based on the number of cubes, the max power needs to be greater
-      // if (!pros::c::motor_get_torque(ANGLER) > 0.7) {
-      //   angler_pid.max_power -= 20;
+      // if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
+      //   currentTarget = currentTarget - 1000;
+      //   torqueCheck = false;
       // }
 
-      // slows down near the end of the stack
-      if (fabs(angler_pid.error) < 500) {
-        printf("slowing down");
+      // 8 stack torque is faster than 7 stack
+      if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 500)) {
         if (angler_pid.max_power < currentSpeed * 0.5) {
           angler_pid.max_power = currentSpeed * 0.5;
         } else {
-          // slow down faster for 7 stack or greater
-          if (maxTorque > SEVEN_STACK_TORQUE) {
-            angler_pid.max_power = angler_pid.max_power - 20;
+          angler_pid.max_power = angler_pid.max_power - 15;
+        }
+      // 7 stack torque is slower
+      } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 600)) {
+        if (angler_pid.max_power < currentSpeed * 0.4) {
+          angler_pid.max_power = currentSpeed * 0.4;
+        } else {
+          angler_pid.max_power = angler_pid.max_power - 25;
+        }
+      // slow down for all cubes
+      } else {
+        if (fabs(angler_pid.error) < 500) {
+          if (angler_pid.max_power < currentSpeed * 0.5) {
+            angler_pid.max_power = currentSpeed * 0.5;
           } else {
-            angler_pid.max_power = angler_pid.max_power - 20;
+            angler_pid.max_power = angler_pid.max_power - 15;
           }
         }
       }
@@ -95,6 +101,7 @@ void angler_pid_task(void*ignore) {
       int final_power = pid_calc(&angler_pid, currentTarget, position);
       angler.move(final_power);
       printf("angler pid: %f \n \n", angler_pid.error);
+      printf("torque values: %f \n \n", maxTorque);
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
       if ((fabs(angler_pid.error) <= 10) || !anglerHold || delayReached)  {
         angler.move(0);

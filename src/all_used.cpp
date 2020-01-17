@@ -57,9 +57,9 @@ void HarshStop()
 
 	printf("Vel y: %f | a: %f | x: %f \n \n", yStop, aStop, xStop);
 
-	yStop *= -0.1;
+	yStop *= -0.2;
 	aStop *= -6.3;
-  xStop *= -0.1;
+  xStop *= -0.2;
 
   int left_b = yStop + aStop - xStop;
   int right_b = yStop - aStop + xStop;
