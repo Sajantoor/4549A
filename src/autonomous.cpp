@@ -17,6 +17,27 @@ void autonomous() {
   beginning_orientation = 0;
   float initial_time;
 
+  initial_time = pros::millis();
+  position_drive(0,15,0,false,127,1200, 0, 127, 10);//pick up first set of cubes
+  loader_left.move(0);
+  loader_right.move(0);
+  position_turn(90,500,100);
+  position_drive(8,15,90,false,70,1500, 0, 127, 10);//pick up first set of cubes
+  loader_left.move(0);
+  loader_right.move(0);
+  position_turn(45,500,100);
+  // angler_pid(1100, 20000);
+  position_drive(31,41,45,false,60,2500, 90, 127, 15);//pick up first set of cubes
+  // angler_pid(870, 500, 127, false);
+  position_turn(-125,1000,100);
+  //angler_pid(1000, 3000);
+  position_drive(-10,22,-125,false,127,3700, 80, 127, 25);//pick up first set of cubes
+  // position_drive(-23,2,-125,false,127,3700, 80, 127, 25);//pick up first set of cubes
+  // angler_pid(1189, true, 127, true);
+  // pros::delay(2000);
+  // position_drive(-20, 11,-135,false,100,3800);//pick up first set of cube
+  // timerAuto = pros::millis() - initial_time;
+
   // // position_drive(0,20,0,110,3000);//pick up first set of cubes
   // // position_drive(20,0,0,110,3000);//pick up first set of cubes
   // // position_drive(20,20,0,110,3000);//pick up first set of cubes
