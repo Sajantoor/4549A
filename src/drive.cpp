@@ -636,12 +636,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       // intake speed transition
       // transition point is the magnitude x, y error away intakes transition speeds
       if ((magnitude_of_X_Y < intake_transition_point) && (intake_transition_point != 0)) {
-        if (intakeSpeed > final_intake) {
-          intakeSpeed = final_intake;
-        } else {
-          // probably a smoother transition here
-          intakeSpeed += 20;
-        }
+        intakeSpeed = final_intake;
       }
       //runs pid loops on the position.x and position.y and orienation
       float final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);

@@ -5,7 +5,7 @@
 #include "motor_sensor_init.h"
 
 // global variables
-const float SEVEN_STACK_TORQUE = 1.50;
+const float SEVEN_STACK_TORQUE = 1.40;
 const float EIGHT_STACK_TORQUE = 1.59; // this is roughly the amount of torque on the motor for a 7 stack
 const float NINE_STACK_TORQUE = 1.93; // roughly the amount of torque for a 9 stack
 const float TEN_STACK_TORQUE = 2.10;
