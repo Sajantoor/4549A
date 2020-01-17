@@ -119,14 +119,25 @@ void basicMovement(float x, float y, float angle) {
 	// target is x and y => point on field
 	// x = strafe
 	// y = torque
-
+  float speed = 80;
   polar absoluteError = {25, 25};
-  float timeout = pros::millis() + 8000;
+  float timeout = pros::millis() + 2000;
+  pid_values xDirPID(25, 1, 0, 30, 500, speed);
+  pid_values yDirPID(14.5, 0, 1, 30, 500, speed);
+  pid_values rotationPID(150, 1, 10, 30, 500, speed);
 
-  while (((absoluteError.radius > 0.22) || (fabs(absoluteError.theta) > 0.15)) && (timeout > pros::millis())) {
-    pid_values xDirPID(25, 1, 0, 30, 500, 127);
-    pid_values yDirPID(14.5, 0, 1, 30, 500, 127);
-    pid_values rotationPID(150, 1, 10, 30, 500, 127);
+  while (((absoluteError.radius > 0.5) || (fabs(absoluteError.theta) > 0.5)) && (timeout > pros::millis())) {
+
+    if (absoluteError.radius < 5) {
+      if (speed < 30) {
+        speed = 30;
+      } else {
+        speed = speed -5;
+      }
+      xDirPID.max_power = speed;
+      yDirPID.max_power = speed;
+      rotationPID.max_power = speed;
+    }
 
     float xDir = pid_calc(&xDirPID, x, trackingValues.position.x);
     float yDir = pid_calc(&yDirPID, y, trackingValues.position.y);

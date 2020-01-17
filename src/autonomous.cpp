@@ -9,8 +9,13 @@
 
 void autonomous() {
   // reset_position_full(0, 0, 0);
-  basicMovement(20, 0, 0);
+  loader_right.move(127);
+  loader_left.move(127);
+  basicMovement(0, 35, 0);
   basicMovement(0, 0, 0);
+  basicMovement(22, 0, 0);
+  basicMovement(22, 35, 0);
+  basicMovement(22, 0, 0);
 //   printf("PositionX: %f || PositionY: %f || Orientation: %f \n \n", position.x, position.y, orientation);
 //   printf("position.x %f \n", position.x);
 //   printf("position.y %f \n", position.y);
