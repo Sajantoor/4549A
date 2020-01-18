@@ -16,7 +16,6 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
-
 //RED FRONT AUTO
   if(switcher == 1){
     initial_time = pros::millis();
@@ -198,42 +197,38 @@ void autonomous() {
       //First Stack
       initial_time = pros::millis();
       lift(1950, 20000);
-      pros::delay(3000);
+      pros::delay(2500);
       lift(0, 0);
+      loader_left.move(127);
+      loader_right.move(127);
+      position_drive(0,16,0,false,127,1200);//pick up first set of cubes
+      position_turn(90,400,100);
+      position_drive(8,16,90,false,70,1500);//pick up first set of cubes
       loader_left.move(100);
       loader_right.move(100);
-      position_drive(0,43,0,false,65,4000, 80, 127, 30);//pick up first set of cubes
-      position_drive(0,12,0,false,127,4500, 127, 100 , 25);//come back facing the scoring zone
+      position_turn(45,500,100);
+      // angler_pid(1100, 20000);
+      position_drive(33,43,45,false,60,2500, 100, 100, 0);//pick up first set of cubes
+      // angler_pid(870, 500, 127, false);
+      loader_left.move(110);
+      loader_right.move(110);
+      position_drive(0,40,-90,false,80,3800, 110, 110, 0);//pick up first set of cubes
+      loader_left.move(100);
+      loader_right.move(100);
+      //angler_pid(1000, 3000);
+      position_drive(-16,0,-150,false,100,3700, 100, 100, 0);//pick up first set of cubes
+      position_turn(-90,500,100);
+      position_drive(-5,-20,-90,false,127,3700, -10, 0, 5);//pick up first set of cubes
+      loader_left.move(-20);
+      loader_right.move(-20);
+      pros::delay(300);
       loader_left.move(0);
       loader_right.move(0);
-      position_turn(90, 600, 110);
-      position_drive(0,-20,90,false,127,1500, 0, 0, 0);//strafe to line up with wall
       reset_position_full(0,0,0);
-      position_drive(0,9,0,false,127,1000, -20, -20, 0);//strafe to line up with wall
-      loader_left.move(0);
-      loader_right.move(0);
+      position_drive(0,10,0,false,100,3700, 0, 0, 0);//pick up first set of cubes
       angler_pid(1189, true, 127, true);
-      pros::delay(2500);
-      position_drive(0,-10,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
-      angler_pid(3000, true, 100, false, 2000);
-      //First Tower
-      position_drive(-20,-15,0,false,127,2000, 0, 0, 0);//strafe to line up with wall
-      position_turn(-90, 600, 110);
-      position_drive(0,0,-90,false,127,1500, 0, 0, 0);//strafe to line up with wall
-      reset_position_full(0,0,0);
-      position_drive(0, 39, 0, false, 100, 3000,0, 127, 20);
-      // loader_left.move(-70);
-      // loader_right.move(-70);
-      // pros::delay(500);
-      loader_left.move(0);
-      loader_right.move(0);
-      lift(2500, 20000);
-      position_drive(0, 30 , 0, false, 100, 3000 , 0,0,0);
-      pros::delay(1000);
-      position_drive(0, 39, 0, false, 60, 3000 , 0,0,0);
-      pros::delay(1500);
-      loader_left.move(-127);
-      loader_right.move(-127);
+      pros::delay(3000);
+      position_drive(0,-5,0,false,100,3800, 0, 0, 0);//pick up first set of cube
       //second stack
       // pros::delay(2000);
       // position_drive(-10, 48, 0, false, 60, 3000 , 0,0,0);
