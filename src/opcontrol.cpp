@@ -64,11 +64,11 @@ void opcontrol() {
 			loader_left.move_velocity(-12000);
 			loader_right.move_velocity(-12000);
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-			loader_left.move(-86);
-			loader_right.move(-86);
+			loader_left.move(-94);
+			loader_right.move(-94);
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			loader_left.move(-86);
-			loader_right.move(-86);
+			loader_left.move(-94);
+			loader_right.move(-94);
 		} else {
 			loader_left.move(0);
 			loader_right.move(0);
@@ -115,8 +115,8 @@ void opcontrol() {
 
 		// lift descore value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-			if (!(1880 > armPosition && armPosition > 1680)) {
-				lift(1600, 20000);
+			if (!(2000 > armPosition && armPosition > 1700)) {
+				lift(1900, 20000);
 			}
 		}
 

@@ -277,7 +277,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    float kp = 130;//75.6
+    float kp = 160;//75.6
     float kd = 0;
     float ki = 0;
     float proportional, derivative, integral;
@@ -562,7 +562,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(290, 3, 6, 30, 500, 127);//300
+    pid_values turn_pid(300, 3, 6, 30, 500, 127);//300
     pid_values xDir_pid(28, 0, 0, 30, 500, 127);//28
     pid_values yDir_pid(11, 8, 0, 30, 500, 127);//12,8
 
@@ -594,43 +594,43 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     do {
       largestVal = 0;
 
-    //   if (magnitude_of_X_Y < 2) {
-    //     limit_to_val_set(rotated_motorPower.y, abs(max_power));
-    //     if (abs(rotated_motorPower.y) < abs(max_power)) {
-    //       if (rotated_motorPower.y > 0) {
-    //         rotated_motorPower.y -= 100;
-    //       } else {
-    //         rotated_motorPower.y += 100;
-    //       }
-    //     }
-    //
-    //     limit_to_val_set(rotated_motorPower.x, abs(max_power));
-    //     if (abs(rotated_motorPower.x) < abs(max_power)) {
-    //       if (rotated_motorPower.x > 0) {
-    //         rotated_motorPower.x -= 100;
-    //       } else {
-    //         rotated_motorPower.x += 100;
-    //       }
-    //     }
-    //   } else if (magnitude_of_X_Y < 5) {
-    //   limit_to_val_set(rotated_motorPower.y, abs(max_power));
-    //   if (abs(rotated_motorPower.y) < abs(max_power)) {
-    //     if (rotated_motorPower.y > 0) {
-    //       rotated_motorPower.y -= 80;
-    //     } else {
-    //       rotated_motorPower.y += 80;
-    //     }
-    //   }
-    //
-    //   limit_to_val_set(rotated_motorPower.x, abs(max_power));
-    //   if (abs(rotated_motorPower.x) < abs(max_power)) {
-    //     if (rotated_motorPower.x > 0) {
-    //       rotated_motorPower.x -= 80;
-    //     } else {
-    //       rotated_motorPower.x += 80;
-    //     }
-    //   }
-    // }
+      if (magnitude_of_X_Y < 2) {
+        limit_to_val_set(rotated_motorPower.y, abs(max_power));
+        if (abs(rotated_motorPower.y) < abs(max_power)) {
+          if (rotated_motorPower.y > 0) {
+            rotated_motorPower.y -= 100;
+          } else {
+            rotated_motorPower.y += 100;
+          }
+        }
+
+        limit_to_val_set(rotated_motorPower.x, abs(max_power));
+        if (abs(rotated_motorPower.x) < abs(max_power)) {
+          if (rotated_motorPower.x > 0) {
+            rotated_motorPower.x -= 100;
+          } else {
+            rotated_motorPower.x += 100;
+          }
+        }
+      } else if (magnitude_of_X_Y < 5) {
+      limit_to_val_set(rotated_motorPower.y, abs(max_power));
+      if (abs(rotated_motorPower.y) < abs(max_power)) {
+        if (rotated_motorPower.y > 0) {
+          rotated_motorPower.y -= 80;
+        } else {
+          rotated_motorPower.y += 80;
+        }
+      }
+
+      limit_to_val_set(rotated_motorPower.x, abs(max_power));
+      if (abs(rotated_motorPower.x) < abs(max_power)) {
+        if (rotated_motorPower.x > 0) {
+          rotated_motorPower.x -= 80;
+        } else {
+          rotated_motorPower.x += 80;
+        }
+      }
+    }
 
 
       // intake speed transition
