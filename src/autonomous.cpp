@@ -17,6 +17,12 @@ void autonomous() {
   beginning_orientation = 0;
   float initial_time;
 
+  if(switcher == 0){
+    lift(1950, 20000);
+    pros::delay(1000);
+    lift(0, 0);
+  }
+
 //RED FRONT AUTO
   if(switcher == 1){
     initial_time = pros::millis();

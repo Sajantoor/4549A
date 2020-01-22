@@ -69,56 +69,57 @@ lv_style_t blue_autos_button_style;
 //RED AUTOS
 static lv_res_t red_auto1 (lv_obj_t * btn) {
   switcher = 1;
-  //printf("switcher red %d\n", switcher);
+  controller.print(0, 0, "Red Front");
   return LV_RES_OK;
 }
 
 static lv_res_t red_auto2 (lv_obj_t * btn) {
   switcher = 2;
-  //printf("switcher red %d\n", switcher);
+  controller.print(0, 0, "Red Back");
   return LV_RES_OK;
 }
 
 static lv_res_t red_auto3 (lv_obj_t * btn) {
   switcher = 3;
-  //printf("switcher red %d\n", switcher);
+  controller.print(0, 0, "Right Strafe Unlock");
   return LV_RES_OK;
 }
 
 static lv_res_t red_auto4 (lv_obj_t * btn)  {
   switcher = 4;
-  //printf("switcher red %d\n", switcher);
+  controller.print(0, 0, "Left Strafe Unlock");
   return LV_RES_OK;
 }
 
 //BLUE AUTOS
 static lv_res_t blue_auto1 (lv_obj_t * btn) {
   switcher = 5;
-  //printf("switcher  %d\n", switcher);
+  controller.print(0, 0, "Blue Front");
   return LV_RES_OK;
 }
 
 static lv_res_t blue_auto2 (lv_obj_t * btn) {
   switcher = 6;
-  //printf("switcher red %d\n", switcher);
+  controller.print(0, 0, "Blue Back");
   return LV_RES_OK;
 }
 
 static lv_res_t blue_auto3 (lv_obj_t * btn) {
   switcher = 7;
-  //printf("switcher red %d\n", switcher);
+  controller.print(0, 0, "Right Strafe Unlock");
   return LV_RES_OK;
 }
 
 static lv_res_t blue_auto4 (lv_obj_t * btn) {
   switcher = 8;
-  //printf("switcher red %d\n", switcher);
+  controller.print(0, 0, "Left Strafe Unlock");
   return LV_RES_OK;
 }
 
 //OTHER AUTOS
 static lv_res_t skills_auto (lv_obj_t * btn) {
   switcher = 9;
+  controller.print(0, 0, "Skills");
   return LV_RES_OK;
 }
 

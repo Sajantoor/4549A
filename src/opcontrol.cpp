@@ -15,6 +15,7 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
+		controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
