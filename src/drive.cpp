@@ -554,7 +554,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float intake_transition_point) {
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float intake_transition_point, float end_speed) {
     vector positionErr;
     vector rotated_motorPower;
     vector rotation_vector;
@@ -655,16 +655,28 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 		  printf("position.y %f \n", position.y);
 
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
-      limit_to_val_set(rotated_motorPower.y, abs(max_power));
-      int delta_y = rotated_motorPower.y - last_y;
-      limit_to_val_set(delta_y, 3);
-      rotated_motorPower.y = last_y += delta_y;
+      if ((magnitude_of_X_Y < intake_transition_point) && (intake_transition_point != 0)) {
+        limit_to_val_set(rotated_motorPower.y, abs(end_speed));
+        int delta_y = rotated_motorPower.y - last_y;
+        limit_to_val_set(delta_y, 3);
+        rotated_motorPower.y = last_y += delta_y;
 
-      limit_to_val_set(rotated_motorPower.x, abs(max_power));
-      int delta_x = rotated_motorPower.x - last_x;
-      limit_to_val_set(delta_x, 5);
-      rotated_motorPower.x = last_x += delta_x;
+        limit_to_val_set(rotated_motorPower.x, abs(end_speed));
+        int delta_x = rotated_motorPower.x - last_x;
+        limit_to_val_set(delta_x, 5);
+        rotated_motorPower.x = last_x += delta_x;
+      }
+      else {
+        limit_to_val_set(rotated_motorPower.y, abs(max_power));
+        int delta_y = rotated_motorPower.y - last_y;
+        limit_to_val_set(delta_y, 3);
+        rotated_motorPower.y = last_y += delta_y;
 
+        limit_to_val_set(rotated_motorPower.x, abs(max_power));
+        int delta_x = rotated_motorPower.x - last_x;
+        limit_to_val_set(delta_x, 5);
+        rotated_motorPower.x = last_x += delta_x;
+      }
       drive_left_power = rotated_motorPower.y + final_power_turn + rotated_motorPower.x;
       drive_left_b_power = rotated_motorPower.y + final_power_turn - rotated_motorPower.x;
       drive_right_power = rotated_motorPower.y - final_power_turn - rotated_motorPower.x;
