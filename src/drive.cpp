@@ -554,7 +554,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float intake_transition_point, float end_speed) {
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float transition_point, float end_speed) {
     vector positionErr;
     vector rotated_motorPower;
     vector rotation_vector;
@@ -631,11 +631,9 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
         }
       }
     }
-
-
       // intake speed transition
       // transition point is the magnitude x, y error away intakes transition speeds
-      if ((magnitude_of_X_Y < intake_transition_point) && (intake_transition_point != 0)) {
+      if ((magnitude_of_X_Y < transition_point) && (transition_point != 0)) {
         intakeSpeed = final_intake;
       }
       //runs pid loops on the position.x and position.y and orienation
@@ -655,7 +653,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 		  printf("position.y %f \n", position.y);
 
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
-      if ((magnitude_of_X_Y < intake_transition_point) && (intake_transition_point != 0)) {
+      if ((magnitude_of_X_Y < transition_point) && (transition_point != 0)) {
         limit_to_val_set(rotated_motorPower.y, abs(end_speed));
         int delta_y = rotated_motorPower.y - last_y;
         limit_to_val_set(delta_y, 3);
