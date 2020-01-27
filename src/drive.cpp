@@ -300,7 +300,7 @@ void position_turn(float target, int timeout, int max_speed) {
     printf("timer %i\n", pros::millis());
 
 
-    while((pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+    do {
       //do a basic pid loop on orientation with the target as the ending angle
       encoder_avg = orientation;
       error = degToRad(target) - encoder_avg;
@@ -331,7 +331,7 @@ void position_turn(float target, int timeout, int max_speed) {
         timer_turn = false;
       }
       pros::delay(20);
-    }
+    } while(radToDeg(error) < 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     HarshStop();
 
@@ -593,44 +593,6 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 
     do {
       largestVal = 0;
-
-      if (magnitude_of_X_Y < 2) {
-        limit_to_val_set(rotated_motorPower.y, abs(max_power));
-        if (abs(rotated_motorPower.y) < abs(max_power)) {
-          if (rotated_motorPower.y > 0) {
-            rotated_motorPower.y -= 100;
-          } else {
-            rotated_motorPower.y += 100;
-          }
-        }
-
-        limit_to_val_set(rotated_motorPower.x, abs(max_power));
-        if (abs(rotated_motorPower.x) < abs(max_power)) {
-          if (rotated_motorPower.x > 0) {
-            rotated_motorPower.x -= 100;
-          } else {
-            rotated_motorPower.x += 100;
-          }
-        }
-      } else if (magnitude_of_X_Y < 5) {
-      limit_to_val_set(rotated_motorPower.y, abs(max_power));
-      if (abs(rotated_motorPower.y) < abs(max_power)) {
-        if (rotated_motorPower.y > 0) {
-          rotated_motorPower.y -= 80;
-        } else {
-          rotated_motorPower.y += 80;
-        }
-      }
-
-      limit_to_val_set(rotated_motorPower.x, abs(max_power));
-      if (abs(rotated_motorPower.x) < abs(max_power)) {
-        if (rotated_motorPower.x > 0) {
-          rotated_motorPower.x -= 80;
-        } else {
-          rotated_motorPower.x += 80;
-        }
-      }
-    }
       // intake speed transition
       // transition point is the magnitude x, y error away intakes transition speeds
       if ((magnitude_of_X_Y < transition_point) && (transition_point != 0)) {
@@ -721,3 +683,120 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     loader_right.move(0);
     printf("driving done\n");
 }
+
+
+          //   void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed) {
+          //     vector Vector;
+          //     polar Polar;
+          //
+          //     if(turnDir == ch){
+          //       Vector.x = position.x - x;
+          //       Vector.y = position.y - y;
+          //       vectorToPolar(Vector, Polar);
+          //       Polar.theta += end_angle;
+          //       polarToVector(Polar, Vector);
+          //
+          //       turnDir = Vector.x > 0 ? cw : ccw;
+          //     }
+          //
+          //     float yOrigin, xOrigin;
+          //     float linearV, angularV, angularVLast = 0;
+          //     float localR, localA;
+          //
+          //     const float kR = 15.0;
+          //     const float kA = 5.0;
+          //     const float kB = 60.0;
+          //     const float kP = 30.0;
+          //     const float kD = 2000.0;
+          //
+          //     switch (turnDir){
+          //
+          //       case cw:
+          //       Vector.y = 0;
+          //       Vector.x = arc_radius;
+          //       vectorToPolar(Vector, Polar);
+          //       Polar.theta -= end_angle;
+          //       polarToVector(Polar, Vector);
+          //       yOrigin = y + Vector.y;
+          //       xOrigin = x + Vector.x;
+          //
+          //       localA = atan2(position.x - xOrigin, position.y - yOrigin);
+          //       end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
+          //
+          //       do
+          //       {
+          //       float aGlobal = orientation;
+          //       if (max_speed < 0)
+          //       aGlobal += pi;
+          //       angularV = velocity.a;
+          //       float _y = position.y - yOrigin;
+          //       float _x = position.x - xOrigin;
+          //       localR = sqrt(_y * _y + _x * _x);
+          //       localA = nearestangle(atan2(_x, _y), localA);
+          //       linearV = velocity.x * sin(localA + pi / 2) + velocity.y * cos(localA + pi / 2);
+          //
+          //       float target = MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA + pi / 2, aGlobal) - aGlobal);
+          //       int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
+          //       angularVLast = angularV;
+          //
+          //       if (turn < 0) {
+          //         turn = 0;
+          //       }
+          //       else if (turn > 150) {
+          //         turn = 150;
+          //       }
+          //
+          //       if (max_speed > 0) {
+          //         set_drive(max_speed, max_speed - turn);
+          //       }
+          //       else {
+          //         set_drive(max_speed + turn, max_speed);
+          //       }
+          //       pros::delay(10);
+          //     } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
+          //
+          //       case ccw:
+          //       Vector.y = 0;
+          //       Vector.x = arc_radius;
+          //       vectorToPolar(Vector, Polar);
+          //       Polar.theta += end_angle;
+          //       polarToVector(Polar, Vector);
+          //       yOrigin = y + Vector.y;
+          //       xOrigin = x + Vector.x;
+          //
+          //       localA = atan2(position.x - xOrigin, position.y - yOrigin);
+          //       end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
+          //
+          //       do
+          //       {
+          //       float aGlobal = orientation;
+          //       if (max_speed < 0)
+          //       aGlobal += pi;
+          //       angularV = velocity.a;
+          //       float _y = position.y - yOrigin;
+          //       float _x = position.x - xOrigin;
+          //       localR = sqrt(_y * _y + _x * _x);
+          //       localA = nearestangle(atan2(_x, _y), localA);
+          //       linearV = velocity.x * sin(localA - pi / 2) + velocity.y * cos(localA - pi / 2);
+          //
+          //       float target = -MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA - pi / 2, aGlobal) - aGlobal);
+          //       int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
+          //       angularVLast = angularV;
+          //
+          //       if (turn < 0)
+          //       turn = 0;
+          //       else if (turn > -150)
+          //       turn = -150;
+          //
+          //       if (max_speed > 0)
+          //       set_drive(max_speed + turn, max_speed);
+          //       else
+          //       set_drive(max_speed, max_speed - turn);
+          //       pros::delay(10);
+          //     } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
+          //
+          //       default:
+          //       break;
+          //     }
+          //     set_drive(0,0);
+          // }
