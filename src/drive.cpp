@@ -554,7 +554,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float transition_point, float end_speed_transition, float end_speed) {
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, bool pickUp_cube, float initial_intake, float final_intake, float transition_point, float end_speed_transition, float end_speed) {
     vector positionErr;
     vector rotated_motorPower;
     vector rotation_vector;
@@ -614,6 +614,10 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 			printf("position.x %f \n", position.x);
 		  printf("position.y %f \n", position.y);
 
+      if(pickUp_cube && light_sensor_intake.get_value() < 1900){
+        loader_left.move(0);
+        loader_right.move(0);
+      }
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
       if ((magnitude_of_X_Y < end_speed_transition) && (end_speed_transition != 0)) {
         limit_to_val_set(rotated_motorPower.y, abs(end_speed));

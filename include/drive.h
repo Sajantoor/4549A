@@ -78,7 +78,7 @@ void position_face_point2(float target_x, float target_y, tTurnDir turnDir, floa
 
 void position_face_point(float target_x, float target_y , int timeout);
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn , float max_power, unsigned int timeout, float initial_intake = 127, float final_intake = 127, float transition_point = 0,  float end_speed_transition = 0, float end_speed = 127);
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn , float max_power, unsigned int timeout, bool pickUp_cube = false, float initial_intake = 127, float final_intake = 127, float transition_point = 0,  float end_speed_transition = 0, float end_speed = 127);
 extern pros::task_t tracking_task;
 extern pros::task_t velocity_task;
 
