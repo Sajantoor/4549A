@@ -16,12 +16,18 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
+  //position_turn(90, 5000, 127);
 
-  if(switcher == 0){
-    lift(1950, 20000);
-    pros::delay(1000);
-    lift(0, 0);
-  }
+  // position_drive(0, 20, 0, false, 127, 9000, 0, 127, 20, 5, 20, true);
+  // position_drive(20,20,0,false,100,3000);//pick up first set of cubes
+
+  // sweep_turn(0,10,90, 5, cw, 100);
+
+  // if(switcher == 0){
+  //   lift(1950, 20000);
+  //   pros::delay(1000);
+  //   lift(0, 0);
+  // }
 
 //RED FRONT AUTO
   if(switcher == 1){

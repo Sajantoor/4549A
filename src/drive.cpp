@@ -277,7 +277,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    float kp = 160;//75.6
+    float kp = 139;//75.6
     float kd = 0;
     float ki = 0;
     float proportional, derivative, integral;
@@ -331,7 +331,7 @@ void position_turn(float target, int timeout, int max_speed) {
         timer_turn = false;
       }
       pros::delay(20);
-    } while(radToDeg(error) < 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+    } while(radToDeg(error) > 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     HarshStop();
 
@@ -554,7 +554,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, bool pickUp_cube, float initial_intake, float final_intake, float transition_point, float end_speed_transition, float end_speed) {
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float transition_point, float end_speed_transition, float end_speed, bool pickUp_cube) {
     vector positionErr;
     vector rotated_motorPower;
     vector rotation_vector;
@@ -562,12 +562,12 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(300, 3, 6, 30, 500, 127);//300
-    pid_values xDir_pid(28, 0, 0, 30, 500, 127);//28
+    pid_values turn_pid(315, 3, 6, 30, 500, 127);//300
+    pid_values xDir_pid(31, 25, 0, 30, 500, 127);//28
     pid_values yDir_pid(11, 8, 0, 30, 500, 127);//12,8
 
     if(cool_turn) {
-      turn_pid.Kp = 85;
+      turn_pid.Kp = 100;
       xDir_pid.Kp = 40;
       yDir_pid.Kp = 19;
     }
@@ -592,6 +592,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     printf("Moving to %f %f \n", ending_point_x, ending_point_y);
 
     do {
+      printf("intake light sensor %d \n", light_sensor_intake.get_value());
       largestVal = 0;
       // intake speed transition
       // transition point is the magnitude x, y error away intakes transition speeds
@@ -617,6 +618,10 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       if(pickUp_cube && light_sensor_intake.get_value() < 1900){
         loader_left.move(0);
         loader_right.move(0);
+        transition_point = 0;
+        intakeSpeed = 0;
+        final_intake = 0;
+        printf("set to 0 \n");
       }
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
       if ((magnitude_of_X_Y < end_speed_transition) && (end_speed_transition != 0)) {
@@ -679,7 +684,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 			printf("magnitude_of_X_Y %f \n", magnitude_of_X_Y);
       pros::delay(10);
 
-    } while ((magnitude_of_X_Y > 1 || abs(radToDeg(turn_pid.error)) > 1) && (pros::millis() < net_timer));
+    } while ((magnitude_of_X_Y > 1 || abs(radToDeg(turn_pid.error)) > 0.5) && (pros::millis() < net_timer));
 
     //applies harsh stop depending on how fast the robot was moving
     HarshStop();
@@ -689,118 +694,119 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 }
 
 
-          //   void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed) {
-          //     vector Vector;
-          //     polar Polar;
-          //
-          //     if(turnDir == ch){
-          //       Vector.x = position.x - x;
-          //       Vector.y = position.y - y;
-          //       vectorToPolar(Vector, Polar);
-          //       Polar.theta += end_angle;
-          //       polarToVector(Polar, Vector);
-          //
-          //       turnDir = Vector.x > 0 ? cw : ccw;
-          //     }
-          //
-          //     float yOrigin, xOrigin;
-          //     float linearV, angularV, angularVLast = 0;
-          //     float localR, localA;
-          //
-          //     const float kR = 15.0;
-          //     const float kA = 5.0;
-          //     const float kB = 60.0;
-          //     const float kP = 30.0;
-          //     const float kD = 2000.0;
-          //
-          //     switch (turnDir){
-          //
-          //       case cw:
-          //       Vector.y = 0;
-          //       Vector.x = arc_radius;
-          //       vectorToPolar(Vector, Polar);
-          //       Polar.theta -= end_angle;
-          //       polarToVector(Polar, Vector);
-          //       yOrigin = y + Vector.y;
-          //       xOrigin = x + Vector.x;
-          //
-          //       localA = atan2(position.x - xOrigin, position.y - yOrigin);
-          //       end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
-          //
-          //       do
-          //       {
-          //       float aGlobal = orientation;
-          //       if (max_speed < 0)
-          //       aGlobal += pi;
-          //       angularV = velocity.a;
-          //       float _y = position.y - yOrigin;
-          //       float _x = position.x - xOrigin;
-          //       localR = sqrt(_y * _y + _x * _x);
-          //       localA = nearestangle(atan2(_x, _y), localA);
-          //       linearV = velocity.x * sin(localA + pi / 2) + velocity.y * cos(localA + pi / 2);
-          //
-          //       float target = MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA + pi / 2, aGlobal) - aGlobal);
-          //       int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
-          //       angularVLast = angularV;
-          //
-          //       if (turn < 0) {
-          //         turn = 0;
-          //       }
-          //       else if (turn > 150) {
-          //         turn = 150;
-          //       }
-          //
-          //       if (max_speed > 0) {
-          //         set_drive(max_speed, max_speed - turn);
-          //       }
-          //       else {
-          //         set_drive(max_speed + turn, max_speed);
-          //       }
-          //       pros::delay(10);
-          //     } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
-          //
-          //       case ccw:
-          //       Vector.y = 0;
-          //       Vector.x = arc_radius;
-          //       vectorToPolar(Vector, Polar);
-          //       Polar.theta += end_angle;
-          //       polarToVector(Polar, Vector);
-          //       yOrigin = y + Vector.y;
-          //       xOrigin = x + Vector.x;
-          //
-          //       localA = atan2(position.x - xOrigin, position.y - yOrigin);
-          //       end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
-          //
-          //       do
-          //       {
-          //       float aGlobal = orientation;
-          //       if (max_speed < 0)
-          //       aGlobal += pi;
-          //       angularV = velocity.a;
-          //       float _y = position.y - yOrigin;
-          //       float _x = position.x - xOrigin;
-          //       localR = sqrt(_y * _y + _x * _x);
-          //       localA = nearestangle(atan2(_x, _y), localA);
-          //       linearV = velocity.x * sin(localA - pi / 2) + velocity.y * cos(localA - pi / 2);
-          //
-          //       float target = -MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA - pi / 2, aGlobal) - aGlobal);
-          //       int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
-          //       angularVLast = angularV;
-          //
-          //       if (turn < 0)
-          //       turn = 0;
-          //       else if (turn > -150)
-          //       turn = -150;
-          //
-          //       if (max_speed > 0)
-          //       set_drive(max_speed + turn, max_speed);
-          //       else
-          //       set_drive(max_speed, max_speed - turn);
-          //       pros::delay(10);
-          //     } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
-          //
-          //       default:
-          //       break;
-          //     }
-          //     set_drive(0,0);
-          // }
+  void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed) {
+    vector Vector;
+    polar Polar;
+
+    if(turnDir == ch){
+      Vector.x = position.x - x;
+      Vector.y = position.y - y;
+      vectorToPolar(Vector, Polar);
+      Polar.theta += end_angle;
+      polarToVector(Polar, Vector);
+
+      turnDir = Vector.x > 0 ? cw : ccw;
+    }
+
+    float yOrigin, xOrigin;
+    float linearV, angularV, angularVLast = 0;
+    float localR, localA;
+
+    const float kR = 15.0;
+    const float kA = 5.0;
+    const float kB = 60.0;
+    const float kP = 30.0;
+    const float kD = 2000.0;
+
+    switch (turnDir){
+
+      case cw:
+      Vector.y = 0;
+      Vector.x = arc_radius;
+      vectorToPolar(Vector, Polar);
+      Polar.theta -= end_angle;
+      polarToVector(Polar, Vector);
+      yOrigin = y + Vector.y;
+      xOrigin = x + Vector.x;
+
+      localA = atan2(position.x - xOrigin, position.y - yOrigin);
+      end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
+
+      do
+      {
+      float aGlobal = orientation;
+        if (max_speed < 0)
+      aGlobal += pi;
+
+      angularV = velocity.a;
+      float _y = position.y - yOrigin;
+      float _x = position.x - xOrigin;
+      localR = sqrt(_y * _y + _x * _x);
+      localA = nearestangle(atan2(_x, _y), localA);
+      linearV = velocity.x * sin(localA + pi / 2) + velocity.y * cos(localA + pi / 2);
+
+      float target = MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA + pi / 2, aGlobal) - aGlobal);
+      int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
+      angularVLast = angularV;
+
+      if (turn < 0) {
+        turn = 0;
+      }
+      else if (turn > 150) {
+        turn = 150;
+      }
+
+      if (max_speed > 0) {
+        set_drive(max_speed, max_speed - turn);
+      }
+      else {
+        set_drive(max_speed + turn, max_speed);
+      }
+      pros::delay(10);
+    } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
+
+      case ccw:
+      Vector.y = 0;
+      Vector.x = arc_radius;
+      vectorToPolar(Vector, Polar);
+      Polar.theta += end_angle;
+      polarToVector(Polar, Vector);
+      yOrigin = y + Vector.y;
+      xOrigin = x + Vector.x;
+
+      localA = atan2(position.x - xOrigin, position.y - yOrigin);
+      end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
+
+      do
+      {
+      float aGlobal = orientation;
+      if (max_speed < 0)
+      aGlobal += pi;
+      angularV = velocity.a;
+      float _y = position.y - yOrigin;
+      float _x = position.x - xOrigin;
+      localR = sqrt(_y * _y + _x * _x);
+      localA = nearestangle(atan2(_x, _y), localA);
+      linearV = velocity.x * sin(localA - pi / 2) + velocity.y * cos(localA - pi / 2);
+
+      float target = -MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA - pi / 2, aGlobal) - aGlobal);
+      int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
+      angularVLast = angularV;
+
+      if (turn < 0)
+      turn = 0;
+      else if (turn > -150)
+      turn = -150;
+
+      if (max_speed > 0)
+      set_drive(max_speed + turn, max_speed);
+      else
+      set_drive(max_speed, max_speed - turn);
+      pros::delay(10);
+    } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
+
+      default:
+      break;
+    }
+    set_drive(0,0);
+}
