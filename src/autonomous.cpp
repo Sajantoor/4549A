@@ -212,17 +212,29 @@ void autonomous() {
 
     //SKILLS
     if(switcher == 9) {
-      position_drive(0, 117.5, 0, false, 127, 9000, 127, 0, 120, 20, 70);
-      position_turn(45, 600, 127);
-      position_drive(12.1, 128.6, 45, false, 127, 9000, 0, 0, 0, 10, 70);
-      angler_pid(1189, true, 127, true);
-      pros::delay(1600);
-      position_drive(0,117,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
-      angler_pid(3000, true, 100, false, 2000);
-      position_turn(-90, 600, 127);
-      position_drive(25, 117, -90, false, 127, 9000, 0, 0, 0, 10, 70);
-      reset_position_full(23, 117, 0);
-      position_drive(-37, 117, 0, false, 127, 9000, 0, 0, 0, 10, 70);
+      position_drive(0, 40, 0, false, 70, 2000, 127, 127, 145, 20, 70, false);
+      loader_left.move(127);
+      loader_right.move(127);
+      pros::delay(2000);
+      position_turn(-27, 5000, 127);
+      position_drive(-6.8, 46,-27, false, 50, 4000, 127, 127, 130, 20, 70, true);
+      position_drive(-0.5, 39.7, -27, false, 100, 3000, 0, 0, 0, 20, 70, false);
+      lift(1950, 20000);
+      pros::delay(2000);
+      position_drive(-4.7, 50, -27, false, 100, 3000, 0, 0, 0, 20, 70, false);
+      loader_left.move(-127);
+      loader_right.move(-127);
+      // position_drive(0, 109, 0, false, 80, 3000, 127, 127, 130, 20, 70, false);
+      // position_turn(45, 5000, 127);
+      // position_drive(12.1, 128.6, 45, false, 127, 9000, 0, 0, 0, 10, 70);
+      // angler_pid(1189, true, 127, true);
+      // pros::delay(1600);
+      // position_drive(0,117,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
+      // angler_pid(3000, true, 100, false, 2000);
+      // position_turn(-90, 600, 127);
+      // position_drive(25, 117, -90, false, 127, 9000, 0, 0, 0, 10, 70);
+      // reset_position_full(23, 117, 0);
+      // position_drive(-37, 117, 0, false, 127, 9000, 0, 0, 0, 10, 70);
     }
   printf("orientation %f \n", radToDeg(orientation));
   printf("position.x %f \n", position.x);

@@ -562,9 +562,9 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(315, 3, 6, 30, 500, 127);//300
+    pid_values turn_pid(300, 3, 6, 30, 500, 127);//300
     pid_values xDir_pid(31, 25, 0, 30, 500, 127);//28
-    pid_values yDir_pid(11, 8, 0, 30, 500, 127);//12,8
+    pid_values yDir_pid(12, 8, 0, 30, 500, 127);//12,8
 
     if(cool_turn) {
       turn_pid.Kp = 100;
@@ -616,6 +616,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 		  printf("position.y %f \n", position.y);
 
       if(pickUp_cube && light_sensor_intake.get_value() < 1900){
+        pros::delay(900);
         loader_left.move(0);
         loader_right.move(0);
         transition_point = 0;
