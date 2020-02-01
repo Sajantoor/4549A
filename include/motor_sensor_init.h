@@ -22,7 +22,7 @@ extern pros::Motor loader_left;
 extern pros::Motor loader_right;
 extern pros::Motor angler;
 
-#define pot_port_arm 1
+#define light_port_intake 1
 #define pot_port_angler 2
 #define top_port_back 3
 #define bottom_port_back 4
@@ -31,7 +31,7 @@ extern pros::Motor angler;
 #define top_port 7
 #define bottom_port 8
 
-extern pros::ADIPort potentiometer_arm;
+extern pros::ADIPort light_sensor_intake;
 extern pros::ADIPort potentiometer_angler;
 extern pros::ADIEncoder left_encoder;
 extern pros::ADIEncoder right_encoder;
