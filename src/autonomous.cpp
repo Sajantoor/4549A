@@ -217,8 +217,8 @@ void autonomous() {
       loader_right.move(127);
       pros::delay(2000);
       position_turn(-27, 5000, 127);
-      position_drive(-6.8, 46,-27, false, 50, 4000, 127, 127, 130, 20, 70, true);
-      position_drive(-0.5, 39.7, -27, false, 100, 3000, 0, 0, 0, 20, 70, false);
+      position_drive(-7, 47,-27, false, 50, 4000, 127, 127, 130, 20, 70, false);
+      position_drive(-0.5, 39.7, -27, false, 100, 3000, -100, -100, 25, 20, 70, true);
       lift(1950, 20000);
       pros::delay(2000);
       position_drive(-4.7, 50, -27, false, 100, 3000, 0, 0, 0, 20, 70, false);

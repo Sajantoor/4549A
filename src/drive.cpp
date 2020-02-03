@@ -635,6 +635,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
         int delta_x = rotated_motorPower.x - last_x;
         limit_to_val_set(delta_x, 5);
         rotated_motorPower.x = last_x += delta_x;
+        printf("slowing down \n");
       }
       else {
         limit_to_val_set(rotated_motorPower.y, abs(max_power));
@@ -689,8 +690,6 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 
     //applies harsh stop depending on how fast the robot was moving
     HarshStop();
-    loader_left.move(0);
-    loader_right.move(0);
     printf("driving done\n");
 }
 
