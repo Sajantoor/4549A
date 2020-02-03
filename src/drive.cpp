@@ -79,7 +79,7 @@ void tracking_update(void*ignore) {
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
 
-    const float distance_between_centre = 4.60091565;//1.59437
+    const float distance_between_centre = 4.95876466;//1.59437
     const float distance_between_backwheel_center = 4.913425;//2.5
 
     //Returns the orientation of the bot in radians
@@ -562,9 +562,9 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(300, 3, 6, 30, 500, 127);//300
+    pid_values turn_pid(310, 150, 0, 30, 500, 127);//300
     pid_values xDir_pid(31, 25, 0, 30, 500, 127);//28
-    pid_values yDir_pid(12, 8, 0, 30, 500, 127);//12,8
+    pid_values yDir_pid(10.5, 4, 0, 30, 500, 127);//12,8
 
     if(cool_turn) {
       turn_pid.Kp = 100;
@@ -686,7 +686,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
 			printf("magnitude_of_X_Y %f \n", magnitude_of_X_Y);
       pros::delay(10);
 
-    } while ((magnitude_of_X_Y > 1 || abs(radToDeg(turn_pid.error)) > 0.5) && (pros::millis() < net_timer));
+    } while ((magnitude_of_X_Y > 1 || abs(radToDeg(turn_pid.error)) > 0.7) && (pros::millis() < net_timer));
 
     //applies harsh stop depending on how fast the robot was moving
     HarshStop();
@@ -712,11 +712,11 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     float linearV, angularV, angularVLast = 0;
     float localR, localA;
 
-    const float kR = 15.0;
-    const float kA = 5.0;
-    const float kB = 60.0;
-    const float kP = 30.0;
-    const float kD = 2000.0;
+    const float kR = 5.0;
+    const float kA = 0;
+    const float kB = 10.0;
+    const float kP = 5.0;
+    const float kD = 30.0;
 
     switch (turnDir){
 

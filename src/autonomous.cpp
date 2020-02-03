@@ -16,6 +16,8 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
+  // position_drive(0, 25, 0, false, 127, 10000, 0, 0, 0, 15, 50, false);
+  //position_turn(91, 1000, 127);
 //RED FRONT AUTO
   if(switcher == 1){
     initial_time = pros::millis();
@@ -212,18 +214,28 @@ void autonomous() {
 
     //SKILLS
     if(switcher == 9) {
-      position_drive(0, 40, 0, false, 70, 2000, 127, 127, 145, 20, 70, false);
-      loader_left.move(127);
-      loader_right.move(127);
-      pros::delay(2000);
-      position_turn(-27, 5000, 127);
-      position_drive(-7, 47,-27, false, 50, 4000, 127, 127, 130, 20, 70, false);
-      position_drive(-0.5, 39.7, -27, false, 100, 3000, -100, -100, 25, 20, 70, true);
+      // position_drive(0, 40, 0, false, 70, 2000, 127, 127, 145, 20, 70, false);
+      // loader_left.move(127);
+      // loader_right.move(127);
+      // pros::delay(2000);
+      // position_turn(-27, 5000, 127);
+      // position_drive(-7, 47,-27, false, 50, 4000, 127, 127, 130, 20, 70, false);
+      // position_drive(-0.5, 39.7, -27, false, 100, 3000, -100, -100, 25, 20, 70, true);
+      // lift(1950, 20000);
+      // pros::delay(2000);
+      // position_drive(-4.7, 50, -27, false, 100, 3000, 0, 0, 0, 20, 70, false);
+      // loader_left.move(-127);
+      // loader_right.move(-127);
+
       lift(1950, 20000);
-      pros::delay(2000);
-      position_drive(-4.7, 50, -27, false, 100, 3000, 0, 0, 0, 20, 70, false);
+      position_drive(0, 22.1, 0, false, 70, 2000, 0, 0, 0, 0, 0, false);
       loader_left.move(-127);
       loader_right.move(-127);
+      position_drive(0, 10, 0, false, 70, 2000, 0, 0, 0, 0, 0, false);
+      position_turn(-45, 5000, 127);
+      drive_line_up(-100, 100);
+      reset_position_full(0, 0, 0);
+      position_drive(0, 107, 0, false, 50, 9000, 127, 127, 107, 60, 25, false);
       // position_drive(0, 109, 0, false, 80, 3000, 127, 127, 130, 20, 70, false);
       // position_turn(45, 5000, 127);
       // position_drive(12.1, 128.6, 45, false, 127, 9000, 0, 0, 0, 10, 70);
