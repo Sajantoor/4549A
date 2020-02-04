@@ -16,8 +16,7 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
-  //position_drive(0, 25, 0, false, 127, 10000, 0, 0, 0, 15, 50, false);
-  //position_turn(91, 1000, 127);
+  position_drive(0, 0, 0, 25, 0, 127, 1, 0, 2000, 15);// pick up cubes  //position_turn(91, 1000, 127);
 //RED FRONT AUTO
   if(switcher == 1){
     initial_time = pros::millis();
@@ -238,11 +237,12 @@ void autonomous() {
       position_turn(-45, 1500, 127);
       drive_line_up(-50, 600);
       reset_position_full(0, 0, 0);
-      position_drive(0, 40, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      position_drive(0, 60, 0, false, 40, 4500, 127, 127, 107, 0, 0, false);
-      position_drive(0, 100, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      position_drive(8.5, 116, 40, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      angler_pid(3730, true, 100, false, 2000);
+      position_drive(0, 0, 0, 100, 0, 60, 1, 0, 2000, 15);// pick up cubes
+      // position_drive(0, 40, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      // position_drive(0, 60, 0, false, 40, 4500, 127, 127, 107, 0, 0, false);
+      // position_drive(0, 100, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      // position_drive(8.5, 116, 40, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      // angler_pid(3730, true, 100, false, 2000);
 
       // while(light_sensor_intake.get_value() > 1850){
       //   loader_left.move(-35);

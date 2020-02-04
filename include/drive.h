@@ -80,6 +80,8 @@ void position_face_point(float target_x, float target_y , int timeout);
 
 void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn , float max_power, unsigned int timeout,float initial_intake = 127, float final_intake = 127, float transition_point = 0,  float end_speed_transition = 0, float end_speed = 127, bool pickUp_cube = false);
 
+void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance);
+
 void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed);
 extern pros::task_t tracking_task;
 extern pros::task_t velocity_task;
