@@ -754,19 +754,19 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 9 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
         printf(" \n");//5.3
       }
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-      finalpower = round(-127.0 / 40 * positionErr.y) * sgn(max_speed); //17
+      finalpower = round(-127.0 / 25 * positionErr.y) * sgn(max_speed); //17
 
       limit_to_val_set(finalpower, abs(max_speed));
 			if (finalpower * sgn(max_speed) < 25) //30
       finalpower = 25 * sgn(max_speed);
 			int delta = finalpower - last;
-			limit_to_val_set(delta, 5);
+			limit_to_val_set(delta, 4);
 			finalpower = last += delta;
 
       switch (sgn(correction)) {
