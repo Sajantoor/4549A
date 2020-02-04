@@ -234,33 +234,28 @@ void autonomous() {
       loader_right.move(-127);
       pros::delay(1000);
       lift(0, 0);
-      position_drive(0, 6, 0, false, 60, 2000, 0, 0, 0, 0, 0, false);
+      position_drive(3, 6, 0, false, 60, 2000, 0, 0, 0, 0, 0, false);
       position_turn(-45, 1500, 127);
       drive_line_up(-50, 600);
       reset_position_full(0, 0, 0);
-      position_drive(0, 40, 0, false, 80, 4500, 127, 127, 107, 0, 0, false);
-      pros::delay(800);
-      while(light_sensor_intake.get_value() > 1900){
-        loader_left.move(-20);
-        loader_right.move(-20);
-        pros::delay(10);
-        printf("set to 0 \n");
-      }
-        loader_left.move(0);
-        loader_right.move(0);
-        printf("set to 0 \n");
-      pros::delay(2000);
-      lift(1950, 20000);
-      pros::delay(1000);
-      position_turn(-24, 1500, 127);
-      loader_left.move(-127);
-      loader_right.move(-127);
-      pros::delay(2000);
-      position_turn(0, 1500, 127);
-      lift(0, 0);
-      position_drive(5, 40, 0, false, 127, 9000, 127, 127, 107, 0, 0, false);
-      position_drive(0, 65, 0, false, 65, 9000, 127, 127, 107, 0, 0, false);
-      position_drive(0, 107, 0, false, 80, 9000, 127, 127, 107, 50, 8, false);
+      position_drive(0, 40, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      position_drive(0, 60, 0, false, 40, 4500, 127, 127, 107, 0, 0, false);
+      position_drive(0, 100, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      position_drive(8.5, 116, 40, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      angler_pid(3730, true, 100, false, 2000);
+
+      // while(light_sensor_intake.get_value() > 1850){
+      //   loader_left.move(-35);
+      //   loader_right.move(-35);
+      //   pros::delay(10);
+      //   printf("set to 0 \n");
+      // }
+      //   loader_left.move(0);
+      //   loader_right.move(0);
+      //   printf("set to 0 \n");
+      // pros::delay(2000);
+
+
       // position_drive(0, 109, 0, false, 80, 3000, 127, 127, 130, 20, 70, false);
       // position_turn(45, 5000, 127);
       // position_drive(12.1, 128.6, 45, false, 127, 9000, 0, 0, 0, 10, 70);

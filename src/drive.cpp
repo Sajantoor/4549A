@@ -562,7 +562,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(310, 150, 0, 30, 500, 127);//300
+    pid_values turn_pid(350, 200, 0, 30, 500, 127);//300
     pid_values xDir_pid(31, 25, 0, 30, 500, 127);//28
     pid_values yDir_pid(10.5, 4, 0, 30, 500, 127);//12,8
 
