@@ -18,18 +18,6 @@ const int DEEP_VISION_THRESHOLD = 1000; // apply deep detection algorithm if siz
 const int MIN_DEEP_VISION_THRESHOLD = 500; // min size to be considered to be considered apart of deep vision
 const int MAX_SIZE = 45264; // stop before cube gets this big
 const int ERROR_X = -32084; // -32084 is the error value for x
-const int X_CENTER = 0;
-
-// Motion Globals
-bool motion = false;
-int motionX = 0;
-int motionY = 0;
-int angle = 0;
-int maxSpeed = 0;
-
-int restrictedX = 100;
-int restrictedY = 100;
-
 
 struct data {
   int width; // effective width of the cube
@@ -241,59 +229,24 @@ void vision_tracking(void*ignore) {
 
       // checks if cube still exists
       if (currentCube.size > 0) {
-        // calculate direction
-        if (currentCube.x - X_CENTER > 0) {
+        // direction
+        if (currentCube.x > 0) {
           direction = 1;
         } else {
           direction = -1;
         }
         // basic movement
-        // only strafe 
-        if (fabs(currentCube.x - X_CENTER) > 100) {
-          motion = true;
-          // used to slow down for lower centering values
-          if (currentCube.x < 200) {
-            motionX = currentCube.x;
-            // power check
-            if (fabs(motionX) > 127) {
-              if (motionX > 0) {
-                motionX = 127;
-              } else {
-                motionX = -127;
-              }
-            }
-          } else {
-            // move otherwise
-            motionX = 10 * direction;
-            motionY = 0;
-          }
-          // strafe and move forward
-       } else if (fabs(currentCube.x - X_CENTER) < 100 && (currentCube.size < MAX_SIZE)) {
-         motion = true;
-         motionX = currentCube.x;
-         motionY = 10;
-       } else if (fabs(currentCube.x - X_CENTER) < 100) {
-         motionX = currentCube.x;
-
-         if (fabs(motionX) > 127) {
-           if (motionX > 0) {
-             motionX = 127;
-           } else {
-             motionX = -127;
-           }
-         }
-
-       } else if (currentCube.size >= MAX_SIZE) {
-         motion = false;
-       } else if (currentCube.size < MAX_SIZE) {
-         motion = true;
-         motionY = 10;
-         motionX = 0;
-       } /* else if (currentCube.size > MAX_SIZE) {
-         set_drive(-30, -30);
-       } */ else {
-          motion = false;
-       }
+        if (fabs(currentCube.x) > 100) {
+          turn_set(80 * direction);
+        } else if (currentCube.size >= MAX_SIZE) {
+          set_drive(0, 0);
+        } else if (currentCube.size < MAX_SIZE) {
+          set_drive(80, 80);
+        } /* else if (currentCube.size > MAX_SIZE) {
+          set_drive(-30, -30);
+        } */ else {
+          set_drive(0, 0);
+        }
 
       } else {
         // lost target
@@ -305,50 +258,6 @@ void vision_tracking(void*ignore) {
       }
     }
 
-    pros::delay(20);
-  }
-}
-
-
-void visionMovement(void*ignore) {
-  vector error;
-  while (true) {
-    if (motion) { // boolean motion
-      // initialize absoluteError as big value
-      polar absoluteError = {25, 25};
-      float timeout = pros::millis() + 2000;
-      // checks if radius and theta is small or times out
-      while (((absoluteError.r > 0.22) || (fabs(absoluteError.theta) > 0.15)) && (timeout > pros::millis())) {
-        // pids for each direction
-        pid_values xDirPID(25, 1, 0, 30, 500, 127);
-        pid_values yDirPID(14.5, 0, 1, 30, 500, 127);
-        pid_values rotationPID(150, 1, 10, 30, 500, 127);
-        // calculated pid for each direction
-        float xDir = pid_calc(&xDirPID, motionX, position.x);
-        float yDir = pid_calc(&yDirPID, motionY, position.y);
-        float rotation = pid_calc(&rotationPID, degToRad(angle), orientation);
-        // error
-        error.x = xDirPID.error;
-        error.y = yDirPID.error;
-        absoluteError = vector_to_polar(error);
-        absoluteError.theta += rotationPID.error;
-        // calculate power for drive
-        float drive_left_power = xDir + yDir + rotation;
-        float drive_left_b_power = -xDir + yDir + rotation;
-        float drive_right_power = -xDir + yDir - rotation;
-        float drive_right_b_power = xDir + yDir - rotation;
-        // set power to drive
-        drive_left.move(drive_left_power);
-        drive_left_b.move(drive_left_b_power);
-        drive_right.move(drive_right_power);
-        drive_right_b.move(drive_right_b_power);
-        pros::delay(20);
-      }
-    } else {
-      motionX = 0;
-      motionY = 0;
-      angle = 0;
-    }
     pros::delay(20);
   }
 }

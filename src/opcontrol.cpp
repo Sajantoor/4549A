@@ -6,6 +6,9 @@
 #include "lift.h"
 #include "angler.h"
 
+const int LIFT_HIGH = 1950;
+const int LIFT_LOW = 2500;
+const int LIFT_DESCORE = 1900;
 
 void opcontrol() {
 	// global variables
@@ -15,7 +18,6 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
-		printf("intake light sensor %d \n", light_sensor_intake.get_value());
 		controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
@@ -81,11 +83,11 @@ void opcontrol() {
 			if (!anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(1291, true, 127, true);
+				angler_pid(1020, true, 127, true);
 			} else if (anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(3776, true, 100, false, 2000);
+				angler_pid(3730, true, 100, false, 2000);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
@@ -104,21 +106,21 @@ void opcontrol() {
 		}
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (!(2050 > armPosition && armPosition > 1850)) {
-				lift(1950, 20000);
+			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
+				lift(LIFT_HIGH, 20000);
 			}
 		}
 		// lift low scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			if (!(2600 > armPosition && armPosition > 2400)) {
-				lift(2500, 20000);
+			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
+				lift(LIFT_LOW, 20000);
 			}
 		}
 
 		// lift descore value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-			if (!(2000 > armPosition && armPosition > 1700)) {
-				lift(1900, 20000);
+			if (!(LIFT_DESCORE + 100 > armPosition && armPosition > LIFT_DESCORE - 100)) {
+				lift(LIFT_DESCORE, 20000);
 			}
 		}
 

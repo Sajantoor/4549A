@@ -16,7 +16,7 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
-  // position_drive(0, 25, 0, false, 127, 10000, 0, 0, 0, 15, 50, false);
+  //position_drive(0, 25, 0, false, 127, 10000, 0, 0, 0, 15, 50, false);
   //position_turn(91, 1000, 127);
 //RED FRONT AUTO
   if(switcher == 1){
@@ -228,14 +228,39 @@ void autonomous() {
       // loader_right.move(-127);
 
       lift(1950, 20000);
-      position_drive(0, 22.1, 0, false, 70, 2000, 0, 0, 0, 0, 0, false);
+      position_drive(0, 20, 0, false, 70, 2000, 0, 0, 0, 0, 0, false);
+      pros::delay(1000);
       loader_left.move(-127);
       loader_right.move(-127);
-      position_drive(0, 10, 0, false, 70, 2000, 0, 0, 0, 0, 0, false);
-      position_turn(-45, 5000, 127);
-      drive_line_up(-100, 100);
+      pros::delay(1000);
+      lift(0, 0);
+      position_drive(0, 6, 0, false, 60, 2000, 0, 0, 0, 0, 0, false);
+      position_turn(-45, 1500, 127);
+      drive_line_up(-50, 600);
       reset_position_full(0, 0, 0);
-      position_drive(0, 107, 0, false, 50, 9000, 127, 127, 107, 60, 25, false);
+      position_drive(0, 40, 0, false, 80, 4500, 127, 127, 107, 0, 0, false);
+      pros::delay(800);
+      while(light_sensor_intake.get_value() > 1900){
+        loader_left.move(-20);
+        loader_right.move(-20);
+        pros::delay(10);
+        printf("set to 0 \n");
+      }
+        loader_left.move(0);
+        loader_right.move(0);
+        printf("set to 0 \n");
+      pros::delay(2000);
+      lift(1950, 20000);
+      pros::delay(1000);
+      position_turn(-24, 1500, 127);
+      loader_left.move(-127);
+      loader_right.move(-127);
+      pros::delay(2000);
+      position_turn(0, 1500, 127);
+      lift(0, 0);
+      position_drive(5, 40, 0, false, 127, 9000, 127, 127, 107, 0, 0, false);
+      position_drive(0, 65, 0, false, 65, 9000, 127, 127, 107, 0, 0, false);
+      position_drive(0, 107, 0, false, 80, 9000, 127, 127, 107, 50, 8, false);
       // position_drive(0, 109, 0, false, 80, 3000, 127, 127, 130, 20, 70, false);
       // position_turn(45, 5000, 127);
       // position_drive(12.1, 128.6, 45, false, 127, 9000, 0, 0, 0, 10, 70);

@@ -277,7 +277,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    float kp = 139;//75.6
+    float kp = 141;//75.6
     float kd = 0;
     float ki = 0;
     float proportional, derivative, integral;
@@ -331,7 +331,7 @@ void position_turn(float target, int timeout, int max_speed) {
         timer_turn = false;
       }
       pros::delay(20);
-    } while(radToDeg(error) > 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+    } while(abs(radToDeg(error)) > 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     HarshStop();
 
