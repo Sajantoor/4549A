@@ -13,7 +13,7 @@ const int LIFT_DESCORE = 1900;
 void opcontrol() {
 	// global variables
 	bool anglerVal = false;
-	bool midStack = false;
+	bool liftBool = false; // used to check first lift
 	int stickArray[4];
 	int power[4];
 
@@ -108,12 +108,30 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
 				lift(LIFT_HIGH, 20000);
+
+				if (!liftBool) {
+					liftBool = true;
+					loader_left.move(-60);
+					loader_right.move(-60);
+					pros::delay(1000);
+					loader_left.move(0);
+					loader_right.move(0);
+				}
 			}
 		}
 		// lift low scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
 				lift(LIFT_LOW, 20000);
+
+				if (!liftBool) {
+					liftBool = true;
+					loader_left.move(-60);
+					loader_right.move(-60);
+					pros::delay(1000);
+					loader_left.move(0);
+					loader_right.move(0);
+				}
 			}
 		}
 
@@ -121,12 +139,22 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
 			if (!(LIFT_DESCORE + 100 > armPosition && armPosition > LIFT_DESCORE - 100)) {
 				lift(LIFT_DESCORE, 20000);
+
+				if (!liftBool) {
+					liftBool = true;
+					loader_left.move(-60);
+					loader_right.move(-60);
+					pros::delay(1000);
+					loader_left.move(0);
+					loader_right.move(0);
+				}
 			}
 		}
 
 		// drop lift
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 			lift(0, 0);
+			liftBool = false;
 		}
 
 		// unlocking mechanism
