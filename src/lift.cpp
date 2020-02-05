@@ -22,7 +22,7 @@ void lift(int moveVal, int holdVal) {
 // lift task which controls lift with PID and motor encoders
 void lift_task(void*ignore) {
   pid_values lift_pid(0.5, 0.7, 0, 30, 500, 127);
-  float timeout = 1000;
+  float timeout = hold;
   float failsafe;
   float delayTime;
 

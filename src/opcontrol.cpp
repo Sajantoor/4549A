@@ -70,9 +70,6 @@ void opcontrol() {
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 			loader_left.move(-94);
 			loader_right.move(-94);
-		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			loader_left.move(-94);
-			loader_right.move(-94);
 		} else {
 			loader_left.move(0);
 			loader_right.move(0);
@@ -87,33 +84,26 @@ void opcontrol() {
 			} else if (anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(3730, true, 100, false, 2000);
+				angler_pid(3530, true, 100, false, 2000);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
-			anglerBool = false;
-			angler.move(70);
-		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-			anglerBool = false;
-			angler.move(-70);
-		} else {
-			if (!anglerBool) {
-				angler.move(0);
-			}
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+			lift(800, 500);
 		}
+
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
 				lift(LIFT_HIGH, 20000);
 
-				if (!liftBool) {
+				if (!liftBool && (light_sensor_intake.get_value() > 1850)) {
 					liftBool = true;
 					loader_left.move(-60);
 					loader_right.move(-60);
-					pros::delay(1000);
+					pros::delay(400);
 					loader_left.move(0);
 					loader_right.move(0);
 				}
@@ -124,11 +114,11 @@ void opcontrol() {
 			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
 				lift(LIFT_LOW, 20000);
 
-				if (!liftBool) {
+				if (!liftBool && (light_sensor_intake.get_value() > 1850)) {
 					liftBool = true;
 					loader_left.move(-60);
 					loader_right.move(-60);
-					pros::delay(1000);
+					pros::delay(400);
 					loader_left.move(0);
 					loader_right.move(0);
 				}
@@ -140,11 +130,11 @@ void opcontrol() {
 			if (!(LIFT_DESCORE + 100 > armPosition && armPosition > LIFT_DESCORE - 100)) {
 				lift(LIFT_DESCORE, 20000);
 
-				if (!liftBool) {
+				if (!liftBool && (light_sensor_intake.get_value() > 1850)) {
 					liftBool = true;
 					loader_left.move(-60);
 					loader_right.move(-60);
-					pros::delay(1000);
+					pros::delay(400);
 					loader_left.move(0);
 					loader_right.move(0);
 				}
@@ -153,7 +143,7 @@ void opcontrol() {
 
 		// drop lift
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-			lift(0, 0);
+			lift(0, 1000);
 			liftBool = false;
 		}
 

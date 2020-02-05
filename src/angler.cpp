@@ -72,7 +72,7 @@ void angler_pid_task(void*ignore) {
       // }
 
       // 8 stack torque is faster than 7 stack
-      if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 500)) {
+      if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 800)) {
         if (angler_pid.max_power < currentSpeed * 0.5) {
           angler_pid.max_power = currentSpeed * 0.5;
         } else {
@@ -100,7 +100,7 @@ void angler_pid_task(void*ignore) {
       float position = potentiometer_angler.get_value();
       int final_power = pid_calc(&angler_pid, currentTarget, position);
       angler.move(final_power);
-      printf("angler pid: %f \n \n", angler_pid.error);
+      // printf("angler pid: %f \n \n", angler_pid.error);
       printf("torque values: %f \n \n", maxTorque);
       // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
       if ((fabs(angler_pid.error) <= 10) || !anglerHold || delayReached)  {

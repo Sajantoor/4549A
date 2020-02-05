@@ -693,7 +693,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     printf("driving done\n");
 }
 
-void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance) {
+void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance, float end_speed) {
     vector error;
     vector positionErr;
     vector rotation_vector;
@@ -706,7 +706,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     unsigned int net_timer;
     int initial_millis = pros::millis();
     net_timer = initial_millis + timeout; //just to initialize net_timer at first
-    float failsafe = 2000;
+    float failsafe = 15000;
 
     float magnPosvector;
     float angle_main_line;
@@ -754,13 +754,13 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 9 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
         printf(" \n");//5.3
       }
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-      finalpower = round(-127.0 / 25 * positionErr.y) * sgn(max_speed); //17
+      finalpower = round(-127.0 / 30 * positionErr.y) * sgn(max_speed); //17
 
       limit_to_val_set(finalpower, abs(max_speed));
 			if (finalpower * sgn(max_speed) < 25) //30
@@ -849,7 +849,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
       } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
-      drive_set(25 * sgn(max_speed));
+      drive_set(end_speed * sgn(max_speed));
 
     do {
       positionErr.x = position.x - ending_point_x;
