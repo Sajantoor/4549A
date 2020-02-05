@@ -8,7 +8,7 @@
 #define DRIVE_RIGHT_B 4
 
 #define LOADER_RIGHT 20
-#define LOADER_LEFT 1
+#define LOADER_LEFT 12
 #define ANGLER 10
 #define ARM 5
 #define VISION_PORT 20
@@ -30,8 +30,10 @@ extern pros::Motor angler;
 #define bottom_port_right 6
 #define top_port 7
 #define bottom_port 8
+// #define gyro_port 11;
 
 extern pros::ADIPort light_sensor_intake;
+// extern pros::ADIGyro gryo;
 extern pros::ADIPort potentiometer_angler;
 extern pros::ADIEncoder left_encoder;
 extern pros::ADIEncoder right_encoder;

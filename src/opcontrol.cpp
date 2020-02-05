@@ -8,7 +8,17 @@
 
 const int LIFT_HIGH = 1950;
 const int LIFT_LOW = 2500;
-const int LIFT_DESCORE = 1900;
+const int LIFT_DESCORE = 1700;
+
+void sensor_outtake() {
+	if (light_sensor_intake.get_value() > 1850) {
+		loader_left.move(-50);
+		loader_right.move(-50);
+		pros::delay(300);
+		loader_left.move(0);
+		loader_right.move(0);
+	}
+}
 
 void opcontrol() {
 	// global variables
@@ -18,6 +28,7 @@ void opcontrol() {
 	int power[4];
 
 	while (true) {
+		// printf("gyro value %f \n \n", gyro.get_value());
 		controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
@@ -99,13 +110,9 @@ void opcontrol() {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
 				lift(LIFT_HIGH, 20000);
 
-				if (!liftBool && (light_sensor_intake.get_value() > 1850)) {
+				if (!liftBool) {
 					liftBool = true;
-					loader_left.move(-60);
-					loader_right.move(-60);
-					pros::delay(400);
-					loader_left.move(0);
-					loader_right.move(0);
+					sensor_outtake();
 				}
 			}
 		}
@@ -114,13 +121,9 @@ void opcontrol() {
 			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
 				lift(LIFT_LOW, 20000);
 
-				if (!liftBool && (light_sensor_intake.get_value() > 1850)) {
+				if (!liftBool) {
 					liftBool = true;
-					loader_left.move(-60);
-					loader_right.move(-60);
-					pros::delay(400);
-					loader_left.move(0);
-					loader_right.move(0);
+					sensor_outtake();
 				}
 			}
 		}
@@ -130,13 +133,9 @@ void opcontrol() {
 			if (!(LIFT_DESCORE + 100 > armPosition && armPosition > LIFT_DESCORE - 100)) {
 				lift(LIFT_DESCORE, 20000);
 
-				if (!liftBool && (light_sensor_intake.get_value() > 1850)) {
+				if (!liftBool) {
 					liftBool = true;
-					loader_left.move(-60);
-					loader_right.move(-60);
-					pros::delay(400);
-					loader_left.move(0);
-					loader_right.move(0);
+					sensor_outtake();
 				}
 			}
 		}
