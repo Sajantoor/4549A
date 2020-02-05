@@ -16,8 +16,7 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
-  //position_drive(0, 25, 0, false, 127, 10000, 0, 0, 0, 15, 50, false);
-  //position_turn(91, 1000, 127);
+  //position_drive2(0, 0, 0, 25, 0, 127, 0.5, 0, 9000, 30);// pick up cubes  //position_turn(91, 1000, 127);
 //RED FRONT AUTO
   if(switcher == 1){
     initial_time = pros::millis();
@@ -234,15 +233,24 @@ void autonomous() {
       loader_right.move(-127);
       pros::delay(1000);
       lift(0, 0);
-      position_drive(3, 6, 0, false, 60, 2000, 0, 0, 0, 0, 0, false);
+      position_drive(1, 8, 0, false, 60, 2000, 0, 0, 0, 0, 0, false);
       position_turn(-45, 1500, 127);
       drive_line_up(-50, 600);
       reset_position_full(0, 0, 0);
-      position_drive(0, 40, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      position_drive(0, 60, 0, false, 40, 4500, 127, 127, 107, 0, 0, false);
-      position_drive(0, 100, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      position_drive(8.5, 116, 40, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      angler_pid(3730, true, 100, false, 2000);
+      loader_left.move(127);
+      loader_right.move(127);
+      position_drive2(0, 0, 0, 107, 0, 70, 0.5, 0, 15000, 30);// pick up cubes
+      position_turn(45, 1500, 127);
+      position_drive2(0, 107, 8, 116, 0, 100, 0.5, 0, 15000, 30);// pick up cubes
+      loader_left.move(0);
+      loader_right.move(0);
+      angler_pid(1020, true, 127, true);
+      position_drive2(8, 107, 0, 107, 0, 110, 0.5, 0, 15000, 30);// pick up cubes
+      // position_drive(0, 40, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      // position_drive(0, 60, 0, false, 40, 4500, 127, 127, 107, 0, 0, false);
+      // position_drive(0, 100, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      // position_drive(8.5, 116, 40, false, 50, 4500, 127, 127, 107, 0, 0, false);
+      // angler_pid(3730, true, 100, false, 2000);
 
       // while(light_sensor_intake.get_value() > 1850){
       //   loader_left.move(-35);
