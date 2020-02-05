@@ -8,7 +8,7 @@
 #define DRIVE_RIGHT_B 4
 
 #define LOADER_RIGHT 20
-#define LOADER_LEFT 1
+#define LOADER_LEFT 12
 #define ANGLER 10
 #define ARM 5
 #define VISION_PORT 20
