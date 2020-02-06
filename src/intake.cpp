@@ -7,7 +7,7 @@ float intakeSpeed;
 
 void autoIntake(void*ignore) {
   while (true) {
-    while (intakeSpeed) {
+    while (intakeSpeed && pros::competition::is_autonomous()) {
       if (light_sensor_intake.get_value() > 1850) {
         loader_left.move(intakeSpeed);
         loader_right.move(intakeSpeed);

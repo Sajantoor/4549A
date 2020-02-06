@@ -6,6 +6,7 @@
 #include "lcd.h"
 #include "lift.h"
 #include "angler.h"
+#include "intake.h"
 
 float timerAuto;
 
