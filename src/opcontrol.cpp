@@ -10,13 +10,15 @@ const int LIFT_HIGH = 1950;
 const int LIFT_LOW = 2500;
 const int LIFT_DESCORE = 1700;
 
+// outtaking using the light sensor
 void sensor_outtake() {
 	std::uint32_t now = pros::millis();
-
+	// if cube no cube detected by light sensor
 	if (light_sensor_intake.get_value() > 1850) {
+		// ENHANcE: For more consistency this should be written using PID loop instead of timed
 		loader_left.move(-50);
 		loader_right.move(-50);
-		pros::Task::delay_until(&now, 500);
+		pros::Task::delay_until(&now, 500); // delay until 500 millis after now
 		loader_left.move(0);
 		loader_right.move(0);
 	}
@@ -87,6 +89,15 @@ void opcontrol() {
 			loader_left.move(0);
 			loader_right.move(0);
 		}
+		// auto intake
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			if (!intakeBool) { // intake bool is false, run auto intake function
+				autoIntakeFunc(127);
+			}
+		} else {
+			// turn off auto intake function
+			autoIntakeFunc(0);
+		}
 
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
@@ -111,11 +122,11 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
 				lift(LIFT_HIGH, 20000);
-				// In skills comment this out
-				// if (!liftBool) {
-				// 	liftBool = true;
-				// 	sensor_outtake();
-				// }
+
+				if (!liftBool) {
+					liftBool = true;
+					sensor_outtake();
+				}
 			}
 		}
 		// lift low scoring value
@@ -147,18 +158,6 @@ void opcontrol() {
 			lift(0, 1000);
 			liftBool = false;
 		}
-
-		// unlocking mechanism
-		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-		//   angler_pid(1580, 0);
-		// 	pros::delay(2000);
-		//   loader_left.move(-127);
-		//   loader_right.move(-127);
-		//   pros::delay(1500);
-		//   loader_left.move(0);
-		//   loader_right.move(0);
-		// 	angler_pid(3665, 0, 80, false);
-		// }
 
 		pros::delay(20);
 	}

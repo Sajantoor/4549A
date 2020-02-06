@@ -4,6 +4,16 @@
 #include "intake.h"
 
 float intakeSpeed;
+bool intakeBool;
+
+void autoIntakeFunc(float speed) {
+  intakeSpeed = speed;
+
+  if (intakeSpeed) {
+    intakeBool = true;
+  }
+}
+
 
 void autoIntake(void*ignore) {
   float lightSensorTimeout = 500;
@@ -11,19 +21,16 @@ void autoIntake(void*ignore) {
   bool intakeTimeout = false;
 
   while (true) {
-    while (intakeSpeed && pros::competition::is_autonomous()) {
-      printf("value %d \n \n", light_sensor_intake.get_value());
-      if (light_sensor_intake.get_value() < 1850) {
+    while (intakeBool) { // task running bool
+      if (light_sensor_intake.get_value() < 1850) { // if cube is detected
         loader_left.move(intakeSpeed);
         loader_right.move(intakeSpeed);
-        timer = lightSensorTimeout + pros::millis();
-        // printf("intakingggggggg \n \n");
-      } else if (intakeTimeout) {
+        timer = lightSensorTimeout + pros::millis(); // timer is updated
+      } else if (intakeTimeout) { // run slow intake speed
         loader_left.move(80);
         loader_right.move(80);
-        intakeTimeout = false;
-        // printf("nooootttttt intakinggggg \n \n");
-      } else if (timer < pros::millis()) {
+        intakeTimeout = false; // restart the timeout to have it run again if cube is detected
+      } else if (timer < pros::millis()) { // run timer
         intakeTimeout = true;
       }
 
