@@ -760,11 +760,11 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
     //------------------------------------------------------------math--------------------------------------------------------
 
-      finalpower = round(-127.0 / 30 * positionErr.y) * sgn(max_speed); //17
+      finalpower = round(-127.0 / 10 * positionErr.y) * sgn(max_speed); //17
 
       limit_to_val_set(finalpower, abs(max_speed));
-			if (finalpower * sgn(max_speed) < 25) //30
-      finalpower = 25 * sgn(max_speed);
+			if (finalpower * sgn(max_speed) < 10) //30
+      finalpower = 10 * sgn(max_speed);
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 4);
 			finalpower = last += delta;
@@ -784,7 +784,12 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       			break;
         }
 
-        // printf("back_encoder %d\n", back_encoder.get_value());
+        if(light_sensor_intake.get_value() < 1800){
+          loader_left.move(0);
+          loader_right.move(0);
+        }
+
+        printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
         // printf(" \n");
         // printf("left_encoder %d\n", left_encoder.get_value());
         // printf(" \n");
@@ -798,6 +803,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
         printf(" \n");
         printf("positionErr.y %f\n", positionErr.y);
         printf(" \n");
+        printf("finalpower %f\n", finalpower);
         // printf("final_power %f\n", finalpower);
         // printf(" \n");
         printf("err_angle %f\n", err_angle);
@@ -849,25 +855,34 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
       } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
-      drive_set(end_speed * sgn(max_speed));
-
-    do {
-      positionErr.x = position.x - ending_point_x;
-      positionErr.y = position.y - ending_point_y;
-
-      vectorToPolar(positionErr, positionErrPolar);
-      positionErrPolar.theta += angle_main_line;
-      polarToVector(positionErrPolar, positionErr);
-
-      velocity_line = sin_line * velocity.x + cos_line * velocity.y;
-      //printf("driving done velocity\n");
-      // printf("position.x %f\n", position.x);
-      // printf(" \n");
-      // printf("position.y %f\n", position.y);
-      // printf(" \n");
-
-      pros::delay(5);
-    } while((positionErr.y < -early_stop - (velocity_line * 0.098)) && (pros::millis() < net_timer));
+    //   drive_set(end_speed * sgn(max_speed));
+    //
+    // do {
+    //   positionErr.x = position.x - ending_point_x;
+    //   positionErr.y = position.y - ending_point_y;
+    //
+    //   vectorToPolar(positionErr, positionErrPolar);
+    //   positionErrPolar.theta += angle_main_line;
+    //   polarToVector(positionErrPolar, positionErr);
+    //
+    //   velocity_line = sin_line * velocity.x + cos_line * velocity.y;
+    //   //printf("driving done velocity\n");
+    //   // printf("position.x %f\n", position.x);
+    //   // printf(" \n");
+    //   // printf("position.y %f\n", position.y);
+    //   // printf(" \n");
+    //
+    //   pros::delay(5);
+    // } while((positionErr.y < -early_stop - (velocity_line * 0.098)) && (pros::millis() < net_timer));
+    printf("driving done\n");
+    printf("driving done\n");
+    printf("driving done\n");
+    printf("driving done\n");
+    printf("driving done\n");
+    printf("driving done\n");
+    printf("driving done\n");
+    printf("driving done\n");
+    printf("driving done\n");
 
     printf("driving done\n");
     printf("velocity_line %f \n", velocity_line);
