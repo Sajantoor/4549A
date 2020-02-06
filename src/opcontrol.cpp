@@ -11,10 +11,12 @@ const int LIFT_LOW = 2500;
 const int LIFT_DESCORE = 1700;
 
 void sensor_outtake() {
+	std::uint32_t now = pros::millis();
+
 	if (light_sensor_intake.get_value() > 1850) {
 		loader_left.move(-50);
 		loader_right.move(-50);
-		pros::delay(500);
+		pros::Task::delay_until(&now, 500);
 		loader_left.move(0);
 		loader_right.move(0);
 	}
