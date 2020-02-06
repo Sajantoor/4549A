@@ -14,7 +14,7 @@ void sensor_outtake() {
 	if (light_sensor_intake.get_value() > 1850) {
 		loader_left.move(-50);
 		loader_right.move(-50);
-		pros::delay(300);
+		pros::delay(500);
 		loader_left.move(0);
 		loader_right.move(0);
 	}
@@ -109,11 +109,11 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
 				lift(LIFT_HIGH, 20000);
-
-				if (!liftBool) {
-					liftBool = true;
-					sensor_outtake();
-				}
+				// In skills comment this out
+				// if (!liftBool) {
+				// 	liftBool = true;
+				// 	sensor_outtake();
+				// }
 			}
 		}
 		// lift low scoring value
