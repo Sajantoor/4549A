@@ -17,35 +17,40 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
-
+ position_turn(15, 50000, 127);
   //position_drive2(0, 0, 0, 20, 0, 50, 0.5, 0, 11000, 50,40);// pick up cubes
   // position_turn(0, 1500, 127);
   // intakeSpeed = 127;
   // position_drive2(0, 40, 0, 65, 0, 100, 0.5, 0, 11000, 100,40);// pick up cubes
-  loader_left.move(127);
-  loader_right.move(127);
-  position_drive2(0, 0, 0, 113, 0, 80, 0.05, 0, 11000, 50,40);// pick up cubes
-  pros::delay(1500);
-  position_turn(30, 1500, 127);
-  position_drive2(0, 112, 10, 122, 127, 100, 0.5, 0, 3500, 2, 127);// pick up cubes
-  while(light_sensor_intake.get_value() > 1850){
-    loader_left.move(-60);
-    loader_right.move(-60);
-  }
-  loader_left.move(0);
-  loader_right.move(0);
-  angler_pid(1020, true, 127, true);
-  pros::delay(6000);
-  position_drive2(position.x, position.y, -5, 100, 0, -60, 0.5, 0, 15000, 5, 100);// pick up cubes
-  drive_line_up(-80, 800);
-  position_turn(0, 1500, 127);
-  angler_pid(3530, true, 100, false, 2000);
-  pros::delay(3000);
-  lift(1905, 20000);
-  pros::delay(3000);
-  drive_line_up(80, 1100);
-  reset_position_full(1, 120, 0);
   //position_drive2(0, 0, 0, 25, 0, 127, 0.5, 0, 9000, 30);// pick up cubes  //position_turn(91, 1000, 127);
+            //   initial_time = pros::millis();
+            //   lift(1950, 20000);
+            //   pros::delay(1000);
+            //   lift(0, 0);
+            //   pros::delay(1000);
+            //   loader_left.move(127);
+            //   loader_right.move(127);
+            //   position_drive2(0, 0, 0, 44.4, 0, 90, 0.1, 0, 11000, 50,40);// pick up cubes
+            //   position_drive2(0, 44.4, 23, 5, 0, -100, 1, 0, 11000, 50,40);// pick up cubes
+            //   position_turn(0, 500, 127);
+            //   controller.print(0, 0, "driving straight now");
+            //   position_drive2(23, 5, 23, 57, 0, 90, 0.5, 0, 11000, 50,20);// pick up cubes
+            //   position_drive2(26.5, 57, 26.5, 23, 0, -100, 0.05, 0, 11000, 50,40);// pick up cubes
+            //   position_turn(135, 1500, 110);
+            //   position_drive2(26.5, 23, 42, 7, 0, 127, 0.05, 0, 11000, 50,40);// pick up cubes
+            //   loader_left.move(0);
+            //   loader_right.move(0);
+            //   angler_pid(1020, true, 127, true);
+            // drive_line_up(-100, 1000);
+  // position_drive(33,12.1,135,false,127,4000);//pick up first set of cubes
+  // loader_left.move(0);
+  // loader_right.move(0);
+  // angler_pid(1189, true, 127, true);
+  // pros::delay(1600);
+  // position_drive(26.5,23,0,false,127,1000);//strafe to line up with wall
+  // angler_pid(3000, true, 100, false, 2000);
+  // timerAuto = pros::millis() - initial_time;
+
 //RED FRONT AUTO
   if(switcher == 1){
     initial_time = pros::millis();
@@ -242,98 +247,25 @@ void autonomous() {
 
     //SKILLS
     if(switcher == 9) {
-      // position_drive(0, 40, 0, false, 70, 2000, 127, 127, 145, 20, 70, false);
-      // loader_left.move(127);
-      // loader_right.move(127);
-      // pros::delay(2000);
-      // position_turn(-27, 5000, 127);
-      // position_drive(-7, 47,-27, false, 50, 4000, 127, 127, 130, 20, 70, false);
-      // position_drive(-0.5, 39.7, -27, false, 100, 3000, -100, -100, 25, 20, 70, true);
-      // lift(1950, 20000);
-      // pros::delay(2000);
-      // position_drive(-4.7, 50, -27, false, 100, 3000, 0, 0, 0, 20, 70, false);
-      // loader_left.move(-127);
-      // loader_right.move(-127);
-
-      // lift(1950, 20000);
-      // position_drive2(0, 0, 0, 20, 0, 127, 0.5, 0, 15000, 15, 80);// pick up cubes
-      // // position_drive(0, 20, 0, false, 70, 2000, 0, 0, 0, 0, 0, false);
-      // pros::delay(1000);
-      // loader_left.move(-127);
-      // loader_right.move(-127);
-      // pros::delay(1000);
-      // lift(0, 0);
-      // position_drive2(0, 20, 1, 8, 0, -127, 0.5, 0, 15000, 15, 100);// pick up cubes
-      // // position_drive(-1, 10, 0, false, 60, 2000, 0, 0, 0, 0, 0, false);
-      // position_turn(-45, 1500, 127);
-      // drive_line_up(-60, 600);
-      // reset_position_full(0, 0, 0);
       loader_left.move(127);
       loader_right.move(127);
-      // position_drive2(0, 0, 0, 65, 0, 60, 0.5, 0, 11000, 10);// pick up cubes
-      // position_drive2(0, 0, 0, 47, 0, 80, 0.5, 0, 11000, 10,80);// pick up cubes
-      // pros::delay(2000);
-      // loader_left.move(0);
-      // loader_right.move(0);
-      // while(light_sensor_intake.get_value() > 1850){
-      //   loader_left.move(-40);
-      //   loader_right.move(-40);
-      // }
-      // loader_left.move(0);
-      // loader_right.move(0);
-      // lift(1950, 20000);
-      // pros::delay(2000);
-      // position_turn(-22, 1500, 127);
-      // loader_left.move(-127);
-      // loader_right.move(-127);
-      // pros::delay(3000);
-      // position_turn(0, 1500, 127);
-      // lift(0, 0);
-      // pros::delay(2000);
-      position_drive2(0, 0, 0, 112, 0, 60, 0.5, 0, 11000, 10,50);// pick up cubes
-      pros::delay(3000);
-      position_turn(45, 1500, 127);
-      position_drive2(0, 115, 14, 120, 60, 127, 0.5, 0, 15000, 2, 127);// pick up cubes
+      position_drive2(0, 0, 0, 113, 0, 80, 0.05, 0, 11000, 50,40);// pick up cubes
+      pros::delay(1500);
+      position_turn(30, 1500, 127);
+      position_drive2(0, 112, 10, 122, 127, 100, 0.5, 0, 3500, 2, 127);// pick up cubes
       loader_left.move(0);
       loader_right.move(0);
       angler_pid(1020, true, 127, true);
-      while(light_sensor_intake.get_value() > 1850){
-        loader_left.move(-40);
-        loader_right.move(-40);
-      }
-      loader_left.move(0);
-      loader_right.move(0);
-      pros::delay(2000);
-      position_drive2(position.x, position.y, 8, 110, 0, -127, 0.5, 0, 15000, 5, 100);// pick up cubes
-      // position_drive(0, 40, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      // position_drive(0, 60, 0, false, 40, 4500, 127, 127, 107, 0, 0, false);
-      // position_drive(0, 100, 0, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      // position_drive(8.5, 116, 40, false, 50, 4500, 127, 127, 107, 0, 0, false);
-      // angler_pid(3730, true, 100, false, 2000);
-
-      // while(light_sensor_intake.get_value() > 1850){
-      //   loader_left.move(-35);
-      //   loader_right.move(-35);
-      //   pros::delay(10);
-      //   printf("set to 0 \n");
-      // }
-      //   loader_left.move(0);
-      //   loader_right.move(0);
-      //   printf("set to 0 \n");
-      // pros::delay(2000);
-
-
-      // position_drive(0, 109, 0, false, 80, 3000, 127, 127, 130, 20, 70, false);
-      // position_turn(45, 5000, 127);
-      // position_drive(12.1, 128.6, 45, false, 127, 9000, 0, 0, 0, 10, 70);
-      // angler_pid(1189, true, 127, true);
-      // pros::delay(1600);
-      // position_drive(0,117,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
-      // angler_pid(3000, true, 100, false, 2000);
-      // position_turn(-90, 600, 127);
-      // position_drive(25, 117, -90, false, 127, 9000, 0, 0, 0, 10, 70);
-      // reset_position_full(23, 117, 0);
-      // position_drive(-37, 117, 0, false, 127, 9000, 0, 0, 0, 10, 70);
+      pros::delay(6000);
+      position_drive2(position.x, position.y, -5, 100, 0, -60, 0.5, 0, 15000, 5, 100);// pick up cubes
+      drive_line_up(-80, 800);
+      position_turn(0, 1500, 127);
+      angler_pid(3530, true, 100, false, 2000);
+      pros::delay(3000);
+      lift(1905, 20000);
+      pros::delay(3000);
+      drive_line_up(80, 1100);
+      reset_position_full(1, 120, 0);
     }
   printf("orientation %f \n", radToDeg(orientation));
   printf("position.x %f \n", position.x);

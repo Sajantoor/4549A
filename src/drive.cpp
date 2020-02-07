@@ -282,6 +282,14 @@ void position_turn(float target, int timeout, int max_speed) {
     float ki = 0;
     float proportional, derivative, integral;
 
+    if(abs((degToRad(target) - orientation)) < 25)
+    {
+      printf("high kp");
+      controller.print(0, 0, "HIGH KP");
+      float kp = 8000;//75.6
+      float kd = 0;
+      float ki = 150;
+    }
     float error;
     float final_power;
     float encoder_avg;
