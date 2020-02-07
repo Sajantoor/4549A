@@ -21,6 +21,7 @@ bool timerAng = false;
 bool anglerHold = false;
 bool torqueCheck = false;
 bool applyTorque = false;
+bool anglerIntakeThreshold = false;
 
 void angler_pid(float position, bool holdVal, float speed, bool applyTorque, float delayTime) {
   // assigns position value based on if there is a currentTarget or not.
@@ -37,6 +38,7 @@ void angler_pid(float position, bool holdVal, float speed, bool applyTorque, flo
   anglerBool = true;
   timerAng = true;
   torqueCheck = true;
+  anglerIntakeThreshold = false;
   applyTorque = applyTorque;
 }
 
@@ -45,6 +47,7 @@ void angler_pid_task(void*ignore) {
   float timeout;
   float maxTorque = 0;
   bool delayReached = false;
+  float intakeThresholdTimer;
 
   while(true) {
     while (anglerBool) {
@@ -54,71 +57,98 @@ void angler_pid_task(void*ignore) {
         timeout = pros::millis() + anglerDelay; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
         !applyTorque ? torqueCheck = false : torqueCheck = true;
+        intakeThresholdTimer = pros::millis() + 4000;
       }
 
-      if (anglerDelay && (pros::millis() > timeout)) {
-        delayReached = true;
-      }
-
-      // max torque value is used to calculate how many cubes are in the angler
-      if (pros::c::motor_get_torque(ANGLER) > maxTorque) {
-        maxTorque = pros::c::motor_get_torque(ANGLER);
-      }
-
-      // slightly increases the target of a 7 stack to improve accuracy
-      // if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-      //   currentTarget = currentTarget - 1000;
-      //   torqueCheck = false;
-      // }
-
-      // 8 stack torque is faster than 7 stack
-      if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 800)) {
-        if (angler_pid.max_power < currentSpeed * 0.5) {
-          angler_pid.max_power = currentSpeed * 0.5;
-        } else {
-          angler_pid.max_power = angler_pid.max_power - 15;
+      if (anglerIntakeThreshold) {
+        // angler stack code
+        if (anglerDelay && (pros::millis() > timeout)) {
+          delayReached = true;
         }
-      // 7 stack torque is slower
-      } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 600)) {
-        if (angler_pid.max_power < currentSpeed * 0.4) {
-          angler_pid.max_power = currentSpeed * 0.4;
-        } else {
-          angler_pid.max_power = angler_pid.max_power - 25;
+
+        // max torque value is used to calculate how many cubes are in the angler
+        if (pros::c::motor_get_torque(ANGLER) > maxTorque) {
+          maxTorque = pros::c::motor_get_torque(ANGLER);
         }
-      // slow down for all cubes
-      } else {
-        if (fabs(angler_pid.error) < 500) {
+
+        // // slightly increases the target of a 7 stack to improve accuracy
+        // if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
+        //   currentTarget = currentTarget - 1000;
+        //   torqueCheck = false;
+        // }
+
+        // 8 stack torque is faster than 7 stack
+        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 800)) {
           if (angler_pid.max_power < currentSpeed * 0.5) {
             angler_pid.max_power = currentSpeed * 0.5;
           } else {
             angler_pid.max_power = angler_pid.max_power - 15;
           }
-        }
-      }
-
-      float currentTime = pros::millis();
-      float position = potentiometer_angler.get_value();
-      int final_power = pid_calc(&angler_pid, currentTarget, position);
-      angler.move(final_power);
-      // printf("angler pid: %f \n \n", angler_pid.error);
-      printf("torque values: %f \n \n", maxTorque);
-      // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
-      if ((fabs(angler_pid.error) <= 10) || !anglerHold || delayReached)  {
-        angler.move(0);
-        maxTorque = 0;
-        // if there is a next target, then switch to the next target, else clear current target and exit the loop
-        if (nextTarget == 0) {
-          currentTarget = 0;
-          currentSpeed = 0;
-          anglerBool = false;
-          delayReached = false;
+        // 7 stack torque is slower
+        } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 600)) {
+          if (angler_pid.max_power < currentSpeed * 0.4) {
+            angler_pid.max_power = currentSpeed * 0.4;
+          } else {
+            angler_pid.max_power = angler_pid.max_power - 25;
+          }
+        // slow down for all cubes
         } else {
-          currentTarget = nextTarget;
-          currentSpeed = nextSpeed;
-          nextSpeed = 0;
-          nextTarget = 0;
-          timerAng = true;
-          delayReached = false;
+          if (fabs(angler_pid.error) < 500) {
+            if (angler_pid.max_power < currentSpeed * 0.5) {
+              angler_pid.max_power = currentSpeed * 0.5;
+            } else {
+              angler_pid.max_power = angler_pid.max_power - 15;
+            }
+          }
+        }
+
+        float currentTime = pros::millis();
+        float position = potentiometer_angler.get_value();
+        int final_power = pid_calc(&angler_pid, currentTarget, position);
+        angler.move(final_power);
+        // printf("angler pid: %f \n \n", angler_pid.error);
+        // printf("torque values: %f \n \n", maxTorque);
+        // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
+        if ((fabs(angler_pid.error) <= 10) || !anglerHold || delayReached)  {
+          angler.move(0);
+          maxTorque = 0;
+          // if there is a next target, then switch to the next target, else clear current target and exit the loop
+          if (nextTarget == 0) {
+            currentTarget = 0;
+            currentSpeed = 0;
+            delayReached = false;
+            anglerBool = false;
+          } else {
+            currentTarget = nextTarget;
+            currentSpeed = nextSpeed;
+            nextSpeed = 0;
+            nextTarget = 0;
+            timerAng = true;
+            delayReached = false;
+          }
+        }
+      } else {
+        // outtake cube to be at the bottom of the tray
+        if (light_sensor_intake.get_value() < 1850) { // if cube is detected
+          loader_left.move(0);
+          loader_right.move(0);
+          anglerIntakeThreshold = true;
+        } else if (light_sensor_intake.get_value() > 1850) { // if cube isn't detected
+          // fixes bug if there is no cubes in tray and driver accidentally pressed stack button,
+          // disabling the robot lol
+          if (pros::millis() > intakeThresholdTimer) {
+            loader_left.move(0);
+            loader_right.move(0);
+            // COULD CAUSE BUGS: maybe change behavior to stack if not stacking
+            // exit loop
+            currentTarget = 0;
+            currentSpeed = 0;
+            delayReached = false;
+            anglerBool = false;
+          } else {
+            loader_left.move(-40);
+            loader_right.move(-40);
+          }
         }
       }
 

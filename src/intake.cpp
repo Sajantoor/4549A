@@ -8,38 +8,35 @@
 void sensor_outtake() {
   std::uint32_t now = pros::millis();
   if (light_sensor_intake.get_value() > 1850) {
-		// ENHANcE: For more consistency this should be written using PID loop instead of timed
-		loader_left.move(-50);
-		loader_right.move(-50);
-		pros::Task::delay_until(&now, 500); // delay until 500 millis after now
-		loader_left.move(0);
-		loader_right.move(0);
+    intakePIDFunc(-400, 127);
 	}
 }
-
+// gloabsl for intake pid
 bool intakeTaskBool = false;
 float intakeTaskPosition;
 float intakeTaskSpeed;
-
+// function setting gloabs for the intake pid
 void intakePIDFunc(float target, float speed) {
   intakeTaskPosition = target;
   intakeTaskSpeed = speed;
   loader_left.tare_position();
   loader_right.tare_position();
   intakeTaskBool = true;
-        printf("it's working broo \n \n");
 }
 
+// intake motor move relative pid
+// ENHANCE: Didn't have time to tune PID but make PID loop (if need be)
 void intakePID(void*ignore) {
   while(true) {
     while (intakeTaskBool) {
     	loader_left.move_relative(intakeTaskPosition, intakeTaskSpeed);
     	loader_right.move_relative(intakeTaskPosition, intakeTaskSpeed);
-      printf("sadasdas");
 
     	while (!((loader_left.get_position() < (intakeTaskPosition + 5)) && (loader_left.get_position() > (intakeTaskPosition - 5)))) {
     		pros::delay(2);
     	}
+
+      intakeTaskBool = false;
       pros::delay(20);
     }
 
@@ -47,10 +44,10 @@ void intakePID(void*ignore) {
   }
 }
 
-
+// globals for auto intake task
 float autoIntakeSpeed;
 bool autoIntakeBool;
-
+// change global values
 void autoIntakeFunc(float speed) {
   autoIntakeSpeed = speed;
 
@@ -58,8 +55,9 @@ void autoIntakeFunc(float speed) {
     autoIntakeBool = true;
   }
 }
-
+// auto intake task
 void autoIntake(void*ignore) {
+  // time for intake to slow if intake doesn't detect cubes
   float lightSensorTimeout = 500;
   float timer;
   bool intakeTimeout = false;

@@ -11,13 +11,13 @@ const int LIFT_HIGH = 1950;
 const int LIFT_LOW = 2500;
 const int LIFT_DESCORE = 1700;
 
-
 void opcontrol() {
 	// global variables
 	bool anglerVal = false;
 	bool liftBool = false; // used to check first lift
 	int stickArray[4];
 	int power[4];
+	bool intakeUsed = false;
 
 	while (true) {
 		// printf("gyro value %f \n \n", gyro.get_value());
@@ -62,21 +62,27 @@ void opcontrol() {
 		drive_left_b = power[1];
 		drive_right = power[2];
 		drive_right_b = power[3];
-
+		// check if intake is used in any task, letting driver use it.
+		if (intakeTaskBool || !anglerIntakeThreshold) {
+			intakeUsed = true;
+		} else {
+			intakeUsed = false;
+		}
 		// intake on triggers
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && !intakeUsed) {
 			loader_left.move_voltage(12000);
 			loader_right.move_voltage(12000);
-		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) && !intakeUsed) {
 			loader_left.move_velocity(-12000);
 			loader_right.move_velocity(-12000);
-		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && !intakeUsed) {
 			loader_left.move(-94);
 			loader_right.move(-94);
-		} else {
+		} else if (!intakeUsed) {
 			loader_left.move(0);
 			loader_right.move(0);
 		}
+
 		// auto intake
 		// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 		// 	if (!intakeBool) { // intake bool is false, run auto intake function
@@ -95,7 +101,7 @@ void opcontrol() {
 			} else if (anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(3530, true, 100, false, 2000);
+				angler_pid(3400, true, 127, false, 2000);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
@@ -144,10 +150,6 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 			lift(0, 1000);
 			liftBool = false;
-		}
-
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
-			intakePIDFunc(1000, 127);
 		}
 
 		pros::delay(20);
