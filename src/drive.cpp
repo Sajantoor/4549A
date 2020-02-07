@@ -754,7 +754,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 9 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 9.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
         printf(" \n");//5.3
       }
 
@@ -783,12 +783,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
             right_drive_set(finalpower);
       			break;
         }
-
-        if(light_sensor_intake.get_value() < 1800){
-          loader_left.move(0);
-          loader_right.move(0);
-        }
-
         printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
         // printf(" \n");
         // printf("left_encoder %d\n", left_encoder.get_value());

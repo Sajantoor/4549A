@@ -11,6 +11,7 @@ const int LIFT_HIGH = 1950;
 const int LIFT_LOW = 2500;
 const int LIFT_DESCORE = 1700;
 
+
 void opcontrol() {
 	// global variables
 	bool anglerVal = false;
@@ -145,6 +146,11 @@ void opcontrol() {
 			liftBool = false;
 		}
 
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+			intakePIDFunc(1000, 127);
+		}
+
 		pros::delay(20);
 	}
+
 }

@@ -8,13 +8,13 @@
 void sensor_outtake() {
   std::uint32_t now = pros::millis();
   if (light_sensor_intake.get_value() > 1850) {
-  		// ENHANcE: For more consistency this should be written using PID loop instead of timed
-  		loader_left.move(-50);
-  		loader_right.move(-50);
-  		pros::Task::delay_until(&now, 500); // delay until 500 millis after now
-  		loader_left.move(0);
-  		loader_right.move(0);
-  	}
+		// ENHANcE: For more consistency this should be written using PID loop instead of timed
+		loader_left.move(-50);
+		loader_right.move(-50);
+		pros::Task::delay_until(&now, 500); // delay until 500 millis after now
+		loader_left.move(0);
+		loader_right.move(0);
+	}
 }
 
 bool intakeTaskBool = false;
@@ -27,27 +27,19 @@ void intakePIDFunc(float target, float speed) {
   loader_left.tare_position();
   loader_right.tare_position();
   intakeTaskBool = true;
+        printf("it's working broo \n \n");
 }
 
 void intakePID(void*ignore) {
-  pid_values intake_pid(1, 0, 0, 30, 500, 127);
-
   while(true) {
     while (intakeTaskBool) {
-      float encoderAverage = loader_left.get_position() + loader_right.get_position() / 2;
-      // intake_pid.max_power = intakeTaskSpeed;
-      int finalPower = pid_calc(&intake_pid, intakeTaskPosition, encoderAverage);
-      loader_left.move(finalPower);
-      loader_right.move(finalPower);
-      printf("error %f \n \n", intake_pid.error);
-      printf("power %f \n \n", finalPower);
+    	loader_left.move_relative(intakeTaskPosition, intakeTaskSpeed);
+    	loader_right.move_relative(intakeTaskPosition, intakeTaskSpeed);
+      printf("sadasdas");
 
-      if (fabs(intake_pid.error) <= 10) {
-        loader_left.move(0);
-        loader_right.move(0);
-        intakeTaskBool = false;
-      }
-
+    	while (!((loader_left.get_position() < (intakeTaskPosition + 5)) && (loader_left.get_position() > (intakeTaskPosition - 5)))) {
+    		pros::delay(2);
+    	}
       pros::delay(20);
     }
 
