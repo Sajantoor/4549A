@@ -8,7 +8,7 @@
 void sensor_outtake() {
   std::uint32_t now = pros::millis();
   if (light_sensor_intake.get_value() > 1850) {
-    intakePIDFunc(-400, 127);
+    intakePIDFunc(-600, 127);
 	}
 }
 // gloabsl for intake pid

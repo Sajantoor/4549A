@@ -20,7 +20,7 @@ void opcontrol() {
 	bool intakeUsed = false;
 
 	while (true) {
-		// printf("gyro value %f \n \n", gyro.get_value());
+		// printf("value %d \n \n", light_sensor_intake.get_value());
 		controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
@@ -65,8 +65,10 @@ void opcontrol() {
 		// check if intake is used in any task, letting driver use it.
 		if (intakeTaskBool || !anglerIntakeThreshold) {
 			intakeUsed = true;
+			printf("intakes are used in task \n \n");
 		} else {
 			intakeUsed = false;
+			printf("intake are not used in task \n \n");
 		}
 		// intake on triggers
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && !intakeUsed) {

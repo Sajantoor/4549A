@@ -277,45 +277,57 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    float kp = 141;//75.6
-    float kd = 0;
-    float ki = 0;
-    float proportional, derivative, integral;
+    pid_values turn_pid(141, 0, 0, 30, 500, 100);
+    // float kp = 141;//75.6
+    // float kd = 0;
+    // float ki = 0;
+    // float proportional, derivative, integral;
 
     if(abs((degToRad(target) - orientation)) < 25)
     {
       printf("high kp");
       controller.print(0, 0, "HIGH KP");
-      float kp = 8000;//75.6
-      float kd = 0;
-      float ki = 150;
+      turn_pid.kp = 8000;
+      turn_pid.kd = 0;
+      turn_pid.ki = 150;
+      // float kp = 8000;//75.6
+      // float kd = 0;
+      // float ki = 150;
     }
-    float error;
-    float final_power;
-    float encoder_avg;
-    int last_error = 0;
-    int integral_limit = 50;
+    // float error;
+    // float final_power;
+    // float encoder_avg;
+    // int last_error = 0;
+    // int integral_limit = 50;
 
     //int max_speed = 100;
-    bool timer_turn = true;
-    unsigned int net_timer;
-
-    int failsafe = timeout;
-    int initial_millis = pros::millis();
-    net_timer = initial_millis + timeout; //just to initialize net_timer at first
+    // bool timer_turn = true;
+    // unsigned int net_timer;
+    //
+    // int failsafe = timeout;
+    // int initial_millis = pros::millis();
+    // net_timer = initial_millis + timeout; //just to initialize net_timer at first
 
     printf("orientation %f\n", orientation);
     printf("timer %i\n", pros::millis());
 
 
     do {
+      float final_power = pid_calc(&turn_pid, target, orientation);
+      turn_set(final_power);
+
+      if (fabs(turn_pid.error) < degToRad(1)){
+        timer_turn = false;
+      }
       //do a basic pid loop on orientation with the target as the ending angle
-      encoder_avg = orientation;
-      error = degToRad(target) - encoder_avg;
-      derivative = (error - last_error)*kd;
-      last_error = error;
-      integral = error + integral;
-      proportional = error*kp;
+
+
+      // encoder_avg = orientation;
+      // error = degToRad(target) - encoder_avg;
+      // derivative = (error - last_error)*kd;
+      // last_error = error;
+      // integral = error + integral;
+      // proportional = error*kp;
 
       //pros::lcd::print(0, "orientation %f\n", orientation);
       //pros::lcd::print(1, "error %f\n", error);
@@ -324,20 +336,17 @@ void position_turn(float target, int timeout, int max_speed) {
       printf("aoijfeosigo \n\n");
 
       //integral limeter
-      if (fabs(error) > (degToRad(22))) integral = 0;//22
-      if (integral > integral_limit) integral = integral_limit;
-      if (-integral < -integral_limit) integral = -integral_limit;
-
-      final_power = proportional + derivative + (integral * ki);
-      turn_set(final_power);
-
-      if (timer_turn == true) {
-        net_timer = pros::millis() + timeout;
-      }
-
-      if (fabs(error) < degToRad(1)){
-        timer_turn = false;
-      }
+      // if (fabs(error) > (degToRad(22))) integral = 0;//22
+      // if (integral > integral_limit) integral = integral_limit;
+      // if (-integral < -integral_limit) integral = -integral_limit;
+      //
+      // final_power = proportional + derivative + (integral * ki);
+      // turn_set(final_power);
+      //
+      // if (timer_turn == true) {
+      //   net_timer = pros::millis() + timeout;
+      // }
+      //
       pros::delay(20);
     } while(abs(radToDeg(error)) > 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 

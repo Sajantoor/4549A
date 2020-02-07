@@ -21,7 +21,7 @@ bool timerAng = false;
 bool anglerHold = false;
 bool torqueCheck = false;
 bool applyTorque = false;
-bool anglerIntakeThreshold = false;
+bool anglerIntakeThreshold = true;
 
 void angler_pid(float position, bool holdVal, float speed, bool applyTorque, float delayTime) {
   // assigns position value based on if there is a currentTarget or not.
@@ -60,8 +60,9 @@ void angler_pid_task(void*ignore) {
         intakeThresholdTimer = pros::millis() + 4000;
       }
 
-      if (anglerIntakeThreshold) {
+      if (anglerIntakeThreshold || (currentTarget == 3400)) {
         // angler stack code
+        anglerIntakeThreshold = true;
         if (anglerDelay && (pros::millis() > timeout)) {
           delayReached = true;
         }
@@ -146,8 +147,8 @@ void angler_pid_task(void*ignore) {
             delayReached = false;
             anglerBool = false;
           } else {
-            loader_left.move(-40);
-            loader_right.move(-40);
+            loader_left.move(-70);
+            loader_right.move(-70);
           }
         }
       }
