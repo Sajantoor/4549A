@@ -40,7 +40,6 @@ void lift_task(void*ignore) {
        float position = arm.get_position(); // mtr encoders
        float final_power = pid_calc(&lift_pid, height, position); // final power is calculated using pid
        arm.move(final_power);
-       printf("error: %f \n \n", lift_pid.error);
        // slew rate to slow down the motor based on the error value
        if (position > 1980) {
          lift_pid.max_power = lift_pid.max_power - 5; // slew rate

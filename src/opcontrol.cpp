@@ -5,24 +5,11 @@
 #include "all_used.h"
 #include "lift.h"
 #include "angler.h"
+#include "intake.h"
 
 const int LIFT_HIGH = 1950;
 const int LIFT_LOW = 2500;
 const int LIFT_DESCORE = 1700;
-
-// outtaking using the light sensor
-void sensor_outtake() {
-	std::uint32_t now = pros::millis();
-	// if cube no cube detected by light sensor
-	if (light_sensor_intake.get_value() > 1850) {
-		// ENHANcE: For more consistency this should be written using PID loop instead of timed
-		loader_left.move(-50);
-		loader_right.move(-50);
-		pros::Task::delay_until(&now, 500); // delay until 500 millis after now
-		loader_left.move(0);
-		loader_right.move(0);
-	}
-}
 
 void opcontrol() {
 	// global variables
@@ -90,14 +77,13 @@ void opcontrol() {
 			loader_right.move(0);
 		}
 		// auto intake
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			if (!intakeBool) { // intake bool is false, run auto intake function
-				autoIntakeFunc(127);
-			}
-		} else {
-			// turn off auto intake function
-			autoIntakeFunc(0);
-		}
+		// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+		// 	if (!intakeBool) { // intake bool is false, run auto intake function
+		// 		autoIntakeFunc(127);
+		// 	}
+		// } else { // turn off auto intake function
+		// 	autoIntakeFunc(0);
+		// }
 
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {

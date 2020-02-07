@@ -18,7 +18,6 @@ void autonomous() {
   beginning_orientation = 0;
   float initial_time;
 
-  intakeSpeed = 127;
   //position_drive2(0, 0, 0, 20, 0, 50, 0.5, 0, 11000, 50,40);// pick up cubes
   // position_turn(0, 1500, 127);
   // intakeSpeed = 127;
@@ -27,7 +26,7 @@ void autonomous() {
   pros::delay(3000);
   position_turn(39, 1500, 127);
   position_drive2(0, 112, 23, 144, 127, 127, 0.5, 0, 2000, 2, 127);// pick up cubes
-  intakeSpeed = 0;
+
   angler_pid(1020, true, 127, true);
   // while(light_sensor_intake.get_value() > 1850){
   //   loader_left.move(-40);
