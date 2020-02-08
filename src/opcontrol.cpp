@@ -21,7 +21,7 @@ void opcontrol() {
 
 	while (true) {
 		// printf("value %d \n \n", light_sensor_intake.get_value());
-		controller.print(0, 0, "Unlock");
+		// controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
@@ -65,10 +65,8 @@ void opcontrol() {
 		// check if intake is used in any task, letting driver use it.
 		if (intakeTaskBool || !anglerIntakeThreshold) {
 			intakeUsed = true;
-			printf("intakes are used in task \n \n");
 		} else {
 			intakeUsed = false;
-			printf("intake are not used in task \n \n");
 		}
 		// intake on triggers
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && !intakeUsed) {
@@ -85,15 +83,6 @@ void opcontrol() {
 			loader_right.move(0);
 		}
 
-		// auto intake
-		// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-		// 	if (!intakeBool) { // intake bool is false, run auto intake function
-		// 		autoIntakeFunc(127);
-		// 	}
-		// } else { // turn off auto intake function
-		// 	autoIntakeFunc(0);
-		// }
-
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 			if (!anglerVal) {
@@ -109,8 +98,15 @@ void opcontrol() {
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-			lift(800, 500);
+		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+		// 	lift(800, 500);
+		// }
+
+		// Unlock mech in skills
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
+				lift(LIFT_HIGH, 20000);
+			}
 		}
 
 		// lift high scoring value
@@ -146,6 +142,13 @@ void opcontrol() {
 					sensor_outtake();
 				}
 			}
+		}
+		// reset everything incase something goes wrong
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
+				angler_pid(3400, true, 127, false, 2000);
+				lift(0,0);
+				intakeTaskBool = false;
+				anglerIntakeThreshold = true;
 		}
 
 		// drop lift

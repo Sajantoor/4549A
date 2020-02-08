@@ -18,8 +18,15 @@ void autonomous() {
   beginning_orientation = 0;
   float initial_time;
 
-  angler_pid(2200, true, 127, false);
-  angler_pid(1020, true, 127, true);
+  printf("switcher %f", switcher);
+  // if no auto unlock
+  if (switcher == 0) {
+    lift(1950, 20000);
+    pros::delay(1000);
+    lift(0, 0);
+  }
+
+
 
  //position_turn(15, 5000, 127);
   //position_drive2(0, 0, 0, 20, 0, 50, 0.5, 0, 11000, 50,40);// pick up cubes
@@ -28,7 +35,7 @@ void autonomous() {
   // position_drive2(0, 40, 0, 65, 0, 100, 0.5, 0, 11000, 100,40);// pick up cubes
   //position_drive2(0, 0, 0, 25, 0, 127, 0.5, 0, 9000, 30);// pick up cubes  //position_turn(91, 1000, 127);
 
-  // the auto
+  // the auto we worked on in class on friday, working
             //   initial_time = pros::millis();
             //   lift(1950, 20000);
             //   pros::delay(1000);
@@ -45,13 +52,15 @@ void autonomous() {
             //   position_turn(120, 1500, 110);
             //   loader_left.move(0);
             //   loader_right.move(0);
-            //   angler_pid(2200, true, 127, false, 500);
+            //     angler_pid(2200, true, 127, false, 0, true);
             //   position_drive2(26.5, 23, 42.5, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
             //   angler_pid(1020, true, 127, true);
             //   pros::delay(2800);
+            // angler_pid(3400, true, 127, false, 2000);
             // drive_line_up(-100, 1000);
 
-            // end of auto
+
+    // end of auto
 
   // position_drive(33,12.1,135,false,127,4000);//pick up first set of cubes
   // loader_left.move(0);

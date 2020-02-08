@@ -22,12 +22,14 @@ bool anglerHold = false;
 bool torqueCheck = false;
 bool applyTorque = false;
 bool anglerIntakeThreshold = true;
+bool ignoreError = false;
 
-void angler_pid(float position, bool holdVal, float speed, bool applyTorque, float delayTime) {
+void angler_pid(float position, bool holdVal, float speed, bool applyTorque, float delayTime, bool errorIgnore) {
   // assigns position value based on if there is a currentTarget or not.
   if (!currentTarget) {
     currentTarget = position;
     currentSpeed = speed;
+    ignoreError = errorIgnore;
   } else {
     nextTarget = position;
     nextSpeed = speed;
@@ -109,10 +111,11 @@ void angler_pid_task(void*ignore) {
         float position = potentiometer_angler.get_value();
         int final_power = pid_calc(&angler_pid, currentTarget, position);
         angler.move(final_power);
-        // printf("angler pid: %f \n \n", angler_pid.error);
+        printf("angler pid: %f \n \n", angler_pid.error);
+        printf("current target: %f \n \n", currentTarget);
         // printf("torque values: %f \n \n", maxTorque);
         // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
-        if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached)  {
+        if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached || (ignoreError && nextTarget))  {
           angler.move(0);
           maxTorque = 0;
           // if there is a next target, then switch to the next target, else clear current target and exit the loop
@@ -144,10 +147,10 @@ void angler_pid_task(void*ignore) {
             loader_right.move(0);
             // COULD CAUSE BUGS: maybe change behavior to stack if not stacking
             // exit loop
-            currentTarget = 0;
-            currentSpeed = 0;
-            delayReached = false;
-            anglerBool = false;
+            // currentTarget = 0;
+            // currentSpeed = 0;
+            anglerIntakeThreshold = true;
+            // anglerBool = false;
           } else {
             loader_left.move(-70);
             loader_right.move(-70);

@@ -29,13 +29,15 @@ void intakePIDFunc(float target, float speed) {
 void intakePID(void*ignore) {
   while(true) {
     while (intakeTaskBool) {
+      printf("Entered loop \n \n");
     	loader_left.move_relative(intakeTaskPosition, intakeTaskSpeed);
     	loader_right.move_relative(intakeTaskPosition, intakeTaskSpeed);
 
-    	while (!((loader_left.get_position() < (intakeTaskPosition + 5)) && (loader_left.get_position() > (intakeTaskPosition - 5)))) {
+    	while (!((loader_left.get_position() < (intakeTaskPosition + 20)) && (loader_left.get_position() > (intakeTaskPosition - 20)))) {
     		pros::delay(2);
     	}
 
+      printf("Exited loop \n \n");
       intakeTaskBool = false;
       pros::delay(20);
     }
