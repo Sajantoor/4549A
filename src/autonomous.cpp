@@ -17,31 +17,32 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
- position_turn(15, 50000, 127);
+ //position_turn(15, 5000, 127);
   //position_drive2(0, 0, 0, 20, 0, 50, 0.5, 0, 11000, 50,40);// pick up cubes
   // position_turn(0, 1500, 127);
   // intakeSpeed = 127;
   // position_drive2(0, 40, 0, 65, 0, 100, 0.5, 0, 11000, 100,40);// pick up cubes
   //position_drive2(0, 0, 0, 25, 0, 127, 0.5, 0, 9000, 30);// pick up cubes  //position_turn(91, 1000, 127);
-            //   initial_time = pros::millis();
-            //   lift(1950, 20000);
-            //   pros::delay(1000);
-            //   lift(0, 0);
-            //   pros::delay(1000);
-            //   loader_left.move(127);
-            //   loader_right.move(127);
-            //   position_drive2(0, 0, 0, 44.4, 0, 90, 0.1, 0, 11000, 50,40);// pick up cubes
-            //   position_drive2(0, 44.4, 23, 5, 0, -100, 1, 0, 11000, 50,40);// pick up cubes
-            //   position_turn(0, 500, 127);
-            //   controller.print(0, 0, "driving straight now");
-            //   position_drive2(23, 5, 23, 57, 0, 90, 0.5, 0, 11000, 50,20);// pick up cubes
-            //   position_drive2(26.5, 57, 26.5, 23, 0, -100, 0.05, 0, 11000, 50,40);// pick up cubes
-            //   position_turn(135, 1500, 110);
-            //   position_drive2(26.5, 23, 42, 7, 0, 127, 0.05, 0, 11000, 50,40);// pick up cubes
-            //   loader_left.move(0);
-            //   loader_right.move(0);
-            //   angler_pid(1020, true, 127, true);
-            // drive_line_up(-100, 1000);
+              initial_time = pros::millis();
+              lift(1950, 20000);
+              pros::delay(1000);
+              lift(0, 0);
+              pros::delay(1000);
+              loader_left.move(127);
+              loader_right.move(127);
+              position_drive2(0, 0, 0, 44.4, 0, 100, 0.1, 0, 3000, 50,40);// pick up cubes
+              position_drive2(0, 44.4, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
+              position_turn(-5, 500, 80);
+              controller.print(0, 0, "driving straight");
+              position_drive2(23, 5, 23, 47, 0, 100, 0.5, 0, 3500, 50,20);// pick up cubes
+              position_drive2(26.5, 57, 26.5, 23, 0, -110, 0.05, 0, 2000, 50,40);// pick up cubes
+              position_turn(124, 1500, 110);
+              loader_left.move(0);
+              loader_right.move(0);
+              position_drive2(26.5, 23, 40, 5, 0, 127, 0.05, 0, 500, 50,40);// pick up cubes
+              angler_pid(1020, true, 127, true);
+              pros::delay(3000);
+            drive_line_up(-100, 1000);
   // position_drive(33,12.1,135,false,127,4000);//pick up first set of cubes
   // loader_left.move(0);
   // loader_right.move(0);

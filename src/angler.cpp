@@ -57,7 +57,7 @@ void angler_pid_task(void*ignore) {
         timeout = pros::millis() + anglerDelay; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
         !applyTorque ? torqueCheck = false : torqueCheck = true;
-        intakeThresholdTimer = pros::millis() + 4000;
+        intakeThresholdTimer = pros::millis() + 1000;
       }
 
       if (anglerIntakeThreshold || (currentTarget == 3400)) {
