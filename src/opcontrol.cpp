@@ -98,9 +98,6 @@ void opcontrol() {
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
-		// if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-		// 	lift(800, 500);
-		// }
 
 		// Unlock mech in skills
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {

@@ -101,50 +101,29 @@ void autonomous() {
 
 //RED BACK AUTO
   if(switcher == 2){
-            // initial_time = pros::millis();
-            // lift(1950, 20000);
-            // pros::delay(1000);
-            // lift(0, 0);
-            // loader_left.move(100);
-            // loader_right.move(100);
-            // position_drive(0,56,0,false,65,4000, 80, 127, 30);//pick up first set of cubes
-            // position_drive(0,12,0,false,127,4500, 127, 100 , 25);//come back facing the scoring zone
-            // loader_left.move(0);
-            // loader_right.move(0);
-            // position_turn(90, 600, 110);
-            // position_drive(0,-20,90,false,127,1500, 0, 0, 0);//strafe to line up with wall
-            // reset_position_full(0,0,0);
-            // loader_left.move(-20);
-            // loader_right.move(-20);
-            // position_drive(0,9,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
-            // loader_left.move(0);
-            // loader_right.move(0);
-            // angler_pid(1189, true, 127, true);
-            // pros::delay(1600);
-            // position_drive(0,-5,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
-            // angler_pid(3000, true, 100, false, 2000);
-            // timerAuto = pros::millis() - initial_time;
-            // controller.print(0, 0, "Timer Auto: %d", timerAuto/1000);
-            //
-    //better autonomoua
     initial_time = pros::millis();
     lift(1950, 20000);
-    pros::delay(1000);
+    loader_left.move(-127);
+    loader_right.move(-127);
+    pros::delay(1500);
     lift(0, 0);
-    position_drive(0,44.4,0,false,100,4000, 127, 0, 30, 10, 80);//pick up first set of cubes
-    position_drive(0,23,0,false,127,4000);//pick up first set of cubes
-    position_drive(26.5,10,0,false,127,4000, 0, 0, 0, 15, 100);//pick up first set of cubes
-    position_drive(26.5,57,0,false,110,4000, 0, 0, 0, 25, 70);//pick up first set of cubes
-    position_drive(26.5,23,0,false,127,4000);//pick up first set of cubes
-    position_turn(135, 1500, 110);
-    position_drive(33,12.1,135,false,127,4000);//pick up first set of cubes
+    pros::delay(1000);
+    loader_left.move(127);
+    loader_right.move(127);
+    position_drive2(0, 0, 0, 44.4, 0, 110, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_drive2(0, 44.4, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
+    position_turn(-5, 400, 80);
+    position_drive2(25, 9, 23, 50, 0, 127, 0.5, 0, 2600, 50,20);// pick up cubes
+    position_drive2(23, 50, 26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
+    position_turn(117, 1500, 110);
     loader_left.move(0);
     loader_right.move(0);
-    angler_pid(1189, true, 127, true);
-    pros::delay(1600);
-    position_drive(26.5,23,0,false,127,1000);//strafe to line up with wall
-    angler_pid(3000, true, 100, false, 2000);
-    timerAuto = pros::millis() - initial_time;
+      angler_pid(2200, true, 127, false, 0, true);
+    position_drive2(26.5, 23, 43.5, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
+    angler_pid(1020, true, 127, true);
+    pros::delay(2000);
+  angler_pid(3400, true, 127, false, 2000);
+  drive_line_up(-100, 1000);
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT
@@ -209,29 +188,27 @@ void autonomous() {
     if(switcher == 6){
       initial_time = pros::millis();
       lift(1950, 20000);
-      pros::delay(1000);
-      lift(0, 0);
-      loader_left.move(100);
-      loader_right.move(100);
-      position_drive(0,56,0,false,65,4000, 80, 127, 30);//pick up first set of cubes
-      position_drive(0,12,0,false,127,4500, 127, 100 , 25);//come back facing the scoring zone
-      loader_left.move(0);
-      loader_right.move(0);
-      position_turn(-90, 600, 110);
-      position_drive(0,-20,-90,false,127,1500, 0, 0, 0);//strafe to line up with wall
-      reset_position_full(0,0,0);
-      loader_left.move(-20);
-      loader_right.move(-20);
-      position_drive(0,9,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
-      loader_left.move(0);
-      loader_right.move(0);
-      angler_pid(1189, true, 127, true);
+      loader_left.move(-127);
+      loader_right.move(-127);
       pros::delay(1600);
-      position_drive(0,-5,0,false,127,1000, 0, 0, 0);//strafe to line up with wall
-      angler_pid(3000, true, 100, false, 2000);
-      timerAuto = pros::millis() - initial_time;
-      controller.print(0, 0, "Timer Auto: %d", timerAuto/1000);
-
+      lift(0, 1000);
+      pros::delay(1000);
+      loader_left.move(127);
+      loader_right.move(127);
+      position_drive2(0, 0, 0, 44.4, 0, 110, 0.1, 0, 2300, 50,40);// pick up cubes
+      position_drive2(0, 44.4, -24, 3, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
+      position_turn(-5, 400, 80);
+      position_drive2(-24, 3, -26, 50, 0, 127, 0.5, 0, 2600, 50,20);// pick up cubes
+      position_drive2(-26, 50, -26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
+      position_turn(-135, 1500, 110);
+      loader_left.move(0);
+      loader_right.move(0);
+        angler_pid(2200, true, 127, false, 0, true);
+      position_drive2(-26.5, 23, -37, 3, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
+      angler_pid(1020, true, 127, true);
+      pros::delay(2000);
+    angler_pid(3400, true, 127, false, 2000);
+    drive_line_up(-100, 1000);
     }
 
   //1 POINT UNLOCK AUTO BLUE RIGHT

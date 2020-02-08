@@ -8,7 +8,15 @@
 void sensor_outtake() {
   std::uint32_t now = pros::millis();
   if (light_sensor_intake.get_value() > 1850) {
-    intakePIDFunc(-600, 127);
+    // old solution if needed
+    // loader_left.move(-50);
+    // loader_right.move(-50);
+    // // pros::delay(1000);
+    // pros::Task::delay_until(&now, 500);
+    // loader_left.move(0);
+    // loader_right.move(0);
+    
+    intakePIDFunc(-500, 127);
 	}
 }
 // gloabsl for intake pid
@@ -29,15 +37,21 @@ void intakePIDFunc(float target, float speed) {
 void intakePID(void*ignore) {
   while(true) {
     while (intakeTaskBool) {
-      printf("Entered loop \n \n");
+      float timeout = 2000 + pros::millis();
+      float currentTime = pros::millis();
+      printf("timeout %f \n \n ", timeout);
+
     	loader_left.move_relative(intakeTaskPosition, intakeTaskSpeed);
     	loader_right.move_relative(intakeTaskPosition, intakeTaskSpeed);
 
-    	while (!((loader_left.get_position() < (intakeTaskPosition + 20)) && (loader_left.get_position() > (intakeTaskPosition - 20)))) {
-    		pros::delay(2);
+    	while (!((loader_left.get_position() < (intakeTaskPosition + 50)) && (loader_left.get_position() > (intakeTaskPosition - 50))) || (currentTime > timeout)) {
+        currentTime = pros::millis();
+
+        printf("currentTime %f \n \n ", currentTime);
+        printf("timeout %f %f \n \n", timeout);
+        pros::delay(2);
     	}
 
-      printf("Exited loop \n \n");
       intakeTaskBool = false;
       pros::delay(20);
     }

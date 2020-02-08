@@ -237,12 +237,12 @@ static lv_res_t blue_tile_screen(lv_obj_t * btn1) {
 
   lv_obj_set_size(blue_auto_1, 200, 100);
   lv_obj_align(blue_auto_1, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10);
-  lv_label_set_text(blue_auto_1_label, "Red Front");
+  lv_label_set_text(blue_auto_1_label, "Blue Front");
   lv_btn_set_style(blue_auto_1, LV_BTN_STYLE_REL, &blue_autos_button_style);
 
   lv_obj_set_size(blue_auto_2, 200, 100); //change name when making auto
   lv_obj_align(blue_auto_2, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
-  lv_label_set_text(blue_auto_2_label, "Red Back");
+  lv_label_set_text(blue_auto_2_label, "Blue Back");
   lv_btn_set_style(blue_auto_2, LV_BTN_STYLE_REL, &blue_autos_button_style);
 
   lv_obj_set_size(blue_auto_3, 200, 100); //change name when making auto
