@@ -48,6 +48,7 @@ void angler_pid_task(void*ignore) {
   float maxTorque = 0;
   bool delayReached = false;
   float intakeThresholdTimer;
+  const int ERROR_THRESHOLD = 10;
 
   while(true) {
     while (anglerBool) {
@@ -56,6 +57,7 @@ void angler_pid_task(void*ignore) {
         angler_pid.max_power = currentSpeed;
         timeout = pros::millis() + anglerDelay; // timeout value to exit out of the loop, if something goes wrong
         timerAng = false;
+
         !applyTorque ? torqueCheck = false : torqueCheck = true;
         intakeThresholdTimer = pros::millis() + 1000;
       }
@@ -110,7 +112,7 @@ void angler_pid_task(void*ignore) {
         // printf("angler pid: %f \n \n", angler_pid.error);
         // printf("torque values: %f \n \n", maxTorque);
         // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
-        if ((fabs(angler_pid.error) <= 10) || !anglerHold || delayReached)  {
+        if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached)  {
           angler.move(0);
           maxTorque = 0;
           // if there is a next target, then switch to the next target, else clear current target and exit the loop
