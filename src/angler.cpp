@@ -6,9 +6,12 @@
 
 // global variables
 const float SEVEN_STACK_TORQUE = 1.40;
-const float EIGHT_STACK_TORQUE = 1.59; // this is roughly the amount of torque on the motor for a 7 stack
-const float NINE_STACK_TORQUE = 1.93; // roughly the amount of torque for a 9 stack
+const float EIGHT_STACK_TORQUE = 1.59;
+const float NINE_STACK_TORQUE = 1.93;
 const float TEN_STACK_TORQUE = 2.10;
+
+const float TRAY_FORWARD_VAL = -4500;
+const float TRAY_BACKWARD_VAL = 0;
 
 float currentTarget;
 float nextTarget;
@@ -64,7 +67,7 @@ void angler_pid_task(void*ignore) {
         intakeThresholdTimer = pros::millis() + 1000;
       }
 
-      if (anglerIntakeThreshold || (currentTarget == 3400)) {
+      if (anglerIntakeThreshold || (currentTarget == 0)) {
         // angler stack code
         anglerIntakeThreshold = true;
         if (anglerDelay && (pros::millis() > timeout)) {
@@ -108,11 +111,11 @@ void angler_pid_task(void*ignore) {
         }
 
         float currentTime = pros::millis();
-        float position = potentiometer_angler.get_value();
+        float position = angler.get_position();
         int final_power = pid_calc(&angler_pid, currentTarget, position);
         angler.move(final_power);
         printf("angler pid: %f \n \n", angler_pid.error);
-        printf("current target: %f \n \n", currentTarget);
+        // printf("current target: %f \n \n", currentTarget);
         // printf("torque values: %f \n \n", maxTorque);
         // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
         if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached || (ignoreError && nextTarget))  {
