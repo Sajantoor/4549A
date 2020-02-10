@@ -281,8 +281,8 @@ void position_turn(float target, int timeout, int max_speed) {
 
     if(abs((degToRad(target) - orientation)) < 25) {
       printf("high kp");
-      turn_pid.Kp = 270;
-      turn_pid.Kd = 75;
+      turn_pid.Kp = 250;
+      turn_pid.Kd = 100;
       turn_pid.Ki = 0;
     }
 

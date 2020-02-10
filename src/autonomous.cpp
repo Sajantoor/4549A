@@ -110,20 +110,20 @@ void autonomous() {
     pros::delay(1000);
     loader_left.move(127);
     loader_right.move(127);
-    position_drive2(0, 0, 0, 44.4, 0, 110, 0.1, 0, 2300, 50,40);// pick up cubes
-    position_drive2(0, 44.4, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
-    position_turn(-5, 400, 80);
-    position_drive2(25, 9, 23, 50, 0, 127, 0.5, 0, 2600, 50,20);// pick up cubes
-    position_drive2(23, 50, 26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
-    position_turn(117, 1500, 110);
+    position_drive2(0, 0, 0, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_drive2(0, 23, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
+    position_turn(5, 1000, 90);
+    position_drive2(25, 9, 25, 38, 0, 90, 0.5, 0, 2600, 50,20);// pick up cubes
+    position_drive2(23, 42, 26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
+    position_turn(129, 1500, 110);
     loader_left.move(0);
     loader_right.move(0);
       angler_pid(2200, true, 127, false, 0, true);
-    position_drive2(26.5, 23, 43.5, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
+    position_drive2(26.5, 23, 40, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
     angler_pid(1020, true, 127, true);
     pros::delay(2000);
   angler_pid(3400, true, 127, false, 2000);
-  drive_line_up(-100, 1000);
+  drive_line_up(-100, 500);
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT
@@ -131,29 +131,25 @@ void autonomous() {
     position_drive(16, 0, 0,false, 127, 1500);
     position_drive(0, 0, 0,false, 127, 1200);
 
-    angler_pid(1580, 0);
-    pros::delay(2000);
+    lift(1950, 20000);
     loader_left.move(-127);
     loader_right.move(-127);
     pros::delay(1500);
-    loader_left.move(0);
-    loader_right.move(0);
-    angler_pid(3665, 0, 80, false);
+    lift(0, 0);
+    pros::delay(1000);
   }
 
   //1 POINT UNLOCK AUTO RED LEFT
   if(switcher == 4){
-    position_drive(-16, 0, 0, false,127, 1500);
-    position_drive(0, 0, 0, false,127, 1200);
+    position_drive2(0, 0, 0, 15, 0, 110, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_drive2(0, 15, 0, 0, 0, -110  , 0.1, 0, 2300, 50,40);// pick up cubes
 
-    angler_pid(1580, 0);
-    pros::delay(2000);
+    lift(1950, 20000);
     loader_left.move(-127);
     loader_right.move(-127);
     pros::delay(1500);
-    loader_left.move(0);
-    loader_right.move(0);
-    angler_pid(3665, 0, 80, false);
+    lift(0, 0);
+    pros::delay(1000);
   }
 
   //BLUE FRONT AUTO
@@ -190,25 +186,25 @@ void autonomous() {
       lift(1950, 20000);
       loader_left.move(-127);
       loader_right.move(-127);
-      pros::delay(1600);
-      lift(0, 1000);
+      pros::delay(1500);
+      lift(0, 0);
       pros::delay(1000);
       loader_left.move(127);
       loader_right.move(127);
-      position_drive2(0, 0, 0, 44.4, 0, 110, 0.1, 0, 2300, 50,40);// pick up cubes
-      position_drive2(0, 44.4, -24, 3, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
-      position_turn(-5, 400, 80);
-      position_drive2(-24, 3, -26, 50, 0, 127, 0.5, 0, 2600, 50,20);// pick up cubes
-      position_drive2(-26, 50, -26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
-      position_turn(-135, 1500, 110);
+      position_drive2(0, 0, 0, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+      position_drive2(0, 18, -25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
+      position_turn(0, 1000, 9);
+      position_drive2(-25, 9, -25, 38, 0, 100, 0.5, 0, 2600, 50,20);// pick up cubes
+      position_drive2(-23, 42, -26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
+      position_turn(-129, 1500, 110);
       loader_left.move(0);
       loader_right.move(0);
         angler_pid(2200, true, 127, false, 0, true);
-      position_drive2(-26.5, 23, -37, 3, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
+      position_drive2(-26.5, 23, -40, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
       angler_pid(1020, true, 127, true);
       pros::delay(2000);
     angler_pid(3400, true, 127, false, 2000);
-    drive_line_up(-100, 1000);
+    drive_line_up(-100, 500);
     }
 
   //1 POINT UNLOCK AUTO BLUE RIGHT

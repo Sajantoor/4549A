@@ -103,6 +103,10 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
 				lift(LIFT_HIGH, 20000);
+				if (!liftBool) {
+					liftBool = true;
+					sensor_outtake();
+				}
 			}
 		}
 
