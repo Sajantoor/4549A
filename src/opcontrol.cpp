@@ -24,7 +24,7 @@ void opcontrol() {
 		// controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 
-		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 			stickArray[0] = 127;
 			stickArray[2] = 127;
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
@@ -80,19 +80,16 @@ void opcontrol() {
 			intakeUsed = false;
 		}
 		// intake on triggers
-		// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && !intakeUsed) {
-		// 	loader_left.move_voltage(12000);
-		// 	loader_right.move_voltage(12000);
-		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) && !intakeUsed) {
-		// 	loader_left.move_velocity(-12000);
-		// 	loader_right.move_velocity(-12000);
-		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && !intakeUsed) {
-		// 	loader_left.move(-94);
-		// 	loader_right.move(-94);
-		// } else if (!intakeUsed) {
-		// 	loader_left.move(0);
-		// 	loader_right.move(0);
-		// }
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && !intakeUsed) {
+			loader_left.move_voltage(12000);
+			loader_right.move_voltage(12000);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) && !intakeUsed) {
+			loader_left.move_velocity(-12000);
+			loader_right.move_velocity(-12000);
+		} else if (!intakeUsed) {
+			loader_left.move(0);
+			loader_right.move(0);
+		}
 
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
