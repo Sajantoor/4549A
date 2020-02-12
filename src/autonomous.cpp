@@ -17,15 +17,18 @@ void autonomous() {
   reset_position_full(0, 0, 0);
   beginning_orientation = 0;
   float initial_time;
+  gyro.reset();
 
   printf("switcher %f", switcher);
   // if no auto unlock
-  if (switcher == 0) {
-    lift(1950, 20000);
-    pros::delay(1000);
-    lift(0, 0);
-  }
-
+  // if (switcher == 0) {
+  //   lift(1950, 20000);
+  //   pros::delay(1000);
+  //   lift(0, 0);
+  // }
+pros::delay(5000);
+position_drive2(0, 0, 0, 113, 0, 80, 0.05, 0, 11000, 50,40);// pick up cubes
+position_turn(90, 5000, 127);
 
 
  //position_turn(15, 5000, 127);

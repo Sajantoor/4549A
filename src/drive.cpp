@@ -23,6 +23,9 @@ float beginning_orientation;
 float prev_inches_traveled_left;
 float prev_inches_traveled_right;
 float prev_inches_traveled_back;
+float prev_gyro_radian;
+float orientation_odem;
+float prev_orientation_odem;
 vector position;
 sVel velocity;
 
@@ -60,6 +63,8 @@ void polarToVector(polar& polar, vector& vector) {
 
 void tracking_update(void*ignore) {
   while(true) {
+    float currentTime = pros::millis();
+    // float currentMinutes = (currentTime / 1000) / 60;
     //gets the ticks from the each of encoders
     float degrees_encoder_left = (left_encoder.get_value());
     float degrees_encoder_right = (right_encoder.get_value());
@@ -70,6 +75,9 @@ void tracking_update(void*ignore) {
     float degrees_to_rad_right = (pi/180) * degrees_encoder_right;
     float degrees_to_rad_back = (pi/180) * degrees_encoder_back;
 
+    const float gyro_threshold = degToRad(1);
+    const float distance_between_centre = 4.95876466;//1.59437
+    const float distance_between_backwheel_center = 2.5;//4.913425
     //the radius of the tracking wheels
     const float wheel_radius = 1.3845055;
 
@@ -78,15 +86,30 @@ void tracking_update(void*ignore) {
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-
-    const float distance_between_centre = 4.95876466;//1.59437
-    const float distance_between_backwheel_center = 2.5;//4.913425
+    float gyro_value = gyro.get_value() / 10;
+    float gyro_radian = degToRad(gyro_value);
+    float delta_gyro = gyro_radian - prev_gyro_radian;
 
     //Returns the orientation of the bot in radians
-    float new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
-
+    float new_absolute_orientation;
+    float odem_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right) / (2 * distance_between_centre));
+    float change_in_gyro_odom = fabs(gyro_radian - odem_orientation);
     //Returns how much it has rotated from its previous point in radians
     float change_in_angle = new_absolute_orientation - orientation;
+
+        printf("change in gyro odom %f \n \n", change_in_gyro_odom);
+        printf("odem orientation %f \n \n", odem_orientation);
+        printf("gyro orientation %f \n \n", gyro_radian);
+        printf("gyro_threshold %f \n \n", gyro_threshold);
+
+    if (gyro_threshold < change_in_gyro_odom) {
+      printf("using gyro \n \n");
+      new_absolute_orientation = gyro_radian;
+      // new_absolute_orientation = orientation + delta_gyro;
+    } else {
+      printf("not using gyro \n \n");
+      new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
+    }
 
     // The change in position from previous reset
     vector local_offset;
@@ -116,6 +139,8 @@ void tracking_update(void*ignore) {
 
     //updates orienation values and the inches traveled by the tracking wheels
     orientation = new_absolute_orientation; //gives back value in radians
+    prev_gyro_radian = gyro_radian;
+    prev_orientation_odem = orientation_odem;
     prev_inches_traveled_left = inches_traveled_left;
     prev_inches_traveled_right = inches_traveled_right;
     prev_inches_traveled_back = inches_traveled_back;
@@ -764,37 +789,37 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
             right_drive_set(finalpower);
       			break;
         }
-        printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
+        // printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
+        // // printf(" \n");
+        // // printf("left_encoder %d\n", left_encoder.get_value());
+        // // printf(" \n");
+        // // printf("right_encoder %d\n", right_encoder.get_value());
+        // // printf(" \n");
+        // printf("position.x %f\n", position.x);
         // printf(" \n");
-        // printf("left_encoder %d\n", left_encoder.get_value());
+        // printf("position.y %f\n", position.y);
         // printf(" \n");
-        // printf("right_encoder %d\n", right_encoder.get_value());
+        // printf("positionErr.x %f\n", positionErr.x);
         // printf(" \n");
-        printf("position.x %f\n", position.x);
-        printf(" \n");
-        printf("position.y %f\n", position.y);
-        printf(" \n");
-        printf("positionErr.x %f\n", positionErr.x);
-        printf(" \n");
-        printf("positionErr.y %f\n", positionErr.y);
-        printf(" \n");
-        printf("finalpower %f\n", finalpower);
-        // printf("final_power %f\n", finalpower);
+        // printf("positionErr.y %f\n", positionErr.y);
         // printf(" \n");
-        printf("err_angle %f\n", err_angle);
-        printf(" \n");
-        printf("err_x %f\n", err_x);
-        printf(" \n");
-        printf("look_ahead_point.x %f\n", look_ahead_point.x);
-        printf(" \n");
-        printf("look_ahead_point.y %f\n", look_ahead_point.y);
-        printf(" \n");
-        printf("orientation %f\n", orientation);
-        printf(" \n");
-        printf("correctA %f\n", correctA);
-        printf(" \n");
-        printf("correction %f\n", correction);
-        printf(" \n");
+        // printf("finalpower %f\n", finalpower);
+        // // printf("final_power %f\n", finalpower);
+        // // printf(" \n");
+        // printf("err_angle %f\n", err_angle);
+        // printf(" \n");
+        // printf("err_x %f\n", err_x);
+        // printf(" \n");
+        // printf("look_ahead_point.x %f\n", look_ahead_point.x);
+        // printf(" \n");
+        // printf("look_ahead_point.y %f\n", look_ahead_point.y);
+        // printf(" \n");
+        // printf("orientation %f\n", orientation);
+        // printf(" \n");
+        // printf("correctA %f\n", correctA);
+        // printf(" \n");
+        // printf("correction %f\n", correction);
+        // printf(" \n");
         // printf("max_error %f\n", max_error);
         // printf(" \n");
         // printf("orientation %f\n", orientation);

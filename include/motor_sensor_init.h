@@ -23,17 +23,18 @@ extern pros::Motor loader_right;
 extern pros::Motor angler;
 
 #define light_port_intake 1
-#define pot_port_angler 2
+#define pot_port_angler 10
 #define top_port_back 3
 #define bottom_port_back 4
 #define top_port_right 5
 #define bottom_port_right 6
 #define top_port 7
 #define bottom_port 8
+#define GYRO_PORT 2 //2 is weird
 // #define gyro_port 11;
 
 extern pros::ADIPort light_sensor_intake;
-// extern pros::ADIGyro gryo;
+extern pros::ADIGyro gyro;
 extern pros::ADIPort potentiometer_angler;
 extern pros::ADIEncoder left_encoder;
 extern pros::ADIEncoder right_encoder;

@@ -18,9 +18,11 @@ void opcontrol() {
 	int stickArray[4];
 	int power[4];
 	bool intakeUsed = false;
-
+	pros::ADIGyro gyro (GYRO_PORT, 0.9506790);
+	gyro.reset();
+	// float initalTime = pros::millis();
 	while (true) {
-		// printf("value %d \n \n", light_sensor_intake.get_value());
+		// printf("gyroVal: %f \n \n", gyro.get_value());
 		// controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);

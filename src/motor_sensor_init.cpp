@@ -13,7 +13,7 @@ pros::Motor arm(ARM, MOTOR_GEARSET_6, true, pros::E_MOTOR_ENCODER_COUNTS);
 
 pros::Vision vision_sensor(VISION_PORT);
 
-// pros::ADIGyro gyro (GYRO_PORT);
+pros::ADIGyro gyro (GYRO_PORT);
 pros::ADIPort light_sensor_intake (light_port_intake, pros::E_ADI_ANALOG_IN);
 pros::ADIPort potentiometer_angler (pot_port_angler, pros::E_ADI_ANALOG_IN);
 pros::ADIEncoder left_encoder(top_port,bottom_port,false);

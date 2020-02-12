@@ -132,6 +132,7 @@ static lv_res_t reset_values (lv_obj_t * btn) {
   left_encoder.reset();
   right_encoder.reset();
   back_encoder.reset();
+  gyro.reset();
   beginning_orientation = 0;
   prev_inches_traveled_left = 0;
   prev_inches_traveled_right = 0;
@@ -346,7 +347,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
     lv_obj_align(arm_potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 220);
 
     std::ostringstream angler_potentiometerV;
-    angler_potentiometerV << "Angler Potentiometer: " << std::setprecision(3) << potentiometer_angler.get_value();
+    angler_potentiometerV << "Gyro Value: " << std::setprecision(3) << (gyro.get_value())/10;
     auto anpv = angler_potentiometerV.str();
     lv_label_set_text(angler_potentiometer_label, anpv.c_str());
     lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
