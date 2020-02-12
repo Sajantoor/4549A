@@ -19,17 +19,17 @@ void autonomous() {
   float initial_time;
   gyro.reset();
 
-  printf("switcher %f", switcher);
+  //printf("switcher %f", switcher);
   // if no auto unlock
   // if (switcher == 0) {
   //   lift(1950, 20000);
   //   pros::delay(1000);
   //   lift(0, 0);
   // }
-  pros::delay(5000);
-  // position_drive2(0, 0, 0, 113, 0, 80, 0.05, 0, 11000, 50,40);// pick up cubes
-  // pros::delay(1500);
-  // position_turn(90, 1500, 127);
+  // pros::delay(2000);
+//position_drive2(0, 0, 0, 20, 0, 80, 0.5, 0, 11000, 50,40);// pick up cubes
+  // // pros::delay(1500);
+  // position_turn(20, 3000, 127);
 
 
  //position_turn(15, 5000, 127);
@@ -114,20 +114,25 @@ void autonomous() {
     pros::delay(1000);
     loader_left.move(127);
     loader_right.move(127);
-    position_drive2(0, 0, 0, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
-    position_drive2(0, 23, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
-    position_turn(5, 1000, 90);
-    position_drive2(25, 9, 25, 38, 0, 90, 0.5, 0, 2600, 50,20);// pick up cubes
-    position_drive2(23, 42, 26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
-    position_turn(129, 1500, 110);
-    loader_left.move(0);
-    loader_right.move(0);
-      angler_pid(2200, true, 127, false, 0, true);
-    position_drive2(26.5, 23, 40, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
-    angler_pid(1020, true, 127, true);
-    pros::delay(2000);
-  angler_pid(3400, true, 127, false, 2000);
-  drive_line_up(-100, 500);
+    position_drive2(0, 0, 0, 40, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_drive2(0, 40, -25, 9, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_turn(0, 1000, 120);
+    position_drive2(-25, 9, -25, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_turn(140, 1500, 110);
+  //   position_drive2(0, 0, 0, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+  //   position_drive2(0, 23, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
+  //   position_turn(5, 1000, 90);
+  //   position_drive2(25, 9, 25, 38, 0, 90, 0.5, 0, 2600, 50,20);// pick up cubes
+  //   position_drive2(23, 42, 26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
+  //   position_turn(129, 1500, 110);
+  //   loader_left.move(0);
+  //   loader_right.move(0);
+  //     angler_pid(2200, true, 127, false, 0, true);
+  //   position_drive2(26.5, 23, 40, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
+  //   angler_pid(1020, true, 127, true);
+  //   pros::delay(2000);
+  // angler_pid(3400, true, 127, false, 2000);
+  // drive_line_up(-100, 500);
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT

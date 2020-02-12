@@ -64,7 +64,7 @@ void polarToVector(polar& polar, vector& vector) {
 void tracking_update(void*ignore) {
   const float gyro_threshold = degToRad(1); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
-  const float distance_between_backwheel_center = 2.5;//4.913425
+  const float distance_between_backwheel_center = -2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
 
   while(true) {
@@ -101,12 +101,12 @@ void tracking_update(void*ignore) {
     // printf("gyro_threshold %f \n \n", gyro_threshold);
 
     if (gyro_threshold < change_in_gyro_odom) {
-      printf("using gyro \n \n");
+      // printf("using gyro \n \n");
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
       // new_absolute_orientation = orientation + delta_gyro;
     } else {
       // odem only
-      printf("odem \n \n");
+      // printf("odem \n \n");
       new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
     }
 
@@ -301,9 +301,9 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(125, 0, 0, 30, 500, 100);
+    pid_values turn_pid(155, 0, 0, 30, 500, max_speed);
 
-    if(abs((degToRad(target) - orientation)) < 25) {
+    if(abs((degToRad(target) - orientation)) < degToRad(25)) {
       printf("high kp");
       turn_pid.Kp = 250;
       turn_pid.Kd = 100;
@@ -318,8 +318,8 @@ void position_turn(float target, int timeout, int max_speed) {
     int initial_millis = pros::millis();
     net_timer = initial_millis + timeout; //just to initialize net_timer at first
 
-    printf("orientation %f\n", orientation);
-    printf("timer %i\n", pros::millis());
+    // printf("orientation %f\n", orientation);
+    // printf("timer %i\n", pros::millis());
 
 
     do {
@@ -885,22 +885,22 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
     printf("driving done\n");
     printf("velocity_line %f \n", velocity_line);
-
-    if (max_speed < 0) {
-      drive_set(20);
-      pros::delay(50);
-      drive_set(0);
-      printf("driving done back\n");
-
-    } else if (max_speed > 0) {
-      drive_set(-20);
-      pros::delay(50);
-      drive_set(0);
-      printf("driving done forward\n");
-
-    } else {
-      drive_set(0);
-    }
+HarshStop();
+    // if (max_speed < 0) {
+    //   drive_set(20);
+    //   pros::delay(50);
+    //   drive_set(0);
+    //   printf("driving done back\n");
+    //
+    // } else if (max_speed > 0) {
+    //   drive_set(-20);
+    //   pros::delay(50);
+    //   drive_set(0);
+    //   printf("driving done forward\n");
+    //
+    // } else {
+    //   drive_set(0);
+    // }
     // drive_set(0);
     printf("driving done\n");
 }
