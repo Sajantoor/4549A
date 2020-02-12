@@ -68,7 +68,6 @@ void tracking_update(void*ignore) {
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
 
   while(true) {
-    float currentTime = pros::millis();
     //gets the ticks from the each of encoders
     float degrees_encoder_left = (left_encoder.get_value());
     float degrees_encoder_right = (right_encoder.get_value());
@@ -96,10 +95,10 @@ void tracking_update(void*ignore) {
     //Returns how much it has rotated from its previous point in radians
     float change_in_angle = new_absolute_orientation - orientation;
 
-    printf("change in gyro odom %f \n \n", change_in_gyro_odom);
-    printf("odem orientation %f \n \n", odem_orientation);
-    printf("gyro orientation %f \n \n", gyro_radian);
-    printf("gyro_threshold %f \n \n", gyro_threshold);
+    // printf("change in gyro odom %f \n \n", change_in_gyro_odom);
+    // printf("odem orientation %f \n \n", odem_orientation);
+    // printf("gyro orientation %f \n \n", gyro_radian);
+    // printf("gyro_threshold %f \n \n", gyro_threshold);
 
     if (gyro_threshold < change_in_gyro_odom) {
       printf("using gyro \n \n");
@@ -598,7 +597,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     printf("Moving to %f %f \n", ending_point_x, ending_point_y);
 
     do {
-      printf("intake light sensor %d \n", light_sensor_intake.get_value());
+      // printf("intake light sensor %d \n", light_sensor_intake.get_value());
       largestVal = 0;
       // intake speed transition
       // transition point is the magnitude x, y error away intakes transition speeds
@@ -618,8 +617,8 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
       rotated_motorPowerPolar.theta += orientation;
       polarToVector(rotated_motorPowerPolar, rotated_motorPower);
-			printf("position.x %f \n", position.x);
-		  printf("position.y %f \n", position.y);
+			// printf("position.x %f \n", position.x);
+		  // printf("position.y %f \n", position.y);
 
       if(pickUp_cube && light_sensor_intake.get_value() < 1900){
         pros::delay(900);
@@ -628,7 +627,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
         transition_point = 0;
         intakeSpeed = 0;
         final_intake = 0;
-        printf("set to 0 \n");
+        // printf("set to 0 \n");
       }
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
       if ((magnitude_of_X_Y < end_speed_transition) && (end_speed_transition != 0)) {
@@ -641,7 +640,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
         int delta_x = rotated_motorPower.x - last_x;
         limit_to_val_set(delta_x, 5);
         rotated_motorPower.x = last_x += delta_x;
-        printf("slowing down \n");
+        // printf("slowing down \n");
       }
       else {
         limit_to_val_set(rotated_motorPower.y, abs(max_power));
@@ -668,7 +667,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
           largestVal = abs(motor_power_array[i]);
         }
       }
-      printf("largestVal %f \n", largestVal);
+      // printf("largestVal %f \n", largestVal);
       //Scales down all the motor_power if the largestVal is over 127, this is to make sure the motors arent getting power over 127
         if (largestVal > 127) {
           motor_power_array[0] = (motor_power_array[0] * 127) / abs(largestVal);
@@ -689,7 +688,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       powf_of_X_Y = powf(yDir_pid.error, 2) + powf(xDir_pid.error, 2);
       magnitude_of_X_Y = sqrtf(powf_of_X_Y);
 
-			printf("magnitude_of_X_Y %f \n", magnitude_of_X_Y);
+			// printf("magnitude_of_X_Y %f \n", magnitude_of_X_Y);
       pros::delay(10);
 
     } while ((magnitude_of_X_Y > 1 || abs(radToDeg(turn_pid.error)) > 0.7) && (pros::millis() < net_timer));
@@ -789,37 +788,37 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
             right_drive_set(finalpower);
       			break;
         }
-        printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
+        // printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
         // printf(" \n");
         // printf("left_encoder %d\n", left_encoder.get_value());
         // printf(" \n");
         // printf("right_encoder %d\n", right_encoder.get_value());
         // printf(" \n");
-        printf("position.x %f\n", position.x);
-        printf(" \n");
-        printf("position.y %f\n", position.y);
-        printf(" \n");
-        printf("positionErr.x %f\n", positionErr.x);
-        printf(" \n");
-        printf("positionErr.y %f\n", positionErr.y);
-        printf(" \n");
-        printf("finalpower %f\n", finalpower);
-        // printf("final_power %f\n", finalpower);
+        // printf("position.x %f\n", position.x);
         // printf(" \n");
-        printf("err_angle %f\n", err_angle);
-        printf(" \n");
-        printf("err_x %f\n", err_x);
-        printf(" \n");
-        printf("look_ahead_point.x %f\n", look_ahead_point.x);
-        printf(" \n");
-        printf("look_ahead_point.y %f\n", look_ahead_point.y);
-        printf(" \n");
-        printf("orientation %f\n", orientation);
-        printf(" \n");
-        printf("correctA %f\n", correctA);
-        printf(" \n");
-        printf("correction %f\n", correction);
-        printf(" \n");
+        // printf("position.y %f\n", position.y);
+        // printf(" \n");
+        // printf("positionErr.x %f\n", positionErr.x);
+        // printf(" \n");
+        // printf("positionErr.y %f\n", positionErr.y);
+        // printf(" \n");
+        // printf("finalpower %f\n", finalpower);
+        // // printf("final_power %f\n", finalpower);
+        // // printf(" \n");
+        // printf("err_angle %f\n", err_angle);
+        // printf(" \n");
+        // printf("err_x %f\n", err_x);
+        // printf(" \n");
+        // printf("look_ahead_point.x %f\n", look_ahead_point.x);
+        // printf(" \n");
+        // printf("look_ahead_point.y %f\n", look_ahead_point.y);
+        // printf(" \n");
+        // printf("orientation %f\n", orientation);
+        // printf(" \n");
+        // printf("correctA %f\n", correctA);
+        // printf(" \n");
+        // printf("correction %f\n", correction);
+        // printf(" \n");
         // printf("max_error %f\n", max_error);
         // printf(" \n");
         // printf("orientation %f\n", orientation);
