@@ -106,28 +106,32 @@ void autonomous() {
 //RED BACK AUTO
   if(switcher == 2){
     initial_time = pros::millis();
+    pros::delay(2000);
     lift(1950, 20000);
-    loader_left.move(-127);
-    loader_right.move(-127);
     pros::delay(1500);
     lift(0, 0);
     pros::delay(1000);
     loader_left.move(127);
     loader_right.move(127);
     position_drive2(0, 0, 0, 40, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
-    position_drive2(0, 40, -25, 9, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
-    position_turn(0, 1000, 120);
-    position_drive2(-25, 9, -25, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
-    position_turn(140, 1500, 110);
+    position_drive2(0, 40, -24, 4, 0, -90, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_turn(0, 3000, 127);
+    position_drive2(-24, 4, -23, 38, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+    position_turn(130, 1500, 110);
+    position_drive2(-25, 38, 5, 6, 0, 90, 0.1, 0, 3000, 50,40);// pick up cubes
+    loader_left.move(0);
+    loader_right.move(0);
+    angler_pid(-4500, true, 127, true);
+    drive_line_up(-100,1000);
   //   position_drive2(0, 0, 0, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
   //   position_drive2(0, 23, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
   //   position_turn(5, 1000, 90);
   //   position_drive2(25, 9, 25, 38, 0, 90, 0.5, 0, 2600, 50,20);// pick up cubes
   //   position_drive2(23, 42, 26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
   //   position_turn(129, 1500, 110);
-  //   loader_left.move(0);
-  //   loader_right.move(0);
-  //     angler_pid(2200, true, 127, false, 0, true);
+    // loader_left.move(0);
+    // loader_right.move(0);
+    //   angler_pid(2200, true, 127, false, 0, true);
   //   position_drive2(26.5, 23, 40, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
   //   angler_pid(1020, true, 127, true);
   //   pros::delay(2000);

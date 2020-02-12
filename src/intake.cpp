@@ -15,7 +15,7 @@ void sensor_outtake() {
     // pros::Task::delay_until(&now, 500);
     // loader_left.move(0);
     // loader_right.move(0);
-    
+
     intakePIDFunc(-500, 127);
 	}
 }
@@ -46,9 +46,6 @@ void intakePID(void*ignore) {
 
     	while (!((loader_left.get_position() < (intakeTaskPosition + 50)) && (loader_left.get_position() > (intakeTaskPosition - 50))) || (currentTime > timeout)) {
         currentTime = pros::millis();
-
-        printf("currentTime %f \n \n ", currentTime);
-        printf("timeout %f %f \n \n", timeout);
         pros::delay(2);
     	}
 

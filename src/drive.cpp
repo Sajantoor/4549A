@@ -98,6 +98,7 @@ void tracking_update(void*ignore) {
     // printf("change in gyro odom %f \n \n", change_in_gyro_odom);
     // printf("odem orientation %f \n \n", odem_orientation);
     // printf("gyro orientation %f \n \n", gyro_radian);
+    // printf("time %d \n \n", pros::millis());
     // printf("gyro_threshold %f \n \n", gyro_threshold);
 
     if (gyro_threshold < change_in_gyro_odom) {
@@ -305,7 +306,7 @@ void position_turn(float target, int timeout, int max_speed) {
 
     if(abs((degToRad(target) - orientation)) < degToRad(25)) {
       printf("high kp");
-      turn_pid.Kp = 250;
+      turn_pid.Kp = 255;
       turn_pid.Kd = 100;
       turn_pid.Ki = 0;
     }

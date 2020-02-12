@@ -109,18 +109,6 @@ void opcontrol() {
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
-
-		// Unlock mech in skills
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
-				lift(LIFT_HIGH, 20000);
-				if (!liftBool) {
-					liftBool = true;
-					sensor_outtake();
-				}
-			}
-		}
-
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
