@@ -26,9 +26,6 @@ void autonomous() {
   //   pros::delay(1000);
   //   lift(0, 0);
   // }
-pros::delay(5000);
-position_drive2(0, 0, 0, 113, 0, 80, 0.05, 0, 11000, 50,40);// pick up cubes
-position_turn(90, 5000, 127);
 
 
  //position_turn(15, 5000, 127);

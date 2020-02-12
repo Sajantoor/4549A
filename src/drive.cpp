@@ -69,7 +69,6 @@ void tracking_update(void*ignore) {
 
   while(true) {
     float currentTime = pros::millis();
-    // float currentMinutes = (currentTime / 1000) / 60;
     //gets the ticks from the each of encoders
     float degrees_encoder_left = (left_encoder.get_value());
     float degrees_encoder_right = (right_encoder.get_value());
