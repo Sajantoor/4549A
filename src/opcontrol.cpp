@@ -25,16 +25,27 @@ void opcontrol() {
 		// printf("gyroVal: %f \n \n", gyro.get_value());
 		// controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
-		stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
+
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			stickArray[0] = 127;
+			stickArray[2] = 127;
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+			stickArray[0] = -127;
+			stickArray[2] = -127;
+		} else {
+			stickArray[0] = 0;
+			stickArray[2] = 0;
+		}
+		// stickArray[0] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X), 3) / powf(127, 2);
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(127, 2);
-		stickArray[2] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), 3) / powf(127, 2);
+		// stickArray[2] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), 3) / powf(127, 2);
 		stickArray[3] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3) / powf(127, 2);
 		// loops through array and removes values under 15 from the calculation
 		for (size_t j = 0; j < 4; j++) {
 			if (abs(stickArray[j]) < 15) {
 				stickArray[j] = 0;
 			}
-			// for x values remove if they are over 30
+			// for x values remove if they are under 30
 			if (j == 0 || j == 2) {
 				if (127 - abs(stickArray[j]) < 30) {
 					if (stickArray[j] > 0)
@@ -77,9 +88,6 @@ void opcontrol() {
 		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) && !intakeUsed) {
 			loader_left.move_velocity(-12000);
 			loader_right.move_velocity(-12000);
-		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && !intakeUsed) {
-			loader_left.move(-94);
-			loader_right.move(-94);
 		} else if (!intakeUsed) {
 			loader_left.move(0);
 			loader_right.move(0);
@@ -87,14 +95,15 @@ void opcontrol() {
 
 		// autonomous stacking mechanism
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+			// go foward
 			if (!anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(1020, true, 127, true);
-			} else if (anglerVal) {
+				angler_pid(-4500, true, 127, true);
+			} else if (anglerVal) { // go backward
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(3400, true, 127, false, 2000);
+				angler_pid(0, true, 127, false, 2000);
 			}
 			// same button to return
 			anglerVal ? anglerVal = false : anglerVal = true;
@@ -148,7 +157,7 @@ void opcontrol() {
 		}
 		// reset everything incase something goes wrong
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
-				angler_pid(3400, true, 127, false, 2000);
+				angler_pid(0, true, 127, false, 2000);
 				lift(0,0);
 				intakeTaskBool = false;
 				anglerIntakeThreshold = true;
