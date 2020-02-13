@@ -20,19 +20,18 @@ void autonomous() {
   gyro.reset();
 
   initial_time = pros::millis();
-  // pros::delay(2000);
-  // lift(1950, 20000);
-  // pros::delay(1500);
-  // lift(0, 0);
-  pros::delay(2000);
+  lift(1950, 20000);
+  pros::delay(1500);
+  lift(0, 0);
   loader_left.move(127);
   loader_right.move(127);
+  pros::delay(1500);
   position_drive2(0, 0, 0, 42, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
-  position_drive2(0, 40, -24, 4, 0, -90, 0.1, 0, 2300, 50,40);// pick up cubes
+  position_drive2(0, 40, -21, 4, 0, -110, 0.1, 0, 2300, 50,40);// pick up cubes
   position_turn(0, 3000, 127);
-  position_drive2(-24, 4, -23, 35, 0, 90, 0.1, 0, 2300, 50,15);// pick up cubes
-  position_turn(133, 1500, 110);
-  position_drive2(-25, 35, 4, 6, 0, 110, 0.1, 0, 3000, 50,40);// pick up cubes
+  position_drive2(-21, 4, -21, 38, 60, 90, 0.05, 0, 2300, 50,10);// pick up cubes
+  position_turn(100, 1500, 110);
+  position_drive2(-21, 38, 10, 12, 0, 110, 0.1, 0, 3000, 50,5);// pick up cubes
   loader_left.move(0);
   loader_right.move(0);
   angler_pid(-4500, true, 127, true);

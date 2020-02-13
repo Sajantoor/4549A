@@ -62,7 +62,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(1); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(100); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = -2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -102,12 +102,12 @@ void tracking_update(void*ignore) {
     // printf("gyro_threshold %f \n \n", gyro_threshold);
 
     if (gyro_threshold < change_in_gyro_odom) {
-      // printf("using gyro \n \n");
+      printf("using gyro \n \n");
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
       // new_absolute_orientation = orientation + delta_gyro;
     } else {
       // odem only
-      // printf("odem \n \n");
+       printf("odem \n \n");
       new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
     }
 
@@ -302,11 +302,11 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(160, 0, 0, 30, 500, max_speed);
+    pid_values turn_pid(200, 0, 0, 30, 500, max_speed);
 
-    if(abs((degToRad(target) - orientation)) < degToRad(25)) {
+    if(abs((degToRad(target) - orientation)) < degToRad(30)) {
       printf("high kp");
-      turn_pid.Kp = 270;
+      turn_pid.Kp = 300;
       turn_pid.Kd = 90;
       turn_pid.Ki = 0;
     }
@@ -760,7 +760,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 9.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 9.8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
         printf(" \n");//5.3
       }
 
