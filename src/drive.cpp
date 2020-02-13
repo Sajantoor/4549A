@@ -886,7 +886,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
     printf("driving done\n");
     printf("velocity_line %f \n", velocity_line);
-HarshStop();
+    HarshStop();
     // if (max_speed < 0) {
     //   drive_set(20);
     //   pros::delay(50);
