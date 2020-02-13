@@ -19,6 +19,29 @@ void autonomous() {
   float initial_time;
   gyro.reset();
 
+  initial_time = pros::millis();
+  // pros::delay(2000);
+  // lift(1950, 20000);
+  // pros::delay(1500);
+  // lift(0, 0);
+  pros::delay(2000);
+  loader_left.move(127);
+  loader_right.move(127);
+  // position_drive2(0, 0, 0, 40, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
+  // position_drive2(0, 40, -24, 4, 0, -90, 0.1, 0, 2300, 50,40);// pick up cubes
+  // position_turn(0, 3000, 127);
+  position_drive2(0, 0, 0, 28, 0, 90, 0.1, 0, 2300, 50,15);// pick up cubes
+  lift(800, 1000);
+  position_drive2(0, 28, 0, 32, 0, 90, 0.1, 0, 2300, 50,15);
+  lift(0, 500);
+  // position_turn(133, 1500, 110);
+  // position_drive2(-25, 38, 4, 6, 0, 90, 0.1, 0, 3000, 50,40);// pick up cubes
+  // loader_left.move(0);
+  // loader_right.move(0);
+  // angler_pid(-4500, true, 127, true);
+  // pros::delay(3000);
+  // drive_line_up(-100,1000);
+
   //printf("switcher %f", switcher);
   // if no auto unlock
   // if (switcher == 0) {
