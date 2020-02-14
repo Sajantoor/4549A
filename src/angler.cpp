@@ -67,7 +67,7 @@ void angler_pid_task(void*ignore) {
         intakeThresholdTimer = pros::millis() + 1000;
       }
 
-      if (anglerIntakeThreshold || (currentTarget == 0)) {
+      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL)) {
         // angler stack code
         anglerIntakeThreshold = true;
         if (anglerDelay && (pros::millis() > timeout)) {
@@ -86,14 +86,14 @@ void angler_pid_task(void*ignore) {
         // }
 
         // 8 stack torque is faster than 7 stack
-        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 800)) {
+        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1600)) {
           if (angler_pid.max_power < currentSpeed * 0.5) {
             angler_pid.max_power = currentSpeed * 0.5;
           } else {
             angler_pid.max_power = angler_pid.max_power - 15;
           }
         // 7 stack torque is slower
-        } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 600)) {
+        } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 1200)) {
           if (angler_pid.max_power < currentSpeed * 0.4) {
             angler_pid.max_power = currentSpeed * 0.4;
           } else {
@@ -101,7 +101,7 @@ void angler_pid_task(void*ignore) {
           }
         // slow down for all cubes
         } else {
-          if (fabs(angler_pid.error) < 500) {
+          if (fabs(angler_pid.error) < 1000) {
             if (angler_pid.max_power < currentSpeed * 0.5) {
               angler_pid.max_power = currentSpeed * 0.5;
             } else {
@@ -118,7 +118,7 @@ void angler_pid_task(void*ignore) {
         // printf("current target: %f \n \n", currentTarget);
         // printf("torque values: %f \n \n", maxTorque);
         // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
-        if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached || (ignoreError && nextTarget))  {
+        if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached || (ignoreError && nextTarget)) {
           angler.move(0);
           maxTorque = 0;
           // if there is a next target, then switch to the next target, else clear current target and exit the loop

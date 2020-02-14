@@ -7,8 +7,8 @@
 #include "angler.h"
 #include "intake.h"
 
-const int LIFT_HIGH = 1950;
-const int LIFT_LOW = 2500;
+const int LIFT_HIGH = 2500;
+const int LIFT_LOW = 1950;
 const int LIFT_DESCORE = 1700;
 
 void opcontrol() {
@@ -118,8 +118,8 @@ void opcontrol() {
 
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
-				lift(LIFT_HIGH, 20000);
+			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
+				lift(LIFT_LOW, 20000);
 
 				if (!liftBool) {
 					liftBool = true;
@@ -129,8 +129,8 @@ void opcontrol() {
 		}
 		// lift low scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
-				lift(LIFT_LOW, 20000);
+			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
+				lift(LIFT_HIGH, 20000);
 
 				if (!liftBool) {
 					liftBool = true;
