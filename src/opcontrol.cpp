@@ -109,6 +109,13 @@ void opcontrol() {
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+
+			lift(900, 500);
+ 			pros::Task::delay(500);
+			lift(0, 500);
+		}
+
 		// lift high scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
@@ -145,16 +152,16 @@ void opcontrol() {
 		}
 		// reset everything incase something goes wrong
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
-				angler_pid(0, true, 127, false, 2000);
-				lift(0,0);
-				intakeTaskBool = false;
-				anglerIntakeThreshold = true;
+			lift(0, 1000);
+			liftBool = false;
 		}
 
 		// drop lift
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-			lift(0, 1000);
-			liftBool = false;
+			angler_pid(0, true, 127, false, 2000);
+			lift(0,0);
+			intakeTaskBool = false;
+			anglerIntakeThreshold = true;
 		}
 
 		pros::delay(20);

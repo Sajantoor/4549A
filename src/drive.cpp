@@ -62,7 +62,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(20000); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(1); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = -2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
