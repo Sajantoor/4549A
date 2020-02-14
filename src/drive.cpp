@@ -62,7 +62,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(100); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(20000); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = -2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -302,11 +302,11 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(200, 0, 0, 30, 500, max_speed);
+    pid_values turn_pid(230, 80, 10, 30, 500, max_speed);
 
     if(abs((degToRad(target) - orientation)) < degToRad(30)) {
       printf("high kp");
-      turn_pid.Kp = 300;
+      turn_pid.Kp = 320;
       turn_pid.Kd = 90;
       turn_pid.Ki = 0;
     }

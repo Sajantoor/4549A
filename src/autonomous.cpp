@@ -20,24 +20,31 @@ void autonomous() {
   gyro.reset();
 
   initial_time = pros::millis();
-  lift(1950, 20000);
-  pros::delay(1500);
-  lift(0, 0);
+  // lift(1950, 20000);
+  // pros::delay(1500);
+  // lift(0, 0);
   loader_left.move(127);
   loader_right.move(127);
   pros::delay(1500);
-  position_drive2(0, 0, 0, 42, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
-  position_drive2(0, 40, -21, 4, 0, -110, 0.1, 0, 2300, 50,40);// pick up cubes
-  position_turn(0, 3000, 127);
-  position_drive2(-21, 4, -21, 38, 60, 90, 0.05, 0, 2300, 50,10);// pick up cubes
-  position_turn(100, 1500, 110);
-  position_drive2(-21, 38, 10, 12, 0, 110, 0.1, 0, 3000, 50,5);// pick up cubes
-  loader_left.move(0);
-  loader_right.move(0);
-  angler_pid(-4500, true, 127, true);
-  pros::delay(3000);
-  drive_line_up(-100,1000);
-
+  position_drive2(0, 0, 0, 25, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
+  // loader_left.move(0);
+  // loader_right.move(0);
+  lift(750,500);
+  pros::delay(200);
+  position_drive2(0, 25, 0, 36, 0, 60, 0.1, 0, 1000, 50,40);// pick up cubes
+  lift(0,20000);
+        // position_drive2(0, 0, 0, 50, 0, 60, 0.1, 0, 8000, 50,40);// pick up cubes
+        // position_drive2(0, 40, -22, 4, 0, -110, 0.1, 0, 2300, 50,40);// pick up cubes
+        // position_turn(0, 1500, 127);
+        // position_drive2(-22, 4, -22, 38, 60, 90, 0.05, 8, 2300, 50,10);// pick up cubes
+        // position_turn(90, 1500, 110);
+        // position_drive2(-21, 38, 9, 8, 0, 110, 0.1, 0, 3000, 50,30);// pick up cubes
+        // loader_left.move(0);
+        // loader_right.move(0);
+        // angler_pid(-4500, true, 127, true);
+        // pros::delay(3000);
+        // drive_line_up(-100,1000);
+        //
   //printf("switcher %f", switcher);
   // if no auto unlock
   // if (switcher == 0) {
