@@ -62,7 +62,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(3); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(5); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = -2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -96,18 +96,18 @@ void tracking_update(void*ignore) {
     float change_in_angle = new_absolute_orientation - orientation;
 
     // printf("change in gyro odom %f \n \n", change_in_gyro_odom);
-    printf("odem orientation %f \n \n", odem_orientation);
-    printf("gyro orientation %f \n \n", gyro_radian);
+    // printf("odem orientation %f \n \n", odem_orientation);
+    // printf("gyro orientation %f \n \n", gyro_radian);
 
     if (gyro_threshold < change_in_gyro_odom) {
-      printf("using gyro \n \n");
+      // printf("using gyro \n \n");
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
 
       // FOR TESTING USE ONLY => FULL GYRO
       // new_absolute_orientation = gyro_radian;
     } else {
       // odem only
-       printf("odem \n \n");
+       // printf("odem \n \n");
       new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
     }
 

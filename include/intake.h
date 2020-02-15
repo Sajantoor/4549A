@@ -4,6 +4,7 @@
 
 void sensor_outtake();
 extern bool intakeTaskBool;
+extern bool autoIntakeBool;
 extern pros::task_t intake_task_init;
 extern pros::task_t intake_task_pid_init;
 void autoIntake(void*ignore);

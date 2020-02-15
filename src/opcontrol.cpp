@@ -22,6 +22,7 @@ void opcontrol() {
 	gyro.reset();
 	// float initalTime = pros::millis();
 	while (true) {
+		// printf("light sensor value: %d \n \n", light_sensor_intake.get_value());
 		// printf("gyroVal: %f \n \n", gyro.get_value());
 		// controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
@@ -76,7 +77,7 @@ void opcontrol() {
 		drive_right = power[2];
 		drive_right_b = power[3];
 		// check if intake is used in any task, letting driver use it.
-		if (intakeTaskBool || !anglerIntakeThreshold) {
+		if (intakeTaskBool || !anglerIntakeThreshold || autoIntakeBool) {
 			intakeUsed = true;
 		} else {
 			intakeUsed = false;
@@ -133,8 +134,8 @@ void opcontrol() {
 				lift(LIFT_HIGH, 20000);
 
 				if (!liftBool) {
-					liftBool = true;
 					sensor_outtake();
+					liftBool = true;
 				}
 			}
 		}
@@ -160,8 +161,13 @@ void opcontrol() {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 			angler_pid(0, true, 127, false, 2000);
 			lift(0,0);
+			liftBool = false;
 			intakeTaskBool = false;
 			anglerIntakeThreshold = true;
+		}
+
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+			autoIntakeFunc(127);
 		}
 
 		pros::delay(20);

@@ -3,11 +3,15 @@
 #include "motor_setup.h"
 #include "intake.h"
 #include "pid.h"
+#include "vision.h"
 
 // outtaking using the light sensor
 void sensor_outtake() {
-  std::uint32_t now = pros::millis();
-  if (light_sensor_intake.get_value() > 1850) {
+  double sensorValue = light_sensor_intake.get_value();
+  // std::uint32_t now = pros::millis();
+  if (sensorValue > 1850) {
+    intakePIDFunc(-700, 127);
+
     // old solution if needed
     // loader_left.move(-50);
     // loader_right.move(-50);
@@ -15,8 +19,7 @@ void sensor_outtake() {
     // pros::Task::delay_until(&now, 500);
     // loader_left.move(0);
     // loader_right.move(0);
-
-    intakePIDFunc(-500, 127);
+    // printf("caLLED FUNCTION \n \n");
 	}
 }
 // gloabsl for intake pid
@@ -39,7 +42,7 @@ void intakePID(void*ignore) {
     while (intakeTaskBool) {
       float timeout = 2000 + pros::millis();
       float currentTime = pros::millis();
-      printf("timeout %f \n \n ", timeout);
+      printf("entered function %f \n \n ", timeout);
 
     	loader_left.move_relative(intakeTaskPosition, intakeTaskSpeed);
     	loader_right.move_relative(intakeTaskPosition, intakeTaskSpeed);
@@ -49,6 +52,7 @@ void intakePID(void*ignore) {
         pros::delay(2);
     	}
 
+      printf("exited loop");
       intakeTaskBool = false;
       pros::delay(20);
     }
@@ -74,16 +78,18 @@ void autoIntake(void*ignore) {
   float lightSensorTimeout = 500;
   float timer;
   bool intakeTimeout = false;
+  const int visionIntakeThreshold = 10000;
 
   while (true) {
     while (autoIntakeBool) { // task running bool
-      if (light_sensor_intake.get_value() < 1850) { // if cube is detected
-        loader_left.move(autoIntakeSpeed);
-        loader_right.move(autoIntakeSpeed);
+      double lightSensorValue = light_sensor_intake.get_value();
+      if ((lightSensorValue < 1850) || currentCube.size > visionIntakeThreshold) { // if cube is detected
+        loader_left.move(127);
+        loader_right.move(127);
         timer = lightSensorTimeout + pros::millis(); // timer is updated
       } else if (intakeTimeout) { // run slow intake speed
-        loader_left.move(80);
-        loader_right.move(80);
+        loader_left.move(0);
+        loader_right.move(0);
         intakeTimeout = false; // restart the timeout to have it run again if cube is detected
       } else if (timer < pros::millis()) { // run timer
         intakeTimeout = true;

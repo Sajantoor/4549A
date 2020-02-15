@@ -19,16 +19,6 @@ const int MIN_DEEP_VISION_THRESHOLD = 500; // min size to be considered to be co
 const int MAX_SIZE = 45264; // stop before cube gets this big
 const int ERROR_X = -32084; // -32084 is the error value for x
 
-struct data {
-  int width; // effective width of the cube
-  int height; // effective height of the cube
-  int size; // area, width * height
-  int x;
-  int y;
-  int id;
-  bool deepVisionCheck;
-};
-
 data deepVisionData;
 data currentCube;
 
@@ -50,12 +40,12 @@ void clearData(data * x) {
 void telemetry() {
 //  pros::vision_object_s_t orangeDetection = vision_sensor.get_by_sig(0, ORANGE);
   // printf("left_coord: %i \n\n top_coord: %i \n\n", orangeDetection.left_coord, orangeDetection.top_coord);
-  printf("width: %i \n\n height: %i \n \n", currentCube.width, currentCube.height);
+  // printf("width: %i \n\n height: %i \n \n", currentCube.width, currentCube.height);
   printf("size: %i \n \n", currentCube.size);
 //  printf("size: %i \n \n", orangeDetection.width * orangeDetection.height);
   // printf("x: %i \n\n y: %i \n\n", orangeDetection.x_middle_coord, orangeDetection.y_middle_coord);
   printf("x: %i \n\n", currentCube.x);
-  printf("object count: %i \n\n", vision_sensor.get_object_count());
+  // printf("object count: %i \n\n", vision_sensor.get_object_count());
 }
 // return area of the cube using width and height
 int sizeCheck(float x, float width, float height, int id) {
@@ -146,9 +136,9 @@ int targetSelection() {
   detectionValues[2] = sizeCheck(greenDetection.x_middle_coord, greenDetection.width, greenDetection.height, 2);
   // gets the largest cube from the array and the color id
   for (size_t i = 0; i < 3; i++) {
-    if ((vision_sensor.get_object_count() > 1) && (detectionValues[i] > DEEP_VISION_THRESHOLD)) {
-      detectionValues[i] = deepVision(i + 1);
-    }
+    // if ((vision_sensor.get_object_count() > 1) && (detectionValues[i] > DEEP_VISION_THRESHOLD)) {
+    //   detectionValues[i] = deepVision(i + 1);
+    // }
 
     if (detectionValues[i] > closestCube) {
       closestCube = detectionValues[i];
@@ -188,30 +178,30 @@ void vision_tracking(void*ignore) {
       int closestCube = targetSelection();
       if (cubeColor != 0) {
         targetedCube = cubeColor;
-        printf("targeted cube y: %i \n \n", closestCube);
+        // printf("targeted cube y: %i \n \n", closestCube);
         // set_drive(0, 0);
       } else {
         // turns until cube detected
-        turn_set(60);
+        // turn_set(60);
       }
 
     } else {
       // targeted cube
-      printf("targeted cube: %i \n \n", targetedCube);
+      // printf("targeted cube: %i \n \n", targetedCube);
       pros::vision_object_s_t trackingCube = vision_sensor.get_by_sig(0, targetedCube);
 
       if (currentCube.deepVisionCheck) {
-        deepVision(targetedCube);
+        // deepVision(targetedCube);
         currentCube = deepVisionData;
-        printf("deep vision target selected: %i \n \n", cubeColor);
-        printf("deep vision target selected: %i \n \n", currentCube.size);
+        // printf("deep vision target selected: %i \n \n", cubeColor);
+        // printf("deep vision target selected: %i \n \n", currentCube.size);
       } else {
         currentCube.width = trackingCube.width;
         currentCube.height = trackingCube.height;
         currentCube.size = trackingCube.width * trackingCube.height;
         currentCube.x = trackingCube.x_middle_coord;
         currentCube.y = trackingCube.y_middle_coord;
-        printf("in loop width %i \n \n", trackingCube.width);
+        // printf("in loop width %i \n \n", trackingCube.width);
      }
 
       int direction;  // direction of turning
@@ -223,34 +213,35 @@ void vision_tracking(void*ignore) {
         currentCube.height = cube.height;
         currentCube.size = currentCube.width * currentCube.height;
         currentCube.x = cube.x_middle_coord;
-        printf("switched to a closer cube %i \n \n", cubeColor);
-        printf("size %i \n \n", currentCube.size);
+        // printf("switched to a closer cube %i \n \n", cubeColor);
+        // printf("size %i \n \n", currentCube.size);
       }
 
       // checks if cube still exists
       if (currentCube.size > 0) {
+        telemetry();
         // direction
-        if (currentCube.x > 0) {
-          direction = 1;
-        } else {
-          direction = -1;
-        }
+        // if (currentCube.x > 0) {
+        //   direction = 1;
+        // } else {
+        //   direction = -1;
+        // }
         // basic movement
-        if (fabs(currentCube.x) > 100) {
-          turn_set(80 * direction);
-        } else if (currentCube.size >= MAX_SIZE) {
-          set_drive(0, 0);
-        } else if (currentCube.size < MAX_SIZE) {
-          set_drive(80, 80);
-        } /* else if (currentCube.size > MAX_SIZE) {
-          set_drive(-30, -30);
-        } */ else {
-          set_drive(0, 0);
-        }
+        // if (fabs(currentCube.x) > 100) {
+        //   turn_set(80 * direction);
+        // } else if (currentCube.size >= MAX_SIZE) {
+        //   set_drive(0, 0);
+        // } else if (currentCube.size < MAX_SIZE) {
+        //   set_drive(80, 80);
+        // } /* else if (currentCube.size > MAX_SIZE) {
+        //   set_drive(-30, -30);
+        // } */ else {
+        //   set_drive(0, 0);
+        // }
 
       } else {
         // lost target
-        printf("target lost! \n \n");
+        // printf("target lost! \n \n");
         clearData(&currentCube);
         // set_drive(0, 0);
         cubeColor = 0;
