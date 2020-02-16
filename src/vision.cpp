@@ -218,32 +218,8 @@ void vision_tracking(void*ignore) {
       }
 
       // checks if cube still exists
-      if (currentCube.size > 0) {
-        // telemetry();
-        // direction
-        // if (currentCube.x > 0) {
-        //   direction = 1;
-        // } else {
-        //   direction = -1;
-        // }
-        // basic movement
-        // if (fabs(currentCube.x) > 100) {
-        //   turn_set(80 * direction);
-        // } else if (currentCube.size >= MAX_SIZE) {
-        //   set_drive(0, 0);
-        // } else if (currentCube.size < MAX_SIZE) {
-        //   set_drive(80, 80);
-        // } /* else if (currentCube.size > MAX_SIZE) {
-        //   set_drive(-30, -30);
-        // } */ else {
-        //   set_drive(0, 0);
-        // }
-
-      } else {
-        // lost target
-        // printf("target lost! \n \n");
+      if (!currentCube.size > 0) {
         clearData(&currentCube);
-        // set_drive(0, 0);
         cubeColor = 0;
         targetedCube = 0;
       }

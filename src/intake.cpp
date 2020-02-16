@@ -75,15 +75,14 @@ void autoIntakeFunc(float speed) {
 // auto intake task
 void autoIntake(void*ignore) {
   // time for intake to slow if intake doesn't detect cubes
-  float lightSensorTimeout = 500;
+  float lightSensorTimeout = 1000;
   float timer;
   bool intakeTimeout = false;
-  const int visionIntakeThreshold = 10000;
 
   while (true) {
     while (autoIntakeBool) { // task running bool
       double lightSensorValue = light_sensor_intake.get_value();
-      if ((lightSensorValue < 1850) || currentCube.size > visionIntakeThreshold) { // if cube is detected
+      if ((lightSensorValue < 1850) || currentCube.size > CUBE_SIZE_THRESHOLD_MAX) { // if cube is detected
         loader_left.move(127);
         loader_right.move(127);
         timer = lightSensorTimeout + pros::millis(); // timer is updated

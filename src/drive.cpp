@@ -700,7 +700,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     printf("driving done\n");
 }
 
-void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance, float end_speed) {
+void position_drive2(float starting_point_x, float starting_point_y, float ending_point_x, float ending_point_y, int startpower, float max_speed, float max_error, int early_stop, float timeout, float look_ahead_distance, float end_speed, bool vision) {
     vector error;
     vector positionErr;
     vector rotation_vector;
@@ -730,7 +730,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     float sin_line;
     float cos_line;
     float velocity_line;
-    bool vision = true;
     bool cubeCorrection = false;
     float cubeCorrectionDirection;
     float vision_power;
@@ -760,31 +759,27 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
 
-      if (max_error && !vision || max_error && cubeCorrection) {
-        printf("correcting drive \n \n");
+      if (max_error && !vision || currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
   			correction = fabs(err_x) > max_error ? 9 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
-        printf(" \n");//5.3
       } else if (vision) {
-        if (currentCube.size > 1000) {
-          if (currentCube.x > -40) {
+        if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
+          if (currentCube.x > CENTER_X) {
             cubeCorrectionDirection = 1;
           } else {
             cubeCorrectionDirection = -1;
           }
 
-          if (fabs(currentCube.x + 40) > 50) {
-            printf("cube correction \n \n");
+          if (fabs(currentCube.x + -CENTER_X) > 50) {
             cubeCorrection = false;
             vision_val = fabs(currentCube.x) - 50;
             vision_power = vision_val - 5;
             turn_set(50 * cubeCorrectionDirection);
           } else {
-            printf("corrected!!!! \n \n");
             cubeCorrection = true;
           }
         } else {
@@ -802,7 +797,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 4);
 			finalpower = last += delta;
-      if (!vision || cubeCorrection) {
+      if (!vision || cubeCorrection || currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
         switch (sgn(correction)) {
           case 0:
               left_drive_set(finalpower);
