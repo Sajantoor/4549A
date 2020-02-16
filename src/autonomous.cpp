@@ -21,7 +21,7 @@ void autonomous() {
 
   initial_time = pros::millis();
   autoIntakeFunc(127);
-  position_drive2(0, 0, 0, 30, 0, 60, 0.1, 0, 3000, 50,40, true);// pick up cubes
+  position_drive2(0, 0, 0, 30, 0, 60, 0.1, 0, 3000, 50,40, false);// pick up cubes
   position_drive2(0, 30, 0, 0, 0, -60, 0.1, 0, 3000, 50,40);// pick up cubes
 
   // FRONT AUTO STARTING

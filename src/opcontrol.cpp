@@ -18,6 +18,8 @@ void opcontrol() {
 	int stickArray[4];
 	int power[4];
 	bool intakeUsed = false;
+	bool miniLift = false;
+	float miniLiftTimer;
 	pros::ADIGyro gyro (GYRO_PORT, 0.9506790);
 	gyro.reset();
 	// float initalTime = pros::millis();
@@ -110,11 +112,17 @@ void opcontrol() {
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
-
-			lift(900, 500);
- 			pros::Task::delay(500);
-			lift(0, 500);
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) || miniLift) {
+			if (!miniLift) {
+				lift(900, 1000);
+				miniLift = true;
+			} else if (miniLiftTimer > 25) { // 500 milis / delay (20 millis)
+				lift(0, 500);
+				miniLiftTimer = 0;
+				miniLift = false;
+			} else if (miniLift) {
+				miniLiftTimer++;
+			}
 		}
 
 		// lift high scoring value

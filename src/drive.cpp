@@ -67,6 +67,8 @@ void tracking_update(void*ignore) {
   const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
+  const float gyro_error = -3115.185059;
+  bool gyroNotTuned = false;
 
   while(true) {
     //gets the ticks from the each of encoders
@@ -88,6 +90,11 @@ void tracking_update(void*ignore) {
     float gyro_radian = degToRad(gyro_value);
     float delta_gyro = gyro_radian - prev_gyro_radian;
 
+    if (pros::competition::is_autonomous() && (gyro_value == gyro_error)) {
+      printf("Not tuned gyro!!!! \n \n");
+      gyroNotTuned = true;
+    }
+
     //Returns the orientation of the bot in radians
     float new_absolute_orientation; // orientation of the bot using odem or gyro
     float odem_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right) / (2 * distance_between_centre));
@@ -98,9 +105,9 @@ void tracking_update(void*ignore) {
 
     // printf("change in gyro odom %f \n \n", change_in_gyro_odom);
     // printf("odem orientation %f \n \n", odem_orientation);
-    // printf("gyro orientation %f \n \n", gyro_radian);
+    // printf("gyro orientation %f \n \n", gyro_value);
 
-    if (gyro_threshold < change_in_gyro_odom) {
+    if (gyro_threshold < change_in_gyro_odom && !gyroNotTuned) {
       // printf("using gyro \n \n");
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
 
@@ -109,7 +116,7 @@ void tracking_update(void*ignore) {
     } else {
       // odem only
        // printf("odem \n \n");
-      new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/(2*distance_between_centre));
+      new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/ (2 * distance_between_centre));
     }
 
     // The change in position from previous reset
