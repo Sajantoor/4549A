@@ -63,9 +63,9 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(5); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(2); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
-  const float distance_between_backwheel_center = -2.5;//4.913425
+  const float distance_between_backwheel_center = 2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
 
   while(true) {
@@ -762,7 +762,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       if (max_error && !vision || currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
-  			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
+  			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
   			correction = fabs(err_x) > max_error ? 9 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
@@ -931,7 +931,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     printf("driving done\n");
 }
 
-  void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed) {
+void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed) {
     vector Vector;
     polar Polar;
 

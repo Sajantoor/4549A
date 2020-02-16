@@ -18,6 +18,7 @@ extern float prev_inches_traveled_left;
 extern float prev_inches_traveled_right;
 extern float prev_inches_traveled_back;
 extern float orientation;
+
 struct vector
 {
   float x;
