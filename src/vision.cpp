@@ -24,7 +24,6 @@ data currentCube;
 
 int falsePositiveCheck[3]; // false positive detections for each tracking color, to confirm something is detected a threshold must be reached
 int cubeColor = 0; // ID of targeted cube color
-// bool target = false; // used to check if a color is being tracked or not
 int targetedCube = 0; // cube currently being targeted (by ID)
 
 
@@ -35,17 +34,6 @@ void clearData(data * x) {
   x-> x = 0;
   x -> y = 0;
   x-> deepVisionCheck = 0;
-}
-
-void telemetry() {
-//  pros::vision_object_s_t orangeDetection = vision_sensor.get_by_sig(0, ORANGE);
-  // printf("left_coord: %i \n\n top_coord: %i \n\n", orangeDetection.left_coord, orangeDetection.top_coord);
-  // printf("width: %i \n\n height: %i \n \n", currentCube.width, currentCube.height);
-  // printf("size: %i \n \n", currentCube.size);
-//  printf("size: %i \n \n", orangeDetection.width * orangeDetection.height);
-  // printf("x: %i \n\n y: %i \n\n", orangeDetection.x_middle_coord, orangeDetection.y_middle_coord);
-  printf("x: %i \n\n", currentCube.x);
-  // printf("object count: %i \n\n", vision_sensor.get_object_count());
 }
 // return area of the cube using width and height
 int sizeCheck(float x, float width, float height, int id) {
@@ -178,35 +166,22 @@ void vision_tracking(void*ignore) {
       int closestCube = targetSelection();
       if (cubeColor != 0) {
         targetedCube = cubeColor;
-        // printf("targeted cube y: %i \n \n", closestCube);
-        // set_drive(0, 0);
-      } else {
-        // turns until cube detected
-        // turn_set(60);
       }
 
     } else {
       // targeted cube
-      // printf("targeted cube: %i \n \n", targetedCube);
       pros::vision_object_s_t trackingCube = vision_sensor.get_by_sig(0, targetedCube);
 
       if (currentCube.deepVisionCheck) {
         // deepVision(targetedCube);
         currentCube = deepVisionData;
-        // printf("deep vision target selected: %i \n \n", cubeColor);
-        // printf("deep vision target selected: %i \n \n", currentCube.size);
       } else {
         currentCube.width = trackingCube.width;
         currentCube.height = trackingCube.height;
         currentCube.size = trackingCube.width * trackingCube.height;
         currentCube.x = trackingCube.x_middle_coord;
         currentCube.y = trackingCube.y_middle_coord;
-        // printf("in loop width %i \n \n", trackingCube.width);
      }
-
-      int direction;  // direction of turning
-
-      // compares targeted cubes to other cubes
       if ((currentCube.size < targetSelection()) && (cubeColor != targetedCube && cubeColor != 0)) {
         pros::vision_object_s_t cube = vision_sensor.get_by_sig(0, cubeColor);
         currentCube.width = cube.width;
