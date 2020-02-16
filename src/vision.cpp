@@ -41,7 +41,7 @@ void telemetry() {
 //  pros::vision_object_s_t orangeDetection = vision_sensor.get_by_sig(0, ORANGE);
   // printf("left_coord: %i \n\n top_coord: %i \n\n", orangeDetection.left_coord, orangeDetection.top_coord);
   // printf("width: %i \n\n height: %i \n \n", currentCube.width, currentCube.height);
-  printf("size: %i \n \n", currentCube.size);
+  // printf("size: %i \n \n", currentCube.size);
 //  printf("size: %i \n \n", orangeDetection.width * orangeDetection.height);
   // printf("x: %i \n\n y: %i \n\n", orangeDetection.x_middle_coord, orangeDetection.y_middle_coord);
   printf("x: %i \n\n", currentCube.x);
@@ -219,7 +219,7 @@ void vision_tracking(void*ignore) {
 
       // checks if cube still exists
       if (currentCube.size > 0) {
-        telemetry();
+        // telemetry();
         // direction
         // if (currentCube.x > 0) {
         //   direction = 1;

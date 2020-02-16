@@ -20,34 +20,37 @@ void autonomous() {
   gyro.reset();
 
   initial_time = pros::millis();
+  autoIntakeFunc(127);
+  position_drive2(0, 0, 0, 30, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
+  position_drive2(0, 30, 0, 0, 0, -60, 0.1, 0, 3000, 50,40);// pick up cubes
 
   // FRONT AUTO STARTING
-  loader_right.move(127);
-  loader_left.move(127);
-  position_drive2(0, 0, 0, 13, 0, 90, 0.1, 0, 3000, 50,40);
-  pros::delay(1000);
-  loader_right.move(-90);
-  loader_left.move(-90);
-  pros::delay(500);
-  loader_right.move(0);
-  loader_left.move(0);
-  lift(2500, 20000);
-  position_drive2(0, 13, 0, 30, 0, 45, 0.1, 0, 3000, 50,40);// pick up cubes
-  loader_left.move(-127);
-  loader_right.move(-40);
-  pros::delay(800);
-  position_drive2(0, 30, 0, 27, 0, 45, 0.1, 0, 3000, 50,40);
-  lift(2100, 20000);
-  loader_right.move(127);
-  loader_left.move(127);
-  position_drive2(0, 27, 0, 30, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
-  // position_drive2(0, 10, 0, 32, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
-  lift(1000, 2000);
-  pros::delay(500);
-  lift(500, 2000);
-  pros::delay(500);
-  lift(0, 2000);
-  pros::delay(500);
+  // loader_right.move(127);
+  // loader_left.move(127);
+  // position_drive2(0, 0, 0, 13, 0, 90, 0.1, 0, 3000, 50,40);
+  // pros::delay(1000);
+  // loader_right.move(-90);
+  // loader_left.move(-90);
+  // pros::delay(500);
+  // loader_right.move(0);
+  // loader_left.move(0);
+  // lift(2500, 20000);
+  // position_drive2(0, 13, 0, 30, 0, 45, 0.1, 0, 3000, 50,40);// pick up cubes
+  // loader_left.move(-127);
+  // loader_right.move(-40);
+  // pros::delay(800);
+  // position_drive2(0, 30, 0, 27, 0, 45, 0.1, 0, 3000, 50,40);
+  // lift(2100, 20000);
+  // loader_right.move(127);
+  // loader_left.move(127);
+  // position_drive2(0, 27, 0, 30, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
+  // // position_drive2(0, 10, 0, 32, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
+  // lift(1000, 2000);
+  // pros::delay(500);
+  // lift(500, 2000);
+  // pros::delay(500);
+  // lift(0, 2000);
+  // pros::delay(500);
 //RED FRONT AUTO
   if(switcher == 1){
     initial_time = pros::millis();

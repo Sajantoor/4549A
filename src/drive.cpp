@@ -6,6 +6,7 @@
 #include "all_used.h"
 #include "lift.h"
 #include "pid.h"
+#include "vision.h"
 
 using namespace pros::literals;
 
@@ -729,6 +730,11 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     float sin_line;
     float cos_line;
     float velocity_line;
+    bool vision = true;
+    bool cubeCorrection = false;
+    float cubeCorrectionDirection;
+    float vision_power;
+    float vision_val;
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
@@ -754,7 +760,8 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
 
-      if (max_error) {
+      if (max_error && !vision || max_error && cubeCorrection) {
+        printf("correcting drive \n \n");
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
   			correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
@@ -762,6 +769,27 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   				correctA += pi;
   			correction = fabs(err_x) > max_error ? 9 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
         printf(" \n");//5.3
+      } else if (vision) {
+        if (currentCube.size > 1000) {
+          if (currentCube.x > -40) {
+            cubeCorrectionDirection = 1;
+          } else {
+            cubeCorrectionDirection = -1;
+          }
+
+          if (fabs(currentCube.x + 40) > 50) {
+            printf("cube correction \n \n");
+            cubeCorrection = false;
+            vision_val = fabs(currentCube.x) - 50;
+            vision_power = vision_val - 5;
+            turn_set(50 * cubeCorrectionDirection);
+          } else {
+            printf("corrected!!!! \n \n");
+            cubeCorrection = true;
+          }
+        } else {
+          cubeCorrection = true;
+        }
       }
 
     //------------------------------------------------------------math--------------------------------------------------------
@@ -774,21 +802,23 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 4);
 			finalpower = last += delta;
+      if (!vision || cubeCorrection) {
+        switch (sgn(correction)) {
+          case 0:
+              left_drive_set(finalpower);
+              right_drive_set(finalpower);
+              break;
+          case 1:
+              left_drive_set(finalpower);
+              right_drive_set(finalpower * exp(-correction));
+              break;
+          case -1:
+              left_drive_set(finalpower * exp(correction));
+              right_drive_set(finalpower);
+              break;
+          }
+      }
 
-      switch (sgn(correction)) {
-    		case 0:
-            left_drive_set(finalpower);
-            right_drive_set(finalpower);
-      			break;
-    		case 1:
-            left_drive_set(finalpower);
-            right_drive_set(finalpower * exp(-correction));
-      			break;
-    		case -1:
-            left_drive_set(finalpower * exp(correction));
-            right_drive_set(finalpower);
-      			break;
-        }
         // printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
         // printf(" \n");
         // printf("left_encoder %d\n", left_encoder.get_value());
