@@ -165,9 +165,9 @@ void vision_tracking(void*ignore) {
   // init
   vision_sensor.set_exposure(150);
   // color signatures
-  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 881, 1903, 1392, 6711, 9709, 8210, 2.400, 0);
-  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 4653, 8133, 6394, -2039, -1471, -1754, 2.000, 0);
-  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -7545, -5649, -6598, -3855, -2305, -3080, 1.100, 0);
+  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, -203, 1555, 676, 7799, 12729, 10264, 2.500, 0);
+  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE,  7905, 9779, 8842, -2689, -1537, -2114, 3.000, 0);
+  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -8219, -6175, -7196, -3201, -897, -2050, 4.900, 0);
 
   // float largestSize;
   // // zero point on sensor is the middle
