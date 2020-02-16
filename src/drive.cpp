@@ -90,7 +90,7 @@ void tracking_update(void*ignore) {
     float gyro_radian = degToRad(gyro_value);
     float delta_gyro = gyro_radian - prev_gyro_radian;
 
-    if (pros::competition::is_autonomous() && (gyro_value == gyro_error)) {
+    if (pros::competition::is_autonomous() && (gyro_value == gyro_error) && !gyroNotTuned) {
       printf("Not tuned gyro!!!! \n \n");
       gyroNotTuned = true;
     }
