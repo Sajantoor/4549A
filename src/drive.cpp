@@ -776,14 +776,14 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correction = fabs(err_x) > max_error ? 7.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
-          // printf("cube tracking !!!!!! \n \n");
+          printf("cube tracking !!!!!! \n \n");
           if (currentCube.x > CENTER_X) {
             cubeCorrectionDirection = 1;
           } else {
             cubeCorrectionDirection = -1;
           }
 
-          if (fabs(currentCube.x + -CENTER_X) > 50) {
+          if (fabs(currentCube.x + -CENTER_X) > 60) {
             cubeCorrection = false;
             // vision_val = fabs(currentCube.x) - 50;
             // vision_power = vision_val - 5;

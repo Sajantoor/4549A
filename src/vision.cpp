@@ -45,9 +45,7 @@ int sizeCheck(float x, float width, float height, int id) {
   // object detection, increment false positive check
   } else if (x != ERROR_X) {
     falsePositiveCheck[id] = falsePositiveCheck[id] + 1;
-    if (falsePositiveCheck[id] > 10) {
-    //  set_drive(0, 0);
-    }
+    return 0;
   } else {
     // no object detected
     falsePositiveCheck[id] = 0;
@@ -188,8 +186,8 @@ void vision_tracking(void*ignore) {
         currentCube.height = cube.height;
         currentCube.size = currentCube.width * currentCube.height;
         currentCube.x = cube.x_middle_coord;
-        // printf("switched to a closer cube %i \n \n", cubeColor);
-        // printf("size %i \n \n", currentCube.size);
+        printf("switched to a closer cube %i \n \n", cubeColor);
+        printf("size %i \n \n", currentCube.size);
       }
 
       // checks if cube still exists
@@ -197,6 +195,8 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         cubeColor = 0;
         targetedCube = 0;
+      } else {
+        printf("cube: %f \n \n", currentCube.size);
       }
     }
 
