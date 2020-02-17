@@ -20,17 +20,17 @@ void autonomous() {
   gyro.reset();
 
   initial_time = pros::millis();
-  //autoIntakeFunc(127);
+  autoIntakeFunc(127);
   // position_drive2(0, 0, 0, 30, 0, 60, 0.1, 0, 3000, 50,40, false);// pick up cubes
   // position_drive2(0, 30, 0, 0, 0, -60, 0.1, 0, 3000, 50,40);// pick up cubes
-  loader_right.move(127);
-  loader_left.move(127);
-  position_drive2(0, 0, 0, 25, 0, 75, 0.05, 0, 4000, 20,40, false);// pick up cubes
-  position_turn(25, 1000, 127);
-  position_drive2(0, 25, 7, 50, 0, 100, 0.1, 0, 3000, 50,40, false);// pick up cubes
-  position_turn(0, 1000, 127);
-  position_drive2(7, 50, 4, 23, 0, -75, 0.05, 0, 4000, 20,40, false);// pick up cubes
-  position_turn(90, 1500, 127);
+  // loader_right.move(127);
+  // loader_left.move(127);
+  position_drive2(0, 0, 0, 30, 0, 75, 0.05, 0, 4000, 20,40, true);// pick up cubes
+  // position_turn(25, 1000, 127);
+  // position_drive2(0, 25, 7, 50, 0, 100, 0.1, 0, 3000, 50,40, false);// pick up cubes
+  // position_turn(0, 1000, 127);
+  // position_drive2(7, 50, 4, 23, 0, -75, 0.05, 0, 4000, 20,40, false);// pick up cubes
+  // position_turn(90, 1500, 127);
   // position_turn(-45, 1000, 127);
   // position_drive2(0, 50, -9, 58, 0, 127, 0.1, 0, 1500, 50,40, false);// pick up cubes
   // position_drive2(0, 55, 3, 15, 0, -127, 0.1, 0, 3000, 50,40, false);// pick up cubes

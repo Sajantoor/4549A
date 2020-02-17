@@ -766,16 +766,17 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
 
-      if (max_error && !vision || currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
+      if (max_error && !vision || max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
   			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
-        printf("correcting \n \n");
+        // printf("correcting \n \n");
   			if (max_speed < 0)
   				correctA += pi;
   			correction = fabs(err_x) > max_error ? 7.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
+          // printf("cube tracking !!!!!! \n \n");
           if (currentCube.x > CENTER_X) {
             cubeCorrectionDirection = 1;
           } else {
@@ -784,8 +785,8 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
           if (fabs(currentCube.x + -CENTER_X) > 50) {
             cubeCorrection = false;
-            vision_val = fabs(currentCube.x) - 50;
-            vision_power = vision_val - 5;
+            // vision_val = fabs(currentCube.x) - 50;
+            // vision_power = vision_val - 5;
             turn_set(50 * cubeCorrectionDirection);
           } else {
             cubeCorrection = true;
@@ -822,68 +823,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
               break;
           }
       }
-
-        // printf("light_sensor_intake %d\n", light_sensor_intake.get_value());
-        // printf(" \n");
-        // printf("left_encoder %d\n", left_encoder.get_value());
-        // printf(" \n");
-        // printf("right_encoder %d\n", right_encoder.get_value());
-        // printf(" \n");
-        // printf("position.x %f\n", position.x);
-        // printf(" \n");
-        // printf("position.y %f\n", position.y);
-        // printf(" \n");
-        // printf("positionErr.x %f\n", positionErr.x);
-        // printf(" \n");
-        // printf("positionErr.y %f\n", positionErr.y);
-        // printf(" \n");
-        // printf("finalpower %f\n", finalpower);
-        // // printf("final_power %f\n", finalpower);
-        // // printf(" \n");
-        // printf("err_angle %f\n", err_angle);
-        // printf(" \n");
-        // printf("err_x %f\n", err_x);
-        // printf(" \n");
-        // printf("look_ahead_point.x %f\n", look_ahead_point.x);
-        // printf(" \n");
-        // printf("look_ahead_point.y %f\n", look_ahead_point.y);
-        // printf(" \n");
-        printf("orientation %f\n", radToDeg(orientation));
-        // printf(" \n");
-        // printf("correctA %f\n", correctA);
-        // printf(" \n");
-        // printf("correction %f\n", correction);
-        // printf(" \n");
-        // printf("max_error %f\n", max_error);
-        // printf(" \n");
-        // printf("orientation %f\n", orientation);
-        // printf(" \n");
-        // printf("sgn(max_speed) %d\n", sgn(max_speed));
-        // printf(" \n");
-        // printf("tan(err_angle) %f \n", tan(err_angle));
-        // printf(" \n");
-        // printf("exp(correction) %f \n", exp(correction));
-        // printf(" \n");
-        // printf("last finalpower %d \n", last);
-        // printf(" \n");
-        // printf("delta %d \n", delta);
-        // printf(" \n");
-        // printf("magnPosvector %f\n", magnPosvector);
-        // printf(" \n");
-        // printf("line_length %f\n", line_length);
-        // printf(" \n");
-        // printf("positionErrPolar %f\n", positionErrPolar.theta);
-        // printf(" \n");
-        // printf("Line Angle %f\n", radToDeg(line_angle));
-        // printf(" \n");
-        // printf("angle_main_line %f\n", radToDeg(angle_main_line));
-        // printf(" \n");
-        // printf("Moving to %f , %f from %f , %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
-        // printf(" \n");
-        // printf("Moved to %f %f from %f %f at %f  || %f.x , %f.y , %f\n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed, position.x, position.y, radToDeg(orientation));
-        // printf(" \n");
-        // printf("--------------------------------------------------------------------------------------\n");
-        // printf(" \n");
 
         pros::delay(10);
 
