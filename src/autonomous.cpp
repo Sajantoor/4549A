@@ -25,12 +25,20 @@ void autonomous() {
   // position_drive2(0, 30, 0, 0, 0, -60, 0.1, 0, 3000, 50,40);// pick up cubes
   loader_right.move(127);
   loader_left.move(127);
-  position_drive2(0, 0, 0, 56, 0, 60, 0.05, 0, 3000, 10,40, false);// pick up cubes
-  pros::delay(1200);
-  // position_drive2(0, 56, 0, 50, 0, -100, 0.1, 0, 3000, 50,40, false);// pick up cubes
-  // position_turn(-50, 1000, 127);
-  // position_drive2(0, 50, -6, 57, 0, 100, 0.1, 0, 3000, 50,40, false);// pick up cubes
-  // position_drive2(0, 55, 3, 19, 0, -60, 0.1, 0, 3000, 50,40, false);// pick up cubes
+  position_drive2(0, 0, 0, 25, 0, 75, 0.05, 0, 4000, 20,40, false);// pick up cubes
+  position_turn(25, 1000, 127);
+  position_drive2(0, 25, 7, 50, 0, 100, 0.1, 0, 3000, 50,40, false);// pick up cubes
+  position_turn(0, 1000, 127);
+  position_drive2(7, 50, 4, 23, 0, -75, 0.05, 0, 4000, 20,40, false);// pick up cubes
+  position_turn(90, 1500, 127);
+  // position_turn(-45, 1000, 127);
+  // position_drive2(0, 50, -9, 58, 0, 127, 0.1, 0, 1500, 50,40, false);// pick up cubes
+  // position_drive2(0, 55, 3, 15, 0, -127, 0.1, 0, 3000, 50,40, false);// pick up cubes
+  // position_turn(107, 1000, 127);
+  // position_drive2(3, 15, 11, 12, 0, 60, 0.1, 0, 1000, 50,40, false);// pick up cubes
+  // angler_pid(-4500, true, 127, true);
+  // pros::delay(3000);
+  // drive_line_up(-100,700);
 
   // FRONT AUTO STARTING
   // loader_right.move(127);
@@ -107,20 +115,22 @@ void autonomous() {
     loader_right.move(0);
     angler_pid(-4500, true, 127, true);
     drive_line_up(-100,1000);
-  //   position_drive2(0, 0, 0, 23, 0, 90, 0.1, 0, 2300, 50,40);// pick up cubes
-  //   position_drive2(0, 23, 25, 9, 0, -110, 1, 0, 2000, 50,40);// pick up cubes
-  //   position_turn(5, 1000, 90);
-  //   position_drive2(25, 9, 25, 38, 0, 90, 0.5, 0, 2600, 50,20);// pick up cubes
-  //   position_drive2(23, 42, 26.5, 23, 0, -110, 0.05, 0, 1800, 50,40);// pick up cubes
-  //   position_turn(129, 1500, 110);
-    // loader_left.move(0);
-    // loader_right.move(0);
-    //   angler_pid(2200, true, 127, false, 0, true);
-  //   position_drive2(26.5, 23, 40, 5, 0, 110, 0.05, 0, 950, 50,40);// pick up cubes
-  //   angler_pid(1020, true, 127, true);
-  //   pros::delay(2000);
-  // angler_pid(3400, true, 127, false, 2000);
-  // drive_line_up(-100, 500);
+
+
+//drive straight and then cubes near tower
+    loader_right.move(127);
+    loader_left.move(127);
+    position_drive2(0, 0, -2, 57, 0, 75, 0.05, 0, 4000, 20,40, false);// pick up cubes
+    pros::delay(1000);
+    position_drive2(0, 56, 0, 50, 0, -127, 0.1, 0, 3000, 50,40, false);// pick up cubes
+    position_turn(-45, 1000, 127);
+    position_drive2(0, 50, -9, 58, 0, 127, 0.1, 0, 1500, 50,40, false);// pick up cubes
+    position_drive2(0, 55, 3, 15, 0, -127, 0.1, 0, 3000, 50,40, false);// pick up cubes
+    position_turn(107, 1000, 127);
+    position_drive2(3, 15, 11, 12, 0, 60, 0.1, 0, 1000, 50,40, false);// pick up cubes
+    angler_pid(-4500, true, 127, true);
+    pros::delay(3000);
+    drive_line_up(-100,700);
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT
