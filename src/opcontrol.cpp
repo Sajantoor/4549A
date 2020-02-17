@@ -114,7 +114,7 @@ void opcontrol() {
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) || miniLift) {
 			if (!miniLift) {
-				lift(900, 1000);
+				lift(700, 1000);
 				miniLift = true;
 			} else if (miniLiftTimer > 25) { // 500 milis / delay (20 millis)
 				lift(0, 500);
