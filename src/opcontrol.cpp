@@ -73,6 +73,7 @@ void opcontrol() {
 				}
 			}
 		}
+
 		// sets drive to power
 		drive_left = power[0];
 		drive_left_b = power[1];
@@ -166,12 +167,15 @@ void opcontrol() {
 		}
 
 		// drop lift
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-			angler_pid(0, true, 127, false, 2000);
+		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+			angler.move(80);
+			angler.tare_position();
 			lift(0,0);
 			liftBool = false;
 			intakeTaskBool = false;
 			anglerIntakeThreshold = true;
+		} else if (!anglerBool) {
+			angler.move(0);
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {

@@ -22,7 +22,7 @@ void autonomous() {
   initial_time = pros::millis();
 
   // // BACK AUTO SAJAN v1
-  // autoIntakeFunc(127);
+  autoIntakeFunc(127);
   // position_drive2(0, 0, 0, 15, 0, 70, 0.1, 0, 3000, 50, 40, false);
   // position_drive2(0, 15, 0, 28, 0, 40, 0.1, 0, 1000, 50, 40, false);
   // autoIntakeFunc(0);
@@ -60,24 +60,24 @@ void autonomous() {
   // drive_line_up(-100, 700);
 
   // // FRONT AUTO SAJAN
-  loader_right.move(127);
-  loader_left.move(127);
-  position_drive2(0, 0, 0, 10, 0, 90, 0.1, 0, 3000, 50,40);
-  pros::delay(1000);
-  loader_right.move(-60);
-  loader_left.move(-60);
-  pros::delay(500);
-  loader_right.move(0);
-  loader_left.move(0);
-  lift(2500, 20000);
-  position_drive2(0, 10, 0, 28, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
-  loader_left.move(-80);
-  loader_right.move(-80);
-  pros::delay(1000);
-  loader_right.move(127);
-  loader_left.move(127);
-  position_drive2(0, 10, 0, 30, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
-  lift(0, 2000);
+  // loader_right.move(127);
+  // loader_left.move(127);
+  // position_drive2(0, 0, 0, 10, 0, 90, 0.1, 0, 3000, 50,40);
+  // pros::delay(1000);
+  // loader_right.move(-60);
+  // loader_left.move(-60);
+  // pros::delay(500);
+  // loader_right.move(0);
+  // loader_left.move(0);
+  // lift(2500, 20000);
+  // position_drive2(0, 10, 0, 28, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
+  // loader_left.move(-80);
+  // loader_right.move(-80);
+  // pros::delay(1000);
+  // loader_right.move(127);
+  // loader_left.move(127);
+  // position_drive2(0, 10, 0, 30, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
+  // lift(0, 2000);
 
 
 //RED FRONT AUTO

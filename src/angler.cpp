@@ -48,7 +48,7 @@ void angler_pid(float position, bool holdVal, float speed, bool applyTorque, flo
 }
 
 void angler_pid_task(void*ignore) {
-  pid_values angler_pid(0.5, 0.8, 0.8, 30, 500, 100);
+  pid_values angler_pid(0.5, 0.8, 0.8, 30, 500, 127);
   float timeout;
   float maxTorque = 0;
   bool delayReached = false;
@@ -86,7 +86,7 @@ void angler_pid_task(void*ignore) {
         // }
 
         // 8 stack torque is faster than 7 stack
-        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1600)) {
+        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1400)) {
           if (angler_pid.max_power < currentSpeed * 0.5) {
             angler_pid.max_power = currentSpeed * 0.5;
           } else {
@@ -102,11 +102,14 @@ void angler_pid_task(void*ignore) {
         // slow down for all cubes
         } else {
           if (fabs(angler_pid.error) < 1000) {
+            printf("in loop \n \n");
             if (angler_pid.max_power < currentSpeed * 0.5) {
               angler_pid.max_power = currentSpeed * 0.5;
             } else {
               angler_pid.max_power = angler_pid.max_power - 15;
             }
+          } else {
+            angler_pid.max_power = currentSpeed;
           }
         }
 
@@ -114,6 +117,7 @@ void angler_pid_task(void*ignore) {
         float position = angler.get_position();
         int final_power = pid_calc(&angler_pid, currentTarget, position);
         angler.move(final_power);
+        printf("power: %i \n \n", final_power);
         printf("angler pid: %f \n \n", angler_pid.error);
         // printf("current target: %f \n \n", currentTarget);
         // printf("torque values: %f \n \n", maxTorque);
