@@ -186,8 +186,8 @@ void vision_tracking(void*ignore) {
         currentCube.height = cube.height;
         currentCube.size = currentCube.width * currentCube.height;
         currentCube.x = cube.x_middle_coord;
-        printf("switched to a closer cube %i \n \n", cubeColor);
-        printf("size %i \n \n", currentCube.size);
+        // printf("switched to a closer cube %i \n \n", cubeColor);
+        // printf("size %i \n \n", currentCube.size);
       }
 
       // checks if cube still exists
@@ -195,9 +195,11 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         cubeColor = 0;
         targetedCube = 0;
-      } else {
-        printf("cube: %f \n \n", currentCube.size);
       }
+      // else {
+      //   printf("cube x: %i \n \n", currentCube.x);
+      //   printf("cube size: %i \n \n", currentCube.size);
+      // }
     }
 
     pros::delay(20);

@@ -70,12 +70,14 @@ void autoIntakeFunc(float speed) {
 
   if (autoIntakeSpeed) {
     autoIntakeBool = true;
+  } else {
+    autoIntakeBool = false;
   }
 }
 // auto intake task
 void autoIntake(void*ignore) {
   // time for intake to slow if intake doesn't detect cubes
-  float lightSensorTimeout = 700;
+  float lightSensorTimeout = 1500;
   float timer;
   bool intakeTimeout = false;
 
