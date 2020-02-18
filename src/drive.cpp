@@ -746,10 +746,16 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     delta_main_line.y = ending_point_y - starting_point_y;
 
     do {
+      look_ahead_point.x = 0;
+
       positionErr.x = position.x - ending_point_x;
       positionErr.y = position.y - ending_point_y;
-      look_ahead_point.x = 0;
+      vectorToPolar(positionErr, positionErrPolar);
+      positionErrPolar.theta += angle_main_line;
+      polarToVector(positionErrPolar, positionErr);
+
       look_ahead_point.y = positionErr.y + look_ahead_distance;
+      look_ahead_point.x = positionErr.x + look_ahead_distance;
       vectorToPolar(look_ahead_point, look_ahead_point_polar);
       look_ahead_point_polar.theta -= angle_main_line;
       polarToVector(look_ahead_point_polar, look_ahead_point);
@@ -762,15 +768,11 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       magnPosvector = sqrt(line_length);
       sin_line = sin(angle_main_line);
       cos_line = cos(angle_main_line);
-      vectorToPolar(positionErr, positionErrPolar);
-      positionErrPolar.theta += angle_main_line;
-      polarToVector(positionErrPolar, positionErr);
 
       if (max_error && !vision || max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
   			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
-        // printf("correcting \n \n");
   			if (max_speed < 0)
   				correctA += pi;
   			correction = fabs(err_x) > max_error ? 7.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
