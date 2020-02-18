@@ -195,6 +195,11 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         cubeColor = 0;
         targetedCube = 0;
+<<<<<<< HEAD
+=======
+      } else {
+        // printf("cube: %f \n \n", currentCube.size);
+>>>>>>> satvik
       }
       // else {
       //   printf("cube x: %i \n \n", currentCube.x);

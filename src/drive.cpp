@@ -64,7 +64,7 @@ void polarToVector(polar& polar, vector& vector) {
 
 void tracking_update(void*ignore) {
   const float gyro_threshold = degToRad(2); // threshold to switch to gyro, incase of systematic error with odometry
-  const float distance_between_centre = 4.95876466;//1.59437 // TUNE VALUE
+  const float distance_between_centre = 4.40779081;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
   const float gyro_error = -3115.185059;
@@ -744,39 +744,45 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
-
     do {
       look_ahead_point.x = 0;
-      positionErr.x = position.x - ending_point_x;
-      positionErr.y = position.y - ending_point_y;
-      look_ahead_point.y = positionErr.y + look_ahead_distance;
-      vectorToPolar(look_ahead_point, look_ahead_point_polar);
-      look_ahead_point_polar.theta -= angle_main_line;
-      polarToVector(look_ahead_point_polar, look_ahead_point);
-      look_ahead_point.x += ending_point_x;
-      look_ahead_point.y += ending_point_y;
-
       angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
       line_angle = nearestangle(angle_main_line - (max_speed < 0 ? pi : 0), orientation);
       line_length = powf(positionErr.x , 2) + powf(positionErr.y , 2);
       magnPosvector = sqrt(line_length);
       sin_line = sin(angle_main_line);
       cos_line = cos(angle_main_line);
+
+      positionErr.x = position.x - ending_point_x;
+      positionErr.y = position.y - ending_point_y;
+      printf("positionErr.x %f \n \n", positionErr.x);
+      printf("positionErr.y %f \n \n", positionErr.y);
       vectorToPolar(positionErr, positionErrPolar);
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
+
+      look_ahead_point.y = positionErr.y + look_ahead_distance;
+      // look_ahead_point.x = positionErr.x + look_ahead_distance;
+      vectorToPolar(look_ahead_point, look_ahead_point_polar);
+      look_ahead_point_polar.theta -= angle_main_line;
+      polarToVector(look_ahead_point_polar, look_ahead_point);
+      look_ahead_point.x += ending_point_x;
+      look_ahead_point.y += ending_point_y;
+      printf("ending_point_y %f \n \n", ending_point_y);
+      printf("ending_point_x %f \n \n", ending_point_x);
+      printf("angle_main_line %f \n \n", angle_main_line);
+
 
       if (max_error && !vision || max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
   			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
-        // printf("correcting \n \n");
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 7.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
-          printf("cube tracking !!!!!! \n \n");
+          // printf("cube tracking !!!!!! \n \n");
           if (currentCube.x > CENTER_X) {
             cubeCorrectionDirection = 1;
           } else {
@@ -824,11 +830,20 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
           }
       }
 
+      printf("correction %f \n \n", correction);
+      printf("finalpower %f \n \n", finalpower);
+      printf("look_ahead_point.x %f \n \n", look_ahead_point.x);
+      printf("look_ahead_point.y %f \n \n", look_ahead_point.y);
+      printf("positionErr.x2 %f \n \n", positionErr.x);
+      printf("positionErr.y2 %f \n \n", positionErr.y);
+      printf("orienation %f \n \n", orientation);
+
+
         pros::delay(10);
 
       } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
-      drive_set(end_speed * sgn(max_speed));
+      drive_set(25 * sgn(max_speed));
 
     do {
       positionErr.x = position.x - ending_point_x;
@@ -846,7 +861,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       // printf(" \n");
 
       pros::delay(5);
-    } while((positionErr.y < -early_stop - (velocity_line * 0.098)) && (pros::millis() < net_timer));
+    } while((positionErr.y < -early_stop - (velocity_line * 0.175)) && (pros::millis() < net_timer));
     printf("driving done\n");
     printf("driving done\n");
     printf("driving done\n");
@@ -860,22 +875,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     printf("driving done\n");
     printf("velocity_line %f \n", velocity_line);
     HarshStop();
-    // if (max_speed < 0) {
-    //   drive_set(20);
-    //   pros::delay(50);
-    //   drive_set(0);
-    //   printf("driving done back\n");
-    //
-    // } else if (max_speed > 0) {
-    //   drive_set(-20);
-    //   pros::delay(50);
-    //   drive_set(0);
-    //   printf("driving done forward\n");
-    //
-    // } else {
-    //   drive_set(0);
-    // }
-    // drive_set(0);
     printf("driving done\n");
 }
 
