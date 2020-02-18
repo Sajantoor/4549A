@@ -20,12 +20,12 @@ void autonomous() {
   gyro.reset();
 
   initial_time = pros::millis();
-  autoIntakeFunc(127);
+  // autoIntakeFunc(127);
   // position_drive2(0, 0, 0, 30, 0, 60, 0.1, 0, 3000, 50,40, false);// pick up cubes
   // position_drive2(0, 30, 0, 0, 0, -60, 0.1, 0, 3000, 50,40);// pick up cubes
-  // loader_right.move(127);
-  // loader_left.move(127);
-  position_drive2(0, 0, 0, 30, 0, 75, 0.05, 0, 4000, 20,40, true);// pick up cubes
+  loader_right.move(127);
+  loader_left.move(127);
+  position_drive2(0, 0, 0, 25, 0, 50, 0.1, 0, 80000, 80,40, false);// pick up cubes
   // position_turn(25, 1000, 127);
   // position_drive2(0, 25, 7, 50, 0, 100, 0.1, 0, 3000, 50,40, false);// pick up cubes
   // position_turn(0, 1000, 127);
