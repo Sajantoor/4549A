@@ -27,12 +27,33 @@ void autonomous() {
 
   // // BACK AUTO SAJAN v1
 
-  autoIntakeFunc(127);
-  position_drive2(0, 0, 0, 117, 0, 60, 0.1, 0, 20000, 50, 40, false);
+  loader_right.move(127);
+  loader_left.move(127);
+  position_drive2(0, 0, 0, 46, 0, 60, 0.1, 0, 20000, 50, 40, false);
+  pros::delay(1000);
+  loader_right.move(0);
+  loader_left.move(0);
+  sensor_outtake();
+  lift(2500, 20000);
+  pros::delay(1500);
+  position_turn(-26, 1500, 100);
+  loader_right.move(-127);
+  loader_left.move(-127);
+  pros::delay(1500);
+  position_turn(0, 1500, 100);
+  loader_right.move(0);
+  loader_left.move(0);
+  lift(0, 4000);
+  pros::delay(1500);
+  loader_right.move(127);
+  loader_left.move(127);
+  position_drive2(0, 43, 0, 117, 0, 60, 0.1, 0, 20000, 50, 40, false);
   position_turn(55, 2000, 127);
-  position_drive2(0, 0, 7, 120, 0, 60, 0.1, 0, 20000, 50, 40, false);
-
-
+  position_drive2(0, 117, 8, 122, 0, 100, 0.1, 0, 20000, 50, 40, false);
+  loader_left.move(0);
+  loader_right.move(0);
+  angler_pid(-4500, true, 127, true);
+  drive_line_up(-100,1000);
   // // BACk AUTO SAJAN v2
   // autoIntakeFunc(127);
   // position_drive2(0, 0, 0, 15, 0, 70, 0.1, 0, 3000, 50, 40, false);
