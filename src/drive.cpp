@@ -63,7 +63,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(2); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(2000000000); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.40779081;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -782,19 +782,21 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
-          // printf("cube tracking !!!!!! \n \n");
+          printf("cube tracking !!!!!! \n \n");
           if (currentCube.x > CENTER_X) {
             cubeCorrectionDirection = 1;
           } else {
             cubeCorrectionDirection = -1;
           }
 
-          if (fabs(currentCube.x + -CENTER_X) > 30) {
+          if (fabs(currentCube.x + -CENTER_X) > 80) {
             cubeCorrection = false;
             // vision_val = fabs(currentCube.x) - 50;
             // vision_power = vision_val - 5;
+            printf("turning \n \n");
             turn_set(40 * cubeCorrectionDirection);
           } else {
+            printf("not turning \n \n");
             cubeCorrection = true;
           }
         } else {

@@ -21,28 +21,16 @@ void autonomous() {
 
   initial_time = pros::millis();
 
-  // // BACK AUTO SAJAN v1
-  autoIntakeFunc(127);
-  // position_drive2(0, 0, 0, 15, 0, 70, 0.1, 0, 3000, 50, 40, false);
-  // position_drive2(0, 15, 0, 28, 0, 40, 0.1, 0, 1000, 50, 40, false);
-  // autoIntakeFunc(0);
-  // loader_right.move(127);
-  // loader_left.move(127);
-  // pros::delay(500); // wait till cube gets in tray fully
-	// lift(700, 500);
-  // position_drive2(0, 28, 0, 32, 0, 40, 0.1, 0, 500, 50, 40, false);
-  // lift(0, 2000);
-  // pros::delay(1000);
+  // VISION TESTING
   // autoIntakeFunc(127);
-  // position_drive2(0, 32, 25, 5, 0, -90, 0.1, 0, 3000, 50, 40, false); // go back
-  // position_turn(0, 1000, 127);
-  // position_drive2(25, 0, 25, 48, 0, 60, 0.1, 0, 3000, 50, 40, false); // pick up line of cubes
-  // position_drive2(25, 48, 28, 2, 0, -90, 0.1, 0, 3000, 50, 40, false); // go back
-  // autoIntakeFunc(0);
-  // position_turn(92, 1000, 127); // turn to stack
-  // angler_pid(-4500, true, 127, true);
-  // pros::delay(2000);
-  // drive_line_up(-100, 700);
+  // position_drive2(0, 0, 0, 20, 0, 70, 0.1, 0, 3000, 50, 40, true);
+
+  // // BACK AUTO SAJAN v1
+
+  autoIntakeFunc(127);
+  position_drive2(0, 0, 0, 117, 0, 60, 0.1, 0, 20000, 50, 40, false);
+  position_turn(55, 2000, 127);
+  position_drive2(0, 0, 7, 120, 0, 60, 0.1, 0, 20000, 50, 40, false);
 
 
   // // BACk AUTO SAJAN v2
@@ -144,6 +132,33 @@ void autonomous() {
     angler_pid(-4500, true, 127, true);
     pros::delay(3000);
     drive_line_up(-100,700);
+
+  //cube lock auto
+  autoIntakeFunc(127);
+  position_drive2(0, 0, 0, 20, 0, 80, 0.1, 0, 3000, 50, 40, false);
+  position_drive2(0, 20, 0, 28, 0, 50, 0.1, 0, 1000, 50, 40, false);
+  autoIntakeFunc(0);
+  loader_right.move(127);
+  loader_left.move(127); // wait till cube gets in tray fully
+  lift(750, 1000);
+  pros::delay(500);
+  position_drive2(0, 28, 0, 35, 0, 50, 0.1, 0, 500, 50, 40, false);
+  lift(0, 1000);
+  pros::delay(1000);
+  autoIntakeFunc(127);
+  position_drive2(0, 32, 22, 11, 0, -90, 0.1, 0, 3000, 50, 40, false); // go back
+  position_turn(0, 1000, 127);
+  position_drive2(25, 0, 25, 48, 0, 90, 0.1, 0, 3000, 50, 40, false); // pick up line of cubes
+  position_drive2(25, 48, 25, 20, 0, -90, 0.1, 0, 3000, 50, 40, false); // go back
+  autoIntakeFunc(0);
+  loader_right.move(0);
+  loader_left.move(0);
+  position_turn(120, 1500, 90); // turn to stack
+  // drive_line_up(100, 500);
+  position_drive2(25, 20, 34, 11, 0, 127, 0.05, 0, 2200, 100, 40, false); // go back
+  angler_pid(-4500, true, 127, true);
+  pros::delay(3500);
+  drive_line_up(-100, 700);
   }
 
 //1 POINT UNLOCK AUTO RED RIGHT

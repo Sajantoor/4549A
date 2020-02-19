@@ -151,9 +151,9 @@ void vision_tracking(void*ignore) {
   // init
   vision_sensor.set_exposure(150);
   // color signatures
-  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, -203, 1555, 676, 7799, 12729, 10264, 2.500, 0);
-  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE,  7905, 9779, 8842, -2689, -1537, -2114, 3.000, 0);
-  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -8219, -6175, -7196, -3201, -897, -2050, 4.900, 0);
+  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 1411, 2379, 1894, 6919, 9497, 8208, 2.500, 0);
+  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE,  6015, 8687, 7350, -2129, -1535, -1832, 2.500, 0);
+  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -7237, -5135, -6186, -3531, -1945, -2738, 3.300, 0);
 
   // float largestSize;
   // // zero point on sensor is the middle
@@ -195,11 +195,6 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         cubeColor = 0;
         targetedCube = 0;
-<<<<<<< HEAD
-=======
-      } else {
-        // printf("cube: %f \n \n", currentCube.size);
->>>>>>> satvik
       }
       // else {
       //   printf("cube x: %i \n \n", currentCube.x);

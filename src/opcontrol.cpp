@@ -170,7 +170,7 @@ void opcontrol() {
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
 			angler.move(80);
 			angler.tare_position();
-			lift(0,0);
+			lift(0, 20);
 			liftBool = false;
 			intakeTaskBool = false;
 			anglerIntakeThreshold = true;
