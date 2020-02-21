@@ -8,21 +8,11 @@
 // outtaking using the light sensor
 void sensor_outtake() {
   double sensorValue = light_sensor_intake.get_value();
-  // std::uint32_t now = pros::millis();
   if (sensorValue > 1850) {
     intakePIDFunc(-700, 127);
-
-    // old solution if needed
-    // loader_left.move(-50);
-    // loader_right.move(-50);
-    // // pros::delay(1000);
-    // pros::Task::delay_until(&now, 500);
-    // loader_left.move(0);
-    // loader_right.move(0);
-    // printf("caLLED FUNCTION \n \n");
 	}
 }
-// gloabsl for intake pid
+// globals for intake pid
 bool intakeTaskBool = false;
 float intakeTaskPosition;
 float intakeTaskSpeed;

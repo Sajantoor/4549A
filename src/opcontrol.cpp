@@ -13,20 +13,15 @@ const int LIFT_DESCORE = 1700;
 
 void opcontrol() {
 	// global variables
-	bool anglerVal = false;
+	bool anglerVal = false; // manage angler's states on one button
 	bool liftBool = false; // used to check first lift
 	int stickArray[4];
 	int power[4];
 	bool intakeUsed = false;
 	bool miniLift = false;
 	float miniLiftTimer;
-	pros::ADIGyro gyro (GYRO_PORT, 0.9506790);
-	gyro.reset();
-	// float initalTime = pros::millis();
+
 	while (true) {
-		// printf("light sensor value: %d \n \n", light_sensor_intake.get_value());
-		// printf("gyroVal: %f \n \n", gyro.get_value());
-		// controller.print(0, 0, "Unlock");
 		float armPosition = arm.get_position();
 
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {

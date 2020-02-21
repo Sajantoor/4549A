@@ -8,7 +8,6 @@
 int height;
 bool liftBool = false;
 bool timer = true;
-// int angler_threshold = 2400; // used to run the motors after the angler has reached a certain point
 int hold = 0;
 
 // takes variables to the task
@@ -27,7 +26,6 @@ void lift_task(void*ignore) {
   float delayTime;
 
   while (true) {
-    // while ((potentiometer_angler.get_value() < angler_threshold) && liftBool) {
     while(liftBool) {
       // calculates time for timeout
       if (timer) {

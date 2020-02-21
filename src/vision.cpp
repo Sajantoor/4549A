@@ -150,13 +150,12 @@ int targetSelection() {
 void vision_tracking(void*ignore) {
   // init
   vision_sensor.set_exposure(150);
-  // color signatures
+  // color signatures from VEX Vision Utility
   pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 2643, 4987, 3814, 5181, 7507, 6344, 2.500, 0);
   pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 4425, 6939, 5682, -2003, -1469, -1736, 3.000, 0);
   pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -5199, -2329, -3764, -3211, -2047, -2628, 2.200, 0);
 
-  // float largestSize;
-  // // zero point on sensor is the middle
+  // zero point on sensor is the middle
   vision_sensor.set_zero_point(pros::E_VISION_ZERO_CENTER);
   while(true) {
     if (targetedCube == 0) { // any cube 1 - 3 would be true, 0 is false
@@ -186,8 +185,6 @@ void vision_tracking(void*ignore) {
         currentCube.height = cube.height;
         currentCube.size = currentCube.width * currentCube.height;
         currentCube.x = cube.x_middle_coord;
-        // printf("switched to a closer cube %i \n \n", cubeColor);
-        // printf("size %i \n \n", currentCube.size);
       }
 
       // checks if cube still exists
@@ -195,11 +192,6 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         cubeColor = 0;
         targetedCube = 0;
-        printf("No cubes detected \n \n");
-      }
-      else {
-        printf("cube x: %i \n \n", currentCube.x);
-        printf("cube size: %i \n \n", currentCube.size);
       }
     }
 

@@ -90,10 +90,9 @@ void tracking_update(void*ignore) {
     float gyro_radian = degToRad(gyro_value);
     float delta_gyro = gyro_radian - prev_gyro_radian;
 
-    // if (pros::competition::is_autonomous() && (gyro_value == gyro_error) || !gyroNotTuned) {
-    //   printf("Not tuned gyro!!!! \n \n");
-    //   gyroNotTuned = true;
-    // }
+    if (pros::competition::is_autonomous() && (gyro_value == gyro_error) || !gyroNotTuned) {
+      gyroNotTuned = true;
+    }
 
     //Returns the orientation of the bot in radians
     float new_absolute_orientation; // orientation of the bot using odem or gyro
@@ -102,10 +101,6 @@ void tracking_update(void*ignore) {
     float change_in_gyro_odom = fabs(gyro_radian - odem_orientation);
     //Returns how much it has rotated from its previous point in radians
     float change_in_angle = new_absolute_orientation - orientation;
-
-    // printf("change in gyro odom %f \n \n", change_in_gyro_odom);
-    // printf("orientation %f \n \n", radToDeg(orientation));
-    // printf("gyro orientation %f \n \n", gyro_value);
 
     if (gyro_threshold < change_in_gyro_odom && !gyroNotTuned) {
       // printf("using gyro \n \n");
@@ -263,7 +258,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
       if (target > 0) direction = 1;
       else if (target < 0) direction = -1;
 
-      while(pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
+      while (pros::competition::is_autonomous() && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis())) {
         encoder_average = (right_encoder.get_value() + left_encoder.get_value()) / 2;
         drive_pid.error = ((target)/(2.75*pi) * 360) - drive_distance_correction - encoder_average;
 
@@ -289,10 +284,6 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
   }
 
   drive_set(0);		//set drive to 0 power
-
-//  printf("encoder avg: %d\n", (left_encoder.get_value() + right_encoder.get_value())/2);
-//  pros::lcd::print(7, "encoder avg %d", (left_encoder.get_value() + right_encoder.get_value())/2);
-
 
   correction_turn = ((left_encoder.get_value() - right_encoder.get_value())/2 + correction_drive);///ticks_to_deg;
   prev_correction_drive = correction_drive;
@@ -349,9 +340,9 @@ void position_turn(float target, int timeout, int max_speed) {
 
     HarshStop();
 
-  printf("target %f\n", degToRad(target));
-  printf("Degrees Turned from: %f to %f\n", turn_pid.error, orientation);
-  printf("Degrees Turned from:%f to %f\n", radToDeg(turn_pid.error), radToDeg(orientation));
+    printf("target %f\n", degToRad(target));
+    printf("Degrees Turned from: %f to %f\n", turn_pid.error, orientation);
+    printf("Degrees Turned from:%f to %f\n", radToDeg(turn_pid.error), radToDeg(orientation));
  }
 
 //turning to a angle in a different way
@@ -534,22 +525,11 @@ void position_face_point(float target_x, float target_y,int timeout) {
 
       // start integral when target is less than 22 degrees
       if (fabs(error_p) > degToRad(22)){ integral = 0; }
-
       if (integral > integral_limit){ integral = integral_limit; }
-
       if (-integral < -integral_limit){ integral = -integral_limit; }
-
-
       final_power = proportional + derivative + (integral * ki);
-
-      //pros::lcd::print(6, "final_power %f\n", final_power);
-
       turn_set(final_power);
 
-      printf("direction_face %f\n", direction_face);
-      printf(" \n");
-      printf("error_p %f\n", error_p);
-      printf(" \n");
 
       if (timer_turn == true) {
         net_timer = pros::millis() + timeout;
@@ -626,17 +606,15 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
       rotated_motorPowerPolar.theta += orientation;
       polarToVector(rotated_motorPowerPolar, rotated_motorPower);
-			// printf("position.x %f \n", position.x);
-		  // printf("position.y %f \n", position.y);
 
-      if(pickUp_cube && light_sensor_intake.get_value() < 1900){
+
+      if (pickUp_cube && light_sensor_intake.get_value() < 1900){
         pros::delay(900);
         loader_left.move(0);
         loader_right.move(0);
         transition_point = 0;
         intakeSpeed = 0;
         final_intake = 0;
-        // printf("set to 0 \n");
       }
       //applying slew rate on the motors so they dont burn out and there arent sudden movements
       if ((magnitude_of_X_Y < end_speed_transition) && (end_speed_transition != 0)) {
@@ -649,9 +627,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
         int delta_x = rotated_motorPower.x - last_x;
         limit_to_val_set(delta_x, 5);
         rotated_motorPower.x = last_x += delta_x;
-        // printf("slowing down \n");
-      }
-      else {
+      } else {
         limit_to_val_set(rotated_motorPower.y, abs(max_power));
         int delta_y = rotated_motorPower.y - last_y;
         limit_to_val_set(delta_y, 3);
@@ -662,6 +638,7 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
         limit_to_val_set(delta_x, 5);
         rotated_motorPower.x = last_x += delta_x;
       }
+
       drive_left_power = rotated_motorPower.y + final_power_turn + rotated_motorPower.x;
       drive_left_b_power = rotated_motorPower.y + final_power_turn - rotated_motorPower.x;
       drive_right_power = rotated_motorPower.y - final_power_turn - rotated_motorPower.x;
@@ -744,6 +721,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
+
     do {
       look_ahead_point.x = 0;
       angle_main_line = atan2f(delta_main_line.x, delta_main_line.y);
@@ -772,7 +750,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       printf("ending_point_x %f \n \n", ending_point_x);
       printf("angle_main_line %f \n \n", angle_main_line);
 
-
       if (max_error && !vision || max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
@@ -782,7 +759,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
-          printf("cube tracking !!!!!! \n \n");
           if (currentCube.x > CENTER_X) {
             cubeCorrectionDirection = 1;
           } else {
@@ -791,20 +767,14 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
           if (fabs(currentCube.x + -CENTER_X) > 80) {
             cubeCorrection = false;
-            // vision_val = fabs(currentCube.x) - 50;
-            // vision_power = vision_val - 5;
-            printf("turning \n \n");
             turn_set(40 * cubeCorrectionDirection);
           } else {
-            printf("not turning \n \n");
             cubeCorrection = true;
           }
         } else {
           cubeCorrection = true;
         }
       }
-
-    //------------------------------------------------------------math--------------------------------------------------------
 
       finalpower = round(-127.0 / 12 * positionErr.y) * sgn(max_speed); //17
 
@@ -832,16 +802,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
           }
       }
 
-      printf("correction %f \n \n", correction);
-      printf("finalpower %f \n \n", finalpower);
-      printf("look_ahead_point.x %f \n \n", look_ahead_point.x);
-      printf("look_ahead_point.y %f \n \n", look_ahead_point.y);
-      printf("positionErr.x2 %f \n \n", positionErr.x);
-      printf("positionErr.y2 %f \n \n", positionErr.y);
-      printf("orienation %f \n \n", orientation);
-
-
-        pros::delay(10);
+      pros::delay(10);
 
       } while (positionErr.y < -early_stop && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
@@ -856,28 +817,12 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       polarToVector(positionErrPolar, positionErr);
 
       velocity_line = sin_line * velocity.x + cos_line * velocity.y;
-      printf("driving done velocity\n");
-      // printf("position.x %f\n", position.x);
-      // printf(" \n");
-      // printf("position.y %f\n", position.y);
-      // printf(" \n");
 
       pros::delay(5);
     } while((positionErr.y < -early_stop - (velocity_line * 0.175)) && (pros::millis() < net_timer));
     printf("driving done\n");
-    printf("driving done\n");
-    printf("driving done\n");
-    printf("driving done\n");
-    printf("driving done\n");
-    printf("driving done\n");
-    printf("driving done\n");
-    printf("driving done\n");
-    printf("driving done\n");
-
-    printf("driving done\n");
     printf("velocity_line %f \n", velocity_line);
     HarshStop();
-    printf("driving done\n");
 }
 
 void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed) {
@@ -918,37 +863,36 @@ void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir tu
       localA = atan2(position.x - xOrigin, position.y - yOrigin);
       end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
 
-      do
-      {
-      float aGlobal = orientation;
-        if (max_speed < 0)
-      aGlobal += pi;
+      do {
+        float aGlobal = orientation;
+          if (max_speed < 0)
+        aGlobal += pi;
 
-      angularV = velocity.a;
-      float _y = position.y - yOrigin;
-      float _x = position.x - xOrigin;
-      localR = sqrt(_y * _y + _x * _x);
-      localA = nearestangle(atan2(_x, _y), localA);
-      linearV = velocity.x * sin(localA + pi / 2) + velocity.y * cos(localA + pi / 2);
+        angularV = velocity.a;
+        float _y = position.y - yOrigin;
+        float _x = position.x - xOrigin;
+        localR = sqrt(_y * _y + _x * _x);
+        localA = nearestangle(atan2(_x, _y), localA);
+        linearV = velocity.x * sin(localA + pi / 2) + velocity.y * cos(localA + pi / 2);
 
-      float target = MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA + pi / 2, aGlobal) - aGlobal);
-      int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
-      angularVLast = angularV;
+        float target = MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA + pi / 2, aGlobal) - aGlobal);
+        int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
+        angularVLast = angularV;
 
-      if (turn < 0) {
-        turn = 0;
-      }
-      else if (turn > 150) {
-        turn = 150;
-      }
+        if (turn < 0) {
+          turn = 0;
+        }
+        else if (turn > 150) {
+          turn = 150;
+        }
 
-      if (max_speed > 0) {
-        set_drive(max_speed, max_speed - turn);
-      }
-      else {
-        set_drive(max_speed + turn, max_speed);
-      }
-      pros::delay(10);
+        if (max_speed > 0) {
+          set_drive(max_speed, max_speed - turn);
+        }
+        else {
+          set_drive(max_speed + turn, max_speed);
+        }
+        pros::delay(10);
     } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
 
       case ccw:
@@ -963,32 +907,31 @@ void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir tu
       localA = atan2(position.x - xOrigin, position.y - yOrigin);
       end_angle = nearestangle(end_angle, max_speed > 0 ? orientation : (orientation + pi));
 
-      do
-      {
-      float aGlobal = orientation;
-      if (max_speed < 0)
-      aGlobal += pi;
-      angularV = velocity.a;
-      float _y = position.y - yOrigin;
-      float _x = position.x - xOrigin;
-      localR = sqrt(_y * _y + _x * _x);
-      localA = nearestangle(atan2(_x, _y), localA);
-      linearV = velocity.x * sin(localA - pi / 2) + velocity.y * cos(localA - pi / 2);
+      do {
+        float aGlobal = orientation;
+        if (max_speed < 0)
+        aGlobal += pi;
+        angularV = velocity.a;
+        float _y = position.y - yOrigin;
+        float _x = position.x - xOrigin;
+        localR = sqrt(_y * _y + _x * _x);
+        localA = nearestangle(atan2(_x, _y), localA);
+        linearV = velocity.x * sin(localA - pi / 2) + velocity.y * cos(localA - pi / 2);
 
-      float target = -MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA - pi / 2, aGlobal) - aGlobal);
-      int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
-      angularVLast = angularV;
+        float target = -MAX(linearV, 15) / localR + kR * log(localR / arc_radius) + kA * (nearestangle(localA - pi / 2, aGlobal) - aGlobal);
+        int turn = round(kB * target + kP * (target - angularV) + kD * (angularVLast - angularV) / 40);
+        angularVLast = angularV;
 
-      if (turn < 0)
-      turn = 0;
-      else if (turn > -150)
-      turn = -150;
+        if (turn < 0)
+        turn = 0;
+        else if (turn > -150)
+        turn = -150;
 
-      if (max_speed > 0)
-      set_drive(max_speed + turn, max_speed);
-      else
-      set_drive(max_speed, max_speed - turn);
-      pros::delay(10);
+        if (max_speed > 0)
+        set_drive(max_speed + turn, max_speed);
+        else
+        set_drive(max_speed, max_speed - turn);
+        pros::delay(10);
     } while ((max_speed > 0 ? orientation : (orientation + pi)) - end_angle);
 
       default:

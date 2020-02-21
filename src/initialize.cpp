@@ -11,7 +11,6 @@
 
 void initialize()  {
 	pros::ADIGyro gyro (GYRO_PORT, 0.9506790);
-	// gyro.reset();
 	// task init
 	pros::task_t tracking_task = pros::c::task_create(tracking_update, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "TRACKING TASK");
 	pros::task_t velocity_task = pros::c::task_create(tracking_velocity, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "VELOCITY TASK");

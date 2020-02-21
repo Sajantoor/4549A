@@ -6,8 +6,7 @@
 #include "motor_sensor_init.h"
 #include "lift.h"
 
-template <typename T> int sgn(T val)
-{
+template <typename T> int sgn(T val) {
   return (T(0) < val) - (val < T(0));
 }
 
@@ -28,6 +27,7 @@ void full_position_reset() {
   position.x = 0;
   orientation = 0;
 }
+
 float nearestangle(float target_angle, float reference_angle) {
   return round((reference_angle-target_angle) / (2 * pi)) *  (2 * pi) + target_angle;
 }
@@ -44,8 +44,8 @@ float degToRad(float degrees) {
 float radToDeg(float radians) {
 	return radians * 180 / pi;
 }
-void HarshStop()
-{
+
+void HarshStop() {
 	vector vel;
 	vel.x = velocity.x;
 	vel.y = velocity.y;

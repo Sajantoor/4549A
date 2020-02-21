@@ -79,12 +79,6 @@ void angler_pid_task(void*ignore) {
           maxTorque = pros::c::motor_get_torque(ANGLER);
         }
 
-        // // slightly increases the target of a 7 stack to improve accuracy
-        // if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-        //   currentTarget = currentTarget - 1000;
-        //   torqueCheck = false;
-        // }
-
         // 8 stack torque is faster than 7 stack
         if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1400)) {
           if (angler_pid.max_power < currentSpeed * 0.5) {
@@ -102,7 +96,6 @@ void angler_pid_task(void*ignore) {
         // slow down for all cubes
         } else {
           if (fabs(angler_pid.error) < 1000) {
-            printf("in loop \n \n");
             if (angler_pid.max_power < currentSpeed * 0.5) {
               angler_pid.max_power = currentSpeed * 0.5;
             } else {
@@ -117,10 +110,6 @@ void angler_pid_task(void*ignore) {
         float position = angler.get_position();
         int final_power = pid_calc(&angler_pid, currentTarget, position);
         angler.move(final_power);
-        printf("power: %i \n \n", final_power);
-        // printf("angler pid: %f \n \n", angler_pid.error);
-        // printf("current target: %f \n \n", currentTarget);
-        // printf("torque values: %f \n \n", maxTorque);
         // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
         if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached || (ignoreError && nextTarget)) {
           angler.move(0);
