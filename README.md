@@ -9,6 +9,8 @@
  * [PID](#PID)
  * [Lift PID Task](#Lift-PID-Task)
  * [Angler PID Task](#angler-pid)
+ * [Light Sensor](#Light-Sensor)
+ * [Intakes](#Intakes)
  * [LCD Display](#LCD-Display)
  * [Tracking Task](#Tracking-Task)
  * [Turn PIDs](#Turn-PIDs)
@@ -196,6 +198,63 @@ float power_limit(float allowed_speed, float actual_speed) {
  > Using torque values from the motor, we solved the problem where we weren't able to detect the number of cubes in the angler. Those torque values allow us to stack automatically with an increased degree of accuracy. 
 
 [View Angler](../master/src/angler.cpp)
+
+## Light Sensor
+> The light sensor is used in several parts of the code, from the autonomous intake function, which combines the light sensor and vision sensor readings to intake only when a cube is close to the robot, outaking precisely for cube lock using PID loops, and outaking for a precise stack.  
+
+## Intakes 
+> The intakes have two major systems, the autonomous intake system combining the vision and light sensor to intake and the light sensor based outake. 
+
+### Light Sensor Based Outake
+> The light sensor based outtake is critical part of the cube lock system in our robot. It allows the driver to press a button and the cube is automatically in the intakes in the bot, allowing cubes to be scored. 
+
+```cpp
+void sensor_outtake() {
+  double sensorValue = light_sensor_intake.get_value();
+  if (sensorValue > LIGHT_SENSOR_THRESHOLD) {
+    intakePIDFunc(-700, 127);
+   }
+}
+``` 
+> The code is fairly simple, if the cube is blocking the light sensor, it doesn't need to be outaked, otherwise there is a PID loop which outakes the cubes. 
+
+### Autonomous Intake System
+> The autonomous intake system is a task, meaning it can be run asynchronously on a seperate thread on the V5 brain. This the autonomous intake system happen in parallel with something else. This system is used during the autonomous period. 
+
+```cpp
+void autoIntake(void*ignore) {
+  // time for intake to slow if intake doesn't detect cubes
+  float lightSensorTimeout = 1500;
+  float timer;
+  bool intakeTimeout = false;
+
+  while (true) {
+    while (autoIntakeBool && pros::competition::is_autonomous()) { // task running bool
+      double lightSensorValue = light_sensor_intake.get_value();
+      if ((lightSensorValue < 1850) || currentCube.size > CUBE_SIZE_THRESHOLD_MAX) { // if cube is detected
+        loader_left.move(127);
+        loader_right.move(127);
+        timer = lightSensorTimeout + pros::millis(); // timer is updated
+      } else if (intakeTimeout) { // stop intakes
+        loader_left.move(0);
+        loader_right.move(0);
+        intakeTimeout = false; // restart the timeout to have it run again if cube is detected
+      } else if (timer < pros::millis()) { // run timer
+        intakeTimeout = true;
+      }
+
+      pros::delay(20);
+    }
+
+    if (!pros::competition::is_autonomous()) {
+      autoIntakeBool = false;
+    }
+
+    pros::delay(20);
+  }
+}
+```
+**How the system works**: Using the Vision Sensor we are able to track cubes, from that we are able to calculate the size of each cube. If the size is big enough, meaning it's close to the robot, the intakes run. The light sensor is also used, it's used to check if the cubes are fully intaked, if not the intakes run. 
 
 
 ## LCD Display
