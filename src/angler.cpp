@@ -141,12 +141,7 @@ void angler_pid_task(void*ignore) {
           if (pros::millis() > intakeThresholdTimer) {
             loader_left.move(0);
             loader_right.move(0);
-            // COULD CAUSE BUGS: maybe change behavior to stack if not stacking
-            // exit loop
-            // currentTarget = 0;
-            // currentSpeed = 0;
             anglerIntakeThreshold = true;
-            // anglerBool = false;
           } else {
             loader_left.move(-70);
             loader_right.move(-70);
