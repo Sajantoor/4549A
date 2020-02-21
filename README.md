@@ -3,24 +3,23 @@
 
  #### Table of Contents
  
- * [Initialize](#Initialize)
- * [Motors and Sensors](#motors-and-sensors)
+ * [The Basics](#The Basics)
  * [Opcontrol](#Opcontrol)
  * [PID](#PID)
- * [Lift PID Task](#Lift-PID-Task)
  * [Angler PID Task](#angler-pid)
- * [Light Sensor](#Light-Sensor)
- * [Intakes](#Intakes)
- * [LCD Display](#LCD-Display)
+ * [Lift PID Task](#Lift-PID-Task)
  * [Tracking Task](#Tracking-Task)
  * [Turn PIDs](#Turn-PIDs)
  * [Drive PID](#Drive-PID)
- * [Vision Sensor Cube Tracking](#Vision-Sensor-Cube-Tracking)
- * [Motor Sensor Init](#Motor-Sensor-Init)
  * [Autonomous](#Autonomous)
+ * [LCD Display](#LCD-Display)
+ * [Light Sensor](#Light-Sensor)
+ * [Vision Sensor Cube Tracking](#Vision-Sensor-Cube-Tracking)
+ * [Intakes](#Intakes)
  
  
- ## Initialize
+## The Basics
+### Initialize
  > The initalize file is used to define tasks for future use. 
 
 An example of a task definition: 
@@ -30,13 +29,23 @@ An example of a task definition:
 
 [View Initialize](../master/src/initialize.cpp)
  
- ## Motors and Sensors
- > Motors and sensors are defined in their own file.
+### Motors and Sensors
+> Motors and sensors are defined in their own file.
  
  An example of a motor definition: 
  ```cpp
  pros::Motor drive_left(DRIVE_LEFT, MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
  ```
+ 
+### Motor Sensor Init
+> This is very all the motors, sensors and ports for the motors are defined. 
+```cpp
+#define DRIVE_LEFT 9
+#define pot_port_arm 1
+extern pros::Motor drive_left;
+pros::Motor drive_left(DRIVE_LEFT, MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
+pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
+```
  
  [View motors and sensors](../master/src/motor_setup.cpp)
  
@@ -44,17 +53,27 @@ An example of a task definition:
  > This is where all the driver related code is. It's designed to be as simple as possible for the driver and requires as few inputs as possible from the driver allowing them to focus on more important aspects of the game.
  
  ```cpp
-if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-  angler_pid(1250);
-  pros::delay(20);
-  angler_pid(2050);
+// autonomous stacking mechanism
+if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+	// go foward
+      if (!anglerVal) {
+	 anglerHold = false;
+	  pros::delay(20);
+	  angler_pid(-4500, true, 127, true);
+      } else if (anglerVal) { // go backward
+          anglerHold = false;
+         pros::delay(20);
+         angler_pid(0, true, 127, false, 2000);
+     }
+  // same button to return
+  anglerVal ? anglerVal = false : anglerVal = true;
 }
  ```
+> This code allows the driver to, at a button press, stack cubes with the angler and the angler returns to its original position. This is a task which allows the driver to do other things such as drive or intake, if they desired.
+
 [View opcontrol](../master/src/opcontrol.cpp)
 
- 
-This code allows the driver to, at a button press, stack cubes with the angler and the angler returns to its original position. This is a task which allows the driver to do other things such as drive or intake, if they desired. (The values here are potentiometer values.)
- 
+
  ## PID 
  > This is our non redundant, PID function. PID values such as kp, kd, etc. are entered using a constructor inside a struct. These values are used with a target and sensor values to calculate what power the motor should be at that given time. 
  
@@ -73,7 +92,7 @@ typedef struct pid_values {
 [View the struct](../master/include/pid.h)
 
 
-This is the struct with its constructor. It's designed to be as flexible as possible and non redundant. Inside our function we can manipulate different aspects of this struct such as the derivative value if we so desired using the "dot (.)" operator. `<constructor id>.derivative`
+> This is the struct with its constructor. It's designed to be as flexible as possible and non redundant. Inside our function we can manipulate different aspects of this struct such as the derivative value if we so desired using the "dot (.)" operator. `<constructor id>.derivative`
 
  
  ```cpp
@@ -138,133 +157,182 @@ float power_limit(float allowed_speed, float actual_speed) {
 
 [View PID](../master/src/pid.cpp)
 
-## Lift PID Task
-> The Lift PID task uses the same PID calculations but it has to overcome another problem. In order for the lift to move, clearance has to be made via the angler moving, therefore the task only runs once the angler has moved to a certain threshold. Another problem is we need it to have a delay in order to drop the cubes into the tower and allowing the driver to position themselves, otherwise the angler drops instantly after the position has been reached due to gravity and the weight of the lift. 
-
-```cpp
-  while (true) {
-    while ((potentiometer_angler.get_value() < angler_threshold) && liftBool) {
-      ...
-
-       if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
-         liftBool = false; // exit out of the loop
-         delayTime = 0 // reset delay time
-       }
-     }
-  }
-  ```
-
-[View Lift](../master/src/lift.cpp)
-
-
 ## Angler PID Task
-> The angler task uses the PID calculations as well as vector arrays to queue up and switch between different targets. The vector arrays solves the problem where the target is changed while the task is running and it goes to that changed target instead of switching to the new target after the current target has been reached. 
+> The angler task allows for autonomous and accurate stacking in both the autonomous and driver control periods. The angler task uses the PID calculations and motor encoders to move to certain positions. Using torque values from the motor we are able to calculate the number of cubes in the tray and move the tray accordingly. Before stacking, the light sensor is used to outake to the perfect position allowing for an increased degree of accuracy. 
 
 ```cpp 
+void angler_pid_task(void*ignore) {
+  pid_values angler_pid(0.5, 0.8, 0.8, 30, 500, 127);
+  float timeout;
+  float maxTorque = 0;
+  bool delayReached = false;
+  float intakeThresholdTimer;
+  const int ERROR_THRESHOLD = 10;
 
-      // max torque value is used to calculate how many cubes are in the angler
-      if (pros::c::motor_get_torque(11) > maxTorque) {
-	maxTorque = pros::c::motor_get_torque(11);
+  while(true) {
+    while (anglerBool) {
+      if (timerAng) {
+        // holdTimer = pros::millis() + delayTime; // motor hold value
+        angler_pid.max_power = currentSpeed;
+        timeout = pros::millis() + anglerDelay; // timeout value to exit out of the loop, if something goes wrong
+        timerAng = false;
+
+        !applyTorque ? torqueCheck = false : torqueCheck = true;
+        intakeThresholdTimer = pros::millis() + 1000;
       }
 
-      // slightly reduces the target of a 7 stack to improve accuracy
-      if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-	currentTarget = currentTarget + 100;
-	torqueCheck = false;
-      }
+      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL)) {
+        // angler stack code
+        anglerIntakeThreshold = true;
+        if (anglerDelay && (pros::millis() > timeout)) {
+          delayReached = true;
+        }
 
-      // run motors faster depending on the amount of torque applied on the motor
-      // based on the number of cubes, the max power needs to be greater
-      if (pros::c::motor_get_torque(11) > 0.7) {
-	angler_pid.max_power = 100;
+        // max torque value is used to calculate how many cubes are in the angler
+        if (pros::c::motor_get_torque(ANGLER) > maxTorque) {
+          maxTorque = pros::c::motor_get_torque(ANGLER);
+        }
+
+        // // slightly increases the target of a 7 stack to improve accuracy
+        // if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
+        //   currentTarget = currentTarget - 1000;
+        //   torqueCheck = false;
+        // }
+
+        // 8 stack torque is faster than 7 stack
+        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1400)) {
+          if (angler_pid.max_power < currentSpeed * 0.5) {
+            angler_pid.max_power = currentSpeed * 0.5;
+          } else {
+            angler_pid.max_power = angler_pid.max_power - 15;
+          }
+        // 7 stack torque is slower
+        } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 1200)) {
+          if (angler_pid.max_power < currentSpeed * 0.4) {
+            angler_pid.max_power = currentSpeed * 0.4;
+          } else {
+            angler_pid.max_power = angler_pid.max_power - 25;
+          }
+        // slow down for all cubes
+        } else {
+          if (fabs(angler_pid.error) < 1000) {
+            printf("in loop \n \n");
+            if (angler_pid.max_power < currentSpeed * 0.5) {
+              angler_pid.max_power = currentSpeed * 0.5;
+            } else {
+              angler_pid.max_power = angler_pid.max_power - 15;
+            }
+          } else {
+            angler_pid.max_power = currentSpeed;
+          }
+        }
+
+        float currentTime = pros::millis();
+        float position = angler.get_position();
+        int final_power = pid_calc(&angler_pid, currentTarget, position);
+        angler.move(final_power);
+        printf("power: %i \n \n", final_power);
+        // printf("angler pid: %f \n \n", angler_pid.error);
+        // printf("current target: %f \n \n", currentTarget);
+        // printf("torque values: %f \n \n", maxTorque);
+        // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
+        if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached || (ignoreError && nextTarget)) {
+          angler.move(0);
+          maxTorque = 0;
+          // if there is a next target, then switch to the next target, else clear current target and exit the loop
+          if (nextTarget == 0) {
+            currentTarget = 0;
+            currentSpeed = 0;
+            delayReached = false;
+            anglerBool = false;
+          } else {
+            currentTarget = nextTarget;
+            currentSpeed = nextSpeed;
+            nextSpeed = 0;
+            nextTarget = 0;
+            timerAng = true;
+            delayReached = false;
+          }
+        }
       } else {
-	angler_pid.max_power = 80;
-      }
-
-      // slows down near the end of the stack
-      if (fabs(angler_pid.error) < 600) {
-	if (angler_pid.max_power < 40) {
-	  angler_pid.max_power = 40;
-	} else {
-	  // slow down faster for 7 stack or greater
-	  if (maxTorque > SEVEN_STACK_TORQUE) {
-	    angler_pid.max_power = angler_pid.max_power - 25;
-	  } else {
-	    angler_pid.max_power = angler_pid.max_power - 15;
-	  }
-	}
-      }
- ``` 
- > Using torque values from the motor, we solved the problem where we weren't able to detect the number of cubes in the angler. Those torque values allow us to stack automatically with an increased degree of accuracy. 
-
-[View Angler](../master/src/angler.cpp)
-
-## Light Sensor
-> The light sensor is used in several parts of the code, from the autonomous intake function, which combines the light sensor and vision sensor readings to intake only when a cube is close to the robot, outaking precisely for cube lock using PID loops, and outaking for a precise stack.  
-
-## Intakes 
-> The intakes have two major systems, the autonomous intake system combining the vision and light sensor to intake and the light sensor based outake. 
-
-### Light Sensor Based Outake
-> The light sensor based outtake is critical part of the cube lock system in our robot. It allows the driver to press a button and the cube is automatically in the intakes in the bot, allowing cubes to be scored. 
-
-```cpp
-void sensor_outtake() {
-  double sensorValue = light_sensor_intake.get_value();
-  if (sensorValue > LIGHT_SENSOR_THRESHOLD) {
-    intakePIDFunc(-700, 127);
-   }
-}
-``` 
-> The code is fairly simple, if the cube is blocking the light sensor, it doesn't need to be outaked, otherwise there is a PID loop which outakes the cubes. 
-
-### Autonomous Intake System
-> The autonomous intake system is a task, meaning it can be run asynchronously on a seperate thread on the V5 brain. This the autonomous intake system happen in parallel with something else. This system is used during the autonomous period. 
-
-```cpp
-void autoIntake(void*ignore) {
-  // time for intake to slow if intake doesn't detect cubes
-  float lightSensorTimeout = 1500;
-  float timer;
-  bool intakeTimeout = false;
-
-  while (true) {
-    while (autoIntakeBool && pros::competition::is_autonomous()) { // task running bool
-      double lightSensorValue = light_sensor_intake.get_value();
-      if ((lightSensorValue < 1850) || currentCube.size > CUBE_SIZE_THRESHOLD_MAX) { // if cube is detected
-        loader_left.move(127);
-        loader_right.move(127);
-        timer = lightSensorTimeout + pros::millis(); // timer is updated
-      } else if (intakeTimeout) { // stop intakes
-        loader_left.move(0);
-        loader_right.move(0);
-        intakeTimeout = false; // restart the timeout to have it run again if cube is detected
-      } else if (timer < pros::millis()) { // run timer
-        intakeTimeout = true;
+        // outtake cube to be at the bottom of the tray
+        if (light_sensor_intake.get_value() < 1850) { // if cube is detected
+          loader_left.move(0);
+          loader_right.move(0);
+          anglerIntakeThreshold = true;
+        } else if (light_sensor_intake.get_value() > 1850) { // if cube isn't detected
+          // fixes bug if there is no cubes in tray and driver accidentally pressed stack button,
+          // disabling the robot lol
+          if (pros::millis() > intakeThresholdTimer) {
+            loader_left.move(0);
+            loader_right.move(0);
+            // exit loop
+            // currentTarget = 0;
+            // currentSpeed = 0;
+            anglerIntakeThreshold = true;
+            // anglerBool = false;
+          } else {
+            loader_left.move(-70);
+            loader_right.move(-70);
+          }
+        }
       }
 
       pros::delay(20);
     }
-
-    if (!pros::competition::is_autonomous()) {
-      autoIntakeBool = false;
-    }
-
     pros::delay(20);
   }
 }
+
+ ``` 
+
+[View Angler](../master/src/angler.cpp)
+
+## Lift PID Task
+> The Lift PID task uses the same PID calculations as the angler. However it's simpler as we don't have to worry about torque. 
+
+```cpp
+  while(liftBool) {
+      // calculates time for timeout
+      if (timer) {
+        failsafe = pros::millis() + timeout + hold;
+        delayTime = pros::millis() + hold;
+        timer = false;
+      }
+
+       float currentTime = pros::millis();
+       float position = arm.get_position(); // mtr encoders
+       float final_power = pid_calc(&lift_pid, height, position); // final power is calculated using pid
+       arm.move(final_power);
+       // slew rate to slow down the motor based on the error value
+       if (position > 1980) {
+         lift_pid.max_power = lift_pid.max_power - 5; // slew rate
+         if (lift_pid.max_power < 60) lift_pid.max_power = 60; // capping lowest possible speed
+       } else {
+         lift_pid.max_power = lift_pid.max_power + 25; // positive slew rate
+         if (lift_pid.max_power > 127) lift_pid.max_power = 127; // motor cap
+       }
+
+       // exit out of the loop
+       if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
+         lift_pid.max_power = 127;
+         hold = 0;
+         arm.move(0);
+         liftBool = false;
+       // exit out based off the failsafe
+       } else if (failsafe < currentTime) {
+         lift_pid.max_power = 127;
+         hold = 0;
+         arm.move(0);
+         liftBool = false;
+       }
+     }
+     pros::delay(20);
+  }
+}
 ```
-**How the system works**: Using the Vision Sensor we are able to track cubes, from that we are able to calculate the size of each cube. If the size is big enough, meaning it's close to the robot, the intakes run. The light sensor is also used, it's used to check if the cubes are fully intaked, if not the intakes run. 
 
-
-## LCD Display
-> The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
-
-![LCD Start Page](../assets/2019-10-17-072731_480x272_pros_capture.png) 
-![LCD Red Auto Selecter](../assets/2019-10-17-072819_480x272_pros_capture.png) 
-![LCD Values Page](../assets/2019-10-17-072758_480x272_pros_capture.png) 
-
-[View LCD](../master/src/lcd.cpp)
+[View Lift](../master/src/lift.cpp)
 
 ## Tracking Task
 > Another name of this tracking System is Absolute Positioning System (APS). The APS System that keeps track of the absolute position (i.e. Cartesian Coordinates) and the current orientation during Programming Skills and Match Autonomous. The input for this system tracking system are 3 Encoders and the output are the absolute Position and the Orientation.
@@ -372,7 +440,8 @@ This difference is the same for my turn function that turns the bot to turn towa
     rotated_motorPower.x = last_x += delta_x;
 }
 ```
-> As you can see in the code I use some variables from my Tracking Function. `position.x`, `position.y` and `orientation`. Another important part of my code is the part where I limit the power of the motors so that they don't exceed the limit of the motors which is 127. This is also important because this makes it so that one part of the motor power doesnt over take other motor power making correction easier during Autonomous.
+> As you can see in the code there are some variables from the Tracking Function. `position.x`, `position.y` and `orientation`. Another important part of my code is the part where the power of the motors are limted so that they don't exceed the limit of the motors which is 127. This is important because this makes it so that one part of the motor power doesnt over take other motor power making correction easier during the autonomous period.
+
 ```cpp
     float motor_power_array [4] = {drive_left_power, drive_left_b_power, drive_right_power, drive_right_b_power};
       
@@ -395,6 +464,90 @@ This difference is the same for my turn function that turns the bot to turn towa
     drive_right_b.move(motor_power_array [3]);
 ```
 [View Drive PID](../master/src/drive.cpp#L666)
+
+
+## Autonomous 
+> In autonomous, all the PIDs and function are used to make routines for match's autos and Programing Skills. This is also where the LCD is used to help select auto.
+
+```cpp
+if (switcher == 1) {
+ //routines for red auto
+}
+
+if (switcher == 2) {
+ //routines for blue auto
+}
+``` 
+
+[View Autonomous](../master/src/autonomous.cpp)
+
+
+## LCD Display
+> The LCD display is custom made and best tailored for our use. It allows us to easily switch between autos and allows us to see values such as sensor values easily. 
+
+![LCD Start Page](../assets/2019-10-17-072731_480x272_pros_capture.png) 
+![LCD Red Auto Selecter](../assets/2019-10-17-072819_480x272_pros_capture.png) 
+![LCD Values Page](../assets/2019-10-17-072758_480x272_pros_capture.png) 
+
+[View LCD](../master/src/lcd.cpp)
+
+
+## Light Sensor
+> The light sensor is used in several parts of the code, from the autonomous intake function, which combines the light sensor and vision sensor readings to intake only when a cube is close to the robot, outaking precisely for cube lock using PID loops, and outaking for a precise stack.  
+
+## Intakes 
+> The intakes have two major systems, the autonomous intake system combining the vision and light sensor to intake and the light sensor based outake. 
+
+### Light Sensor Based Outake
+> The light sensor based outtake is critical part of the cube lock system in our robot. It allows the driver to press a button and the cube is automatically in the intakes in the bot, allowing cubes to be scored. 
+
+```cpp
+void sensor_outtake() {
+  double sensorValue = light_sensor_intake.get_value();
+  if (sensorValue > LIGHT_SENSOR_THRESHOLD) {
+    intakePIDFunc(-700, 127);
+   }
+}
+``` 
+> The code is fairly simple, if the cube is blocking the light sensor, it doesn't need to be outaked, otherwise there is a PID loop which outakes the cubes. 
+
+### Autonomous Intake System
+> The autonomous intake system is a task, meaning it can be run asynchronously on a seperate thread on the V5 brain. This the autonomous intake system happen in parallel with something else. This system is used during the autonomous period. 
+
+```cpp
+void autoIntake(void*ignore) {
+  // time for intake to slow if intake doesn't detect cubes
+  float lightSensorTimeout = 1500;
+  float timer;
+  bool intakeTimeout = false;
+
+  while (true) {
+    while (autoIntakeBool && pros::competition::is_autonomous()) { // task running bool
+      double lightSensorValue = light_sensor_intake.get_value();
+      if ((lightSensorValue < 1850) || currentCube.size > CUBE_SIZE_THRESHOLD_MAX) { // if cube is detected
+        loader_left.move(127);
+        loader_right.move(127);
+        timer = lightSensorTimeout + pros::millis(); // timer is updated
+      } else if (intakeTimeout) { // stop intakes
+        loader_left.move(0);
+        loader_right.move(0);
+        intakeTimeout = false; // restart the timeout to have it run again if cube is detected
+      } else if (timer < pros::millis()) { // run timer
+        intakeTimeout = true;
+      }
+
+      pros::delay(20);
+    }
+
+    if (!pros::competition::is_autonomous()) {
+      autoIntakeBool = false;
+    }
+
+    pros::delay(20);
+  }
+}
+```
+**How the system works**: Using the Vision Sensor we are able to track cubes, from that we are able to calculate the size of each cube. If the size is big enough, meaning it's close to the robot, the intakes run. The light sensor is also used, it's used to check if the cubes are fully intaked, if not the intakes run. 
 
 ### Vision Sensor Cube Tracking
 > Vision sensor is used to recognize, track and follow cubes. It uses 3 signatures, one for each cube colour and then uses drive functions to follow the cubes. It allows us to dynamically make adjustments to our autonomous based on field conditions, an example of this would be cubes are setup with a margin of error or for cubes falling unpredictably. This allows for us to maximize the number of cubes we get during the autonomous period.
@@ -514,28 +667,3 @@ int deepVision(int id) {
 > Due to low lighting conditions the vision sensor may not detect the whole cube, there may be multiple smaller detections. Then this algorithm steps in. This algorithm applies basic geometric operations to calculate the full width of the cube based on these smaller detected pieces. This improves the performance of cube tracking in these low lighting condtions.
 
 [View vision sensor code](../master/src/vision.cpp)
-
-## Motor Sensor Init
-> This is very all the motors, sensors and ports for the motors are defined. 
-```cpp
-#define DRIVE_LEFT 9
-#define pot_port_arm 1
-extern pros::Motor drive_left;
-pros::Motor drive_left(DRIVE_LEFT, MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_COUNTS);
-pros::ADIPort potentiometer_arm (pot_port_arm, pros::E_ADI_ANALOG_IN);
-```
-## Autonomous 
-> In autonomous, all the PIDs and function are used to make routines for match's autos and Programing Skills. This is also where the LCD is used to help select auto.
-
-```cpp
-if (switcher == 1){
- //routines for red auto
-}
-
-if (switcher == 2){
- //routines for blue auto
-}
-``` 
-The switcher value is what I change in the LCD to change autos.
-
-[View Autonomous](../master/src/autonomous.cpp)
