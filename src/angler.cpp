@@ -118,7 +118,7 @@ void angler_pid_task(void*ignore) {
         int final_power = pid_calc(&angler_pid, currentTarget, position);
         angler.move(final_power);
         printf("power: %i \n \n", final_power);
-        printf("angler pid: %f \n \n", angler_pid.error);
+        // printf("angler pid: %f \n \n", angler_pid.error);
         // printf("current target: %f \n \n", currentTarget);
         // printf("torque values: %f \n \n", maxTorque);
         // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached

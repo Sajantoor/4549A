@@ -151,9 +151,9 @@ void vision_tracking(void*ignore) {
   // init
   vision_sensor.set_exposure(150);
   // color signatures
-  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 1411, 2379, 1894, 6919, 9497, 8208, 2.500, 0);
-  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE,  6015, 8687, 7350, -2129, -1535, -1832, 2.500, 0);
-  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -7237, -5135, -6186, -3531, -1945, -2738, 3.300, 0);
+  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 2643, 4987, 3814, 5181, 7507, 6344, 2.500, 0);
+  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 4425, 6939, 5682, -2003, -1469, -1736, 3.000, 0);
+  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -5199, -2329, -3764, -3211, -2047, -2628, 2.200, 0);
 
   // float largestSize;
   // // zero point on sensor is the middle
@@ -195,11 +195,12 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         cubeColor = 0;
         targetedCube = 0;
+        printf("No cubes detected \n \n");
       }
-      // else {
-      //   printf("cube x: %i \n \n", currentCube.x);
-      //   printf("cube size: %i \n \n", currentCube.size);
-      // }
+      else {
+        printf("cube x: %i \n \n", currentCube.x);
+        printf("cube size: %i \n \n", currentCube.size);
+      }
     }
 
     pros::delay(20);

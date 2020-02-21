@@ -11,7 +11,7 @@
 #define LOADER_LEFT 12
 #define ANGLER 10
 #define ARM 5
-#define VISION_PORT 14
+#define VISION_PORT 15
 
 extern pros::Motor drive_left;
 extern pros::Motor drive_left_b;
