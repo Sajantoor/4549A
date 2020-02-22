@@ -1,8 +1,7 @@
 # 4549A
 > VEX Robotics Code For the Envertronics Team: 4549A
 
- #### Table of Contents
- 
+ #### Table of Contents 
  * [The Basics](#The-Basics)
  * [Opcontrol](#Opcontrol)
  * [PID](#PID)
@@ -16,8 +15,10 @@
  * [Light Sensor](#Light-Sensor)
  * [Vision Sensor Cube Tracking](#Vision-Sensor-Cube-Tracking)
  * [Intakes](#Intakes)
- 
- 
+
+### Programming And Algorithm Design Proccess
+> For an indepth look at the programming proccess, [click here](https://github.com/Sajantoor/4549A/blob/documentation/docs/extra-docs.md).
+
 ## The Basics
 ### Initialize
  > The initalize file is used to define tasks for future use. 
@@ -669,3 +670,5 @@ void autoIntake(void*ignore) {
 }
 ```
 **How the system works**: Using the Vision Sensor we are able to track cubes, from that we are able to calculate the size of each cube. If the size is big enough, meaning it's close to the robot, the intakes run. The light sensor is also used, it's used to check if the cubes are fully intaked, if not the intakes run. 
+
+[View intake](../master/src/intake.cpp)
