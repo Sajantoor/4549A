@@ -427,42 +427,42 @@ This difference is the same for my turn function that turns the bot to turn towa
 [View Turning](../master/src/drive.cpp)
 
 ## Drive PID
-> I made a drive pid that takes in account the X, Y and Orientation to drive to any coordinate with correction. This function uses many concepts from Math like Algebra, Trignometry and even Calculus to find calculations for applying power to the motors and limiting power for the motors. This specific part of the code adds a slew rate to the code so that the movements are not so harsh and sudden which could possible misalign the robot.
+> I made a drive pid that takes in account the X, Y and Orientation to drive to any coordinate with correction. This function uses many concepts from Math like Algebra, Trignometry and even Calculus to find calculations for corrections and supllying power to the motors.
 ```cpp
-    limit_to_val_set(rotated_motorPower.y, abs(max_power));
-    int delta_y = rotated_motorPower.y - last_y;
-    limit_to_val_set(delta_y, 3);
-    rotated_motorPower.y = last_y += delta_y;
-
-    limit_to_val_set(rotated_motorPower.x, abs(max_power));
-    int delta_x = rotated_motorPower.x - last_x;
-    limit_to_val_set(delta_x, 5);
-    rotated_motorPower.x = last_x += delta_x;
+ if (max_error) {
+	err_angle = orientation - line_angle;
+	err_x = positionErr.x + positionErr.y * tan(err_angle);
+	correctA = atan2(ending_point_x - position.x, ending_point_y - position.y);
+	if (max_speed < 0) correctA += pi;
+	correction = fabs(err_x) > max_error ? 8.2 * (nearestangle(correctA, orientation) - orientation) * 				sgn(max_speed) : 0;
 }
 ```
-> As you can see in the code there are some variables from the Tracking Function. `position.x`, `position.y` and `orientation`. Another important part of my code is the part where the power of the motors are limted so that they don't exceed the limit of the motors which is 127. This is important because this makes it so that one part of the motor power doesnt over take other motor power making correction easier during the autonomous period.
+> As you can see in the code I use some variables from my Tracking Function. position.x, position.y and orientation. Another important part of my code is the part where I supply power to the motors and put in the correction variable.
 
 ```cpp
-    float motor_power_array [4] = {drive_left_power, drive_left_b_power, drive_right_power, drive_right_b_power};
-      
-    for (size_t i = 0; i < 4; i++) {
-      if (abs(motor_power_array[i]) > largestVal) {
-        largestVal = abs(motor_power_array[i]);
-      }
-    }
-      
-      if (largestVal > 127) {
-        motor_power_array[0] = (motor_power_array[0] * 127) / abs(largestVal);
-        motor_power_array[1] = (motor_power_array[1] * 127) / abs(largestVal);
-        motor_power_array[2] = (motor_power_array[2] * 127) / abs(largestVal);
-        motor_power_array[3] = (motor_power_array[3] * 127) / abs(largestVal);
-      }
-	
-    drive_left.move(motor_power_array [0]);
-    drive_left_b.move(motor_power_array [1]);
-    drive_right.move(motor_power_array [2]);
-    drive_right_b.move(motor_power_array [3]);
-```
+inalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed);
+
+limit_to_val_set(finalpower, abs(max_speed));
+		if (finalpower * sgn(max_speed) < 35)
+finalpower = 35 * sgn(max_speed);
+		int delta = finalpower - last;
+		limit_to_val_set(delta, 5);
+		finalpower = last += delta;
+
+switch (sgn(correction)) {
+	case 0:
+		left_drive_set(finalpower);
+		right_drive_set(finalpower);
+		break;
+	case 1:
+		left_drive_set(finalpower);
+		right_drive_set(finalpower * exp(-correction));
+		break;
+	case -1:
+		left_drive_set(finalpower * exp(correction));
+		right_drive_set(finalpower);
+		break;
+}```
 [View Drive PID](../master/src/drive.cpp#L666)
 
 
