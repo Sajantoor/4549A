@@ -1,9 +1,9 @@
-# 4549A's Guide To Programming With VEX
+# 4549A's Programming Process
 ### Table of Contents
 * [Problem Solving](#Problem-Solving)
 * [Code Style](#Code-Style)
-* [Variables](#Variables)
 * [Algorithms](#Algorithms)
+* [Variables](#Variables)
 
 ## Problem Solving
 > Problem solving is what programming is all about. The goal of programming can be summed up as solving problems using the simplest and best solution possible. In VEX the problem could be as simple as moving the motor with a button press or as complex as tracking and following cubes using the vision sensor in the autonomous period. 
@@ -29,6 +29,9 @@ There are several steps in solving problems:
 
 #### Clean Code and Optimize
 > At this stage it's important to clean up your code and remove anything that's unnecessary, such as prints, unused codes and commented out code. It's also time to optimize your algorithm for maxmimum performance, removing bugs, working on edge cases, and writing a cleaner solution. After that you should add comments so it's easy to understand the code and read it later.  
+
+![An Example](https://github.com/Sajantoor/4549A/blob/documentation/docs/Vision%20Sensor%20Problem%20Solving.jpg)
+> Example: solving the problem of cube tracking using the vision sensor using this problem solving process.
 
 ## Code Style
 > The style of your code is extremely important as it allows for improved readability which can help in the programming process. Code should be properly indented and commented. General rule of thumb is there should be and indent every open brace. There should also be spacing between `if`s and between brackets and commas. Here's an example of good code style: 
@@ -62,11 +65,11 @@ loader_right.move(0);
 }
 ```
 
+## Algorithms
+> Algorithms are supposed to be as simple as possible and designed to be easily changed and manipulated if needed. The programmers need to be aware of the hardware and memory constraints  of the V5 Brain when designing an algorithm. An example of a bad algorithm would be multiple for loops within themselves, this would have a large [time complexity](https://en.wikipedia.org/wiki/Time_complexity) pushing the hardware closer to its limits. Another example is an algorithm using an infinite array when only 4 values need to be stored at a given time, this would be memory intensive. 
+
 ## Variables
-> Variables are an important part of programming. 
+> Variables are an important part of programming. Variables are used when some data has to be stored and manipulated or when something is a constant, such an unchanging speed and is used in multiple places. 
 
 ### Variable Naming
-
-## Algorithms
-
-### Time and Memory Complexity
+> Variables are named using camel case (camelCase). Booleans are to be named as verbs to make it clear what it is. Constants are to be named using all capital letters seperated by underscores.
