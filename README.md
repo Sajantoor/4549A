@@ -440,7 +440,7 @@ This difference is the same for my turn function that turns the bot to turn towa
 > As you can see in the code I use some variables from my Tracking Function. position.x, position.y and orientation. Another important part of my code is the part where I supply power to the motors and put in the correction variable.
 
 ```cpp
-inalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed);
+finalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed);
 
 limit_to_val_set(finalpower, abs(max_speed));
 		if (finalpower * sgn(max_speed) < 35)
@@ -462,7 +462,8 @@ switch (sgn(correction)) {
 		left_drive_set(finalpower * exp(correction));
 		right_drive_set(finalpower);
 		break;
-}```
+}
+```
 [View Drive PID](../master/src/drive.cpp#L666)
 
 
