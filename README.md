@@ -427,7 +427,7 @@ This difference is the same for my turn function that turns the bot to turn towa
 [View Turning](../master/src/drive.cpp)
 
 ## Drive PID
-> I made a drive pid that takes in account the X, Y and Orientation to drive to any coordinate with correction. This function uses many concepts from Math like Algebra, Trignometry and even Calculus to find calculations for corrections and supllying power to the motors.
+> The drive pid takes in account the X, Y and Orientation to drive to any coordinate with correction. This function uses many concepts from Math like Algebra, Trignometry and even Calculus to find calculations for corrections and supllying power to the motors.
 ```cpp
  if (max_error) {
 	err_angle = orientation - line_angle;
@@ -437,7 +437,7 @@ This difference is the same for my turn function that turns the bot to turn towa
 	correction = fabs(err_x) > max_error ? 8.2 * (nearestangle(correctA, orientation) - orientation) * 				sgn(max_speed) : 0;
 }
 ```
-> As you can see in the code I use some variables from my Tracking Function. position.x, position.y and orientation. Another important part of my code is the part where I supply power to the motors and put in the correction variable.
+> The drive function uses some variables from the Tracking Function. position.x, position.y and orientation. Giving power to the motors and using the correction variable with the final power is another important part of the drive function.
 
 ```cpp
 finalpower = round(-127.0 / 17 * positionErr.y) * sgn(max_speed);
