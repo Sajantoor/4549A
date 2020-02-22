@@ -1,4 +1,4 @@
-# 4549A's Programming Process
+# 4549A's Programming And Algorithm Design Proccess
 ### Table of Contents
 * [Problem Solving](#Problem-Solving)
 * [Code Style](#Code-Style)
