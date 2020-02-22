@@ -163,25 +163,8 @@ float power_limit(float allowed_speed, float actual_speed) {
 
 ```cpp 
 void angler_pid_task(void*ignore) {
-  pid_values angler_pid(0.5, 0.8, 0.8, 30, 500, 127);
-  float timeout;
-  float maxTorque = 0;
-  bool delayReached = false;
-  float intakeThresholdTimer;
-  const int ERROR_THRESHOLD = 10;
-
-  while(true) {
+    ... 
     while (anglerBool) {
-      if (timerAng) {
-        // holdTimer = pros::millis() + delayTime; // motor hold value
-        angler_pid.max_power = currentSpeed;
-        timeout = pros::millis() + anglerDelay; // timeout value to exit out of the loop, if something goes wrong
-        timerAng = false;
-
-        !applyTorque ? torqueCheck = false : torqueCheck = true;
-        intakeThresholdTimer = pros::millis() + 1000;
-      }
-
       if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL)) {
         // angler stack code
         anglerIntakeThreshold = true;
@@ -193,12 +176,6 @@ void angler_pid_task(void*ignore) {
         if (pros::c::motor_get_torque(ANGLER) > maxTorque) {
           maxTorque = pros::c::motor_get_torque(ANGLER);
         }
-
-        // // slightly increases the target of a 7 stack to improve accuracy
-        // if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-        //   currentTarget = currentTarget - 1000;
-        //   torqueCheck = false;
-        // }
 
         // 8 stack torque is faster than 7 stack
         if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1400)) {
@@ -217,7 +194,6 @@ void angler_pid_task(void*ignore) {
         // slow down for all cubes
         } else {
           if (fabs(angler_pid.error) < 1000) {
-            printf("in loop \n \n");
             if (angler_pid.max_power < currentSpeed * 0.5) {
               angler_pid.max_power = currentSpeed * 0.5;
             } else {
@@ -232,28 +208,9 @@ void angler_pid_task(void*ignore) {
         float position = angler.get_position();
         int final_power = pid_calc(&angler_pid, currentTarget, position);
         angler.move(final_power);
-        printf("power: %i \n \n", final_power);
-        // printf("angler pid: %f \n \n", angler_pid.error);
-        // printf("current target: %f \n \n", currentTarget);
-        // printf("torque values: %f \n \n", maxTorque);
-        // exits out of the loop after the +/- 10 of the error has been reached, hold value has been reached
+        // exits out of the loop after the error has been reached, hold value has been reached
         if ((fabs(angler_pid.error) <= ERROR_THRESHOLD) || !anglerHold || delayReached || (ignoreError && nextTarget)) {
-          angler.move(0);
-          maxTorque = 0;
-          // if there is a next target, then switch to the next target, else clear current target and exit the loop
-          if (nextTarget == 0) {
-            currentTarget = 0;
-            currentSpeed = 0;
-            delayReached = false;
-            anglerBool = false;
-          } else {
-            currentTarget = nextTarget;
-            currentSpeed = nextSpeed;
-            nextSpeed = 0;
-            nextTarget = 0;
-            timerAng = true;
-            delayReached = false;
-          }
+	  ...
         }
       } else {
         // outtake cube to be at the bottom of the tray
@@ -262,16 +219,8 @@ void angler_pid_task(void*ignore) {
           loader_right.move(0);
           anglerIntakeThreshold = true;
         } else if (light_sensor_intake.get_value() > 1850) { // if cube isn't detected
-          // fixes bug if there is no cubes in tray and driver accidentally pressed stack button,
-          // disabling the robot lol
           if (pros::millis() > intakeThresholdTimer) {
-            loader_left.move(0);
-            loader_right.move(0);
-            // exit loop
-            // currentTarget = 0;
-            // currentSpeed = 0;
-            anglerIntakeThreshold = true;
-            // anglerBool = false;
+	    ....
           } else {
             loader_left.move(-70);
             loader_right.move(-70);
