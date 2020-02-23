@@ -566,6 +566,33 @@ int deepVision(int id) {
 
 [View vision sensor code](../master/src/vision.cpp)
 
+#### Driving With Vision Sensor
+> The whole point of designing an algorithm that is able to track cubes is to be able to correct for misaligned cubes during the autonomous period. Within the general purpose drive function, the vision sensor's cube tracking can be used after passing a parameter. 
+
+```cpp
+if (max_error && !vision || max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
+ // drive correction code
+} else if (vision) {
+  if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
+    if (currentCube.x > CENTER_X) {
+      cubeCorrectionDirection = 1;
+     } else {
+       cubeCorrectionDirection = -1;
+    }
+
+    if (fabs(currentCube.x + -CENTER_X) > 80) {
+       cubeCorrection = false;
+       turn_set(40 * cubeCorrectionDirection);
+     } else {
+       cubeCorrection = true;
+     }
+   } else {
+     cubeCorrection = true;
+  }
+}
+```
+> If the vision sensor detects a cube large enough to be tracked then the cube correction takes over, turning off the drive correction. It turns according to the x values of the cube and lines it self up with the cube. Then the drive correction comes back and corrects for the misalignment due to the cube tracking. This assuring the robot never goes off the path. 
+
 ## Intakes 
 > The intakes have two major systems, the autonomous intake system combining the vision and light sensor to intake and the light sensor based outake. 
 
