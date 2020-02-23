@@ -447,7 +447,7 @@ if (switcher == 2) {
 > The light sensor is used in several parts of the code, from the autonomous intake function, which combines the light sensor and vision sensor readings to intake only when a cube is close to the robot, outaking precisely for cube lock using PID loops, and outaking for a precise stack.  
 
 
-### Vision Sensor Cube Tracking
+## Vision Sensor Cube Tracking
 > Vision sensor is used to recognize, track and follow cubes. It uses 3 signatures, one for each cube colour and then uses drive functions to follow the cubes. It allows us to dynamically make adjustments to our autonomous based on field conditions, an example of this would be cubes are setup with a margin of error or for cubes falling unpredictably. This allows for us to maximize the number of cubes we get during the autonomous period.
 
 ```cpp
