@@ -506,7 +506,7 @@ int targetSelection() {
 ``` 
 > This code selects a target cube colour to be the closest cube from the for loop and that cubes's coordinates are used in the motion and tracking part of the code. It also has to meet specfic thresholds to see if the cube is close enough to track for example `DETECTION_THRESHOLD` 
 
-#### Deep Vision Algorithm
+### Deep Vision Algorithm
 ```cpp
 int deepVision(int id) {
   int numObjects = vision_sensor.get_object_count();
@@ -566,7 +566,7 @@ int deepVision(int id) {
 
 [View vision sensor code](../master/src/vision.cpp)
 
-#### Driving With Vision Sensor
+### Driving With Vision Sensor
 > The whole point of designing an algorithm that is able to track cubes is to be able to correct for misaligned cubes during the autonomous period. Within the general purpose drive function, the vision sensor's cube tracking can be used after passing a parameter. 
 
 ```cpp
