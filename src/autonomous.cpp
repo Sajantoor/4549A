@@ -22,6 +22,8 @@ void autonomous() {
   initial_time = pros::millis();
 
   // VISION TESTING
+  loader_right.move(127);
+  loader_left.move(127);
   // autoIntakeFunc(127);
   // position_drive2(0, 0, 0, 20, 0, 70, 0.1, 0, 3000, 50, 40, true);
   // autoIntakeFunc(127);

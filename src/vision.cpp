@@ -148,12 +148,10 @@ int targetSelection() {
 }
 
 void vision_tracking(void*ignore) {
-  // init
-  vision_sensor.set_exposure(150);
   // color signatures from VEX Vision Utility
-  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 2643, 4987, 3814, 5181, 7507, 6344, 2.500, 0);
-  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 4425, 6939, 5682, -2003, -1469, -1736, 3.000, 0);
-  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -5199, -2329, -3764, -3211, -2047, -2628, 2.200, 0);
+  pros::vision_signature_s_t PURPLE_CUBE = pros::Vision::signature_from_utility(PURPLE, 2039, 3121, 2580, 5781, 7533, 6658, 2.500, 0);
+  pros::vision_signature_s_t ORANGE_CUBE = pros::Vision::signature_from_utility(ORANGE, 7153, 9985, 8570, -2527, -2005, -2266, 2.500, 0);
+  pros::vision_signature_s_t GREEN_CUBE = pros::Vision::signature_from_utility(GREEN, -6671, -5117, -5894, -4369, -2823, -3596, 2.500, 0);
 
   // zero point on sensor is the middle
   vision_sensor.set_zero_point(pros::E_VISION_ZERO_CENTER);
@@ -192,6 +190,10 @@ void vision_tracking(void*ignore) {
         clearData(&currentCube);
         cubeColor = 0;
         targetedCube = 0;
+      } else {
+        printf("x: %i \n \n", currentCube.x);
+        printf("size: %i \n \n", currentCube.size);
+        printf("color: %i \n \n", cubeColor);
       }
     }
 

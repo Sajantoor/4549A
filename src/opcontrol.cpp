@@ -19,6 +19,7 @@ void opcontrol() {
 	int power[4];
 	bool intakeUsed = false;
 	bool miniAnglerVal;
+	bool driveBackToggle = false;
 
 	while (true) {
 		float armPosition = arm.get_position();
@@ -66,14 +67,21 @@ void opcontrol() {
 				}
 			}
 		}
+		if (!driveBackToggle) {
+			// sets drive to power
+			drive_left = power[0];
+			drive_left_b = power[1];
+			drive_right = power[2];
+			drive_right_b = power[3];
+		} else {
+			loader_left.move_voltage(-12000);
+			loader_right.move_voltage(-12000);
+			angler_pid(0, true, 127, false, 2000);
+			drive_set(-90);
+		}
 
-		// sets drive to power
-		drive_left = power[0];
-		drive_left_b = power[1];
-		drive_right = power[2];
-		drive_right_b = power[3];
 		// check if intake is used in any task, letting driver use it.
-		if (intakeTaskBool || !anglerIntakeThreshold || autoIntakeBool || sensorOutakeBool) {
+		if (intakeTaskBool || !anglerIntakeThreshold || autoIntakeBool || sensorOutakeBool || driveBackToggle) {
 			intakeUsed = true;
 		} else {
 			intakeUsed = false;
@@ -107,17 +115,7 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
-			if (!miniAnglerVal) {
-				anglerHold = false;
-				pros::delay(20);
-				angler_pid(-2200, true, 127, true);
-			} else if (miniAnglerVal) { // go backward
-				anglerHold = false;
-				pros::delay(20);
-				angler_pid(0, true, 127, false, 2000);
-			}
-			// same button to return
-			miniAnglerVal ? miniAnglerVal = false : miniAnglerVal = true;
+			driveBackToggle ? driveBackToggle = false : driveBackToggle = true;
 		}
 
 		// lift high scoring value

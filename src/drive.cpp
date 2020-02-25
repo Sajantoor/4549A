@@ -104,7 +104,6 @@ void tracking_update(void*ignore) {
 
     if (gyro_threshold < change_in_gyro_odom) {
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
-      printf("using gyro: %f \n \n", radToDeg(new_absolute_orientation));
       // FOR TESTING USE ONLY => FULL GYRO
       // new_absolute_orientation = gyro_radian;
     } else {
@@ -138,8 +137,6 @@ void tracking_update(void*ignore) {
     //updates the position.x and position.y
     position.x += global_offset.x;
     position.y += global_offset.y;
-    printf("gyro value: %f \n \n", gyro_value);
-    printf("odem value: %f \n \n", radToDeg(odem_orientation));
     //updates orienation values and the inches traveled by the tracking wheels
     orientation = new_absolute_orientation; //gives back value in radians
     prev_gyro_radian = gyro_radian;
@@ -719,6 +716,8 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     float cubeCorrectionDirection;
     float vision_power;
     float vision_val;
+    int cubeCorrectionTimer;
+
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
     delta_main_line.y = ending_point_y - starting_point_y;
@@ -765,10 +764,13 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
           } else {
             cubeCorrectionDirection = -1;
           }
-
-          if (fabs(currentCube.x + -CENTER_X) > 80) {
+            printf("center check: %f \n \n", fabs(currentCube.x + -CENTER_X));
+          if (fabs(currentCube.x + -CENTER_X) > 60 && cubeCorrectionTimer < 50) {
             cubeCorrection = false;
             turn_set(40 * cubeCorrectionDirection);
+            cubeCorrectionTimer++;
+          } else if (fabs(currentCube.x + -CENTER_X) > 60) {
+            cubeCorrectionTimer = 0;
           } else {
             cubeCorrection = true;
           }
