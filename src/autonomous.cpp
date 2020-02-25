@@ -26,7 +26,10 @@ void autonomous() {
   // position_drive2(0, 0, 0, 20, 0, 70, 0.1, 0, 3000, 50, 40, true);
   // autoIntakeFunc(127);
   // position_drive2(0, 0, 0, 45, 0, 60, 0.1, 0, 20000, 50, 40, true);
-
+  // pros::delay(4000);
+  // position_turn(90, 1500, 100);
+  // pros::delay(4000);
+  // position_turn(0, 1500, 100);
 // SKILLS -----------------
 loader_right.move(127);
 loader_left.move(127);
@@ -38,19 +41,19 @@ sensor_outtake();
 lift(2500, 20000);
 pros::delay(1500);
 position_turn(-20, 1500, 100);
-position_drive2(0, 45, -7, 55, 0, 127, 0.1, 0, 2500, 50, 40, false);
+position_drive2(0, 45, -5, 55, 0, 127, 0.1, 0, 2500, 30, 40, false);
 loader_right.move(-80);
 loader_left.move(-80);
 pros::delay(1500);
-position_drive2(-6, 55, 0, 53, 0, -127, 0.1, 0, 2000, 50, 40, false);
-position_turn(0, 1000, 90);
+position_drive2(-5, 55, 0, 52, 0, -127, 0.1, 0, 2000, 30, 40, false);
+position_turn(0, 1000, 100);
 loader_right.move(0);
 loader_left.move(0);
 lift(0, 4000);
 pros::delay(1500);
 loader_right.move(127);
 loader_left.move(127);
-position_drive2(0, 48, 0, 117, 0, 70, 0.1, 0, 5000, 50, 40, false);
+position_drive2(0, 52, 0, 117, 0, 70, 0.1, 0, 5000, 30, 40, false);
 pros::delay(3000);
 position_turn(55, 2000, 127);
 loader_left.move(0);
