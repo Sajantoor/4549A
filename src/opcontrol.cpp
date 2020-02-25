@@ -73,7 +73,7 @@ void opcontrol() {
 		drive_right = power[2];
 		drive_right_b = power[3];
 		// check if intake is used in any task, letting driver use it.
-		if (intakeTaskBool || !anglerIntakeThreshold || autoIntakeBool) {
+		if (intakeTaskBool || !anglerIntakeThreshold || autoIntakeBool || sensorOutakeBool) {
 			intakeUsed = true;
 		} else {
 			intakeUsed = false;
@@ -137,8 +137,8 @@ void opcontrol() {
 				lift(LIFT_HIGH, 20000);
 
 				if (!liftBool) {
-					sensor_outtake();
 					liftBool = true;
+					sensor_outtake();
 				}
 			}
 		}

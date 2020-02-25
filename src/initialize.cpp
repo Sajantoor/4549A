@@ -18,8 +18,9 @@ void initialize()  {
 	pros::task_t lift_task_init = pros::c::task_create(lift_task, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "LIFT TASK");
 	pros::task_t angler_task = pros::c::task_create(angler_pid_task, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "ANGLER TASK");
 	pros::task_t intake_task_init = pros::c::task_create(autoIntake, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "INTAKE TASK");
-	pros::task_t intake_task_pid_init = pros::c::task_create(intakePID, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "INTAKE TASK PID");
+	// pros::task_t intake_task_pid_init = pros::c::task_create(intakePID, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "INTAKE TASK PID");
 	pros::task_t vision_task = pros::c::task_create(vision_tracking, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "VISION TRACKING TASK");
+	pros::task_t intake_sensor_task_init = pros::c::task_create(sensor_outtake_task, (void*)NULL, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "INTAKE SENSOR TASK");
 }
 
 void disabled() {}

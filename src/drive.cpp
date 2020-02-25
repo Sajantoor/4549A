@@ -63,7 +63,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(2); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(1); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.40779081;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -103,9 +103,8 @@ void tracking_update(void*ignore) {
     float change_in_angle = new_absolute_orientation - orientation;
 
     if (gyro_threshold < change_in_gyro_odom) {
-      // printf("using gyro \n \n");
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
-
+      printf("using gyro: %f \n \n", radToDeg(new_absolute_orientation));
       // FOR TESTING USE ONLY => FULL GYRO
       // new_absolute_orientation = gyro_radian;
     } else {
@@ -139,9 +138,8 @@ void tracking_update(void*ignore) {
     //updates the position.x and position.y
     position.x += global_offset.x;
     position.y += global_offset.y;
-
-    printf("gyro value: %f \n \n", gyro_radian);
-
+    printf("gyro value: %f \n \n", gyro_value);
+    printf("odem value: %f \n \n", radToDeg(odem_orientation));
     //updates orienation values and the inches traveled by the tracking wheels
     orientation = new_absolute_orientation; //gives back value in radians
     prev_gyro_radian = gyro_radian;
@@ -303,11 +301,11 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(190, 80, 10, 30, 500, max_speed);
+    pid_values turn_pid(118, 80, 10, 30, 500, max_speed);
 
     if(abs((degToRad(target) - orientation)) < degToRad(30)) {
       printf("high kp");
-      turn_pid.Kp = 320;
+      turn_pid.Kp = 200;
       turn_pid.Kd = 90;
       turn_pid.Ki = 0;
     }
@@ -327,6 +325,7 @@ void position_turn(float target, int timeout, int max_speed) {
     do {
       float final_power = pid_calc(&turn_pid, degToRad(target), orientation);
       turn_set(final_power);
+      printf("abs((degToRad(target) - orientation)) %f \n ", radToDeg(abs((degToRad(target) - orientation))));
 
       if (timer_turn == true && !timerCheck) {
         net_timer = pros::millis() + timeout;
@@ -735,8 +734,8 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
       positionErr.x = position.x - ending_point_x;
       positionErr.y = position.y - ending_point_y;
-      printf("positionErr.x %f \n \n", positionErr.x);
-      printf("positionErr.y %f \n \n", positionErr.y);
+      // printf("positionErr.x %f \n \n", positionErr.x);
+      // printf("positionErr.y %f \n \n", positionErr.y);
       vectorToPolar(positionErr, positionErrPolar);
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
@@ -748,9 +747,9 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       polarToVector(look_ahead_point_polar, look_ahead_point);
       look_ahead_point.x += ending_point_x;
       look_ahead_point.y += ending_point_y;
-      printf("ending_point_y %f \n \n", ending_point_y);
-      printf("ending_point_x %f \n \n", ending_point_x);
-      printf("angle_main_line %f \n \n", angle_main_line);
+      // printf("ending_point_y %f \n \n", ending_point_y);
+      // printf("ending_point_x %f \n \n", ending_point_x);
+      // printf("angle_main_line %f \n \n", angle_main_line);
 
       if (max_error && !vision || max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
   			err_angle = orientation - line_angle;
@@ -758,7 +757,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 7 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
           if (currentCube.x > CENTER_X) {

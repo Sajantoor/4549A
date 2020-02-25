@@ -5,12 +5,41 @@
 #include "pid.h"
 #include "vision.h"
 
+bool sensorOutakeBool;
+int sensorTimer = 0;
+
+void sensor_outtake_task(void*ignore) {
+  bool sensorTimeout;
+
+  while (true) {
+    while (sensorOutakeBool) {
+      double sensorValue = light_sensor_intake.get_value();
+      sensorTimer++;
+      printf("timer value %i: \n \n", sensorTimer);
+      if (sensorValue > 1850 && !sensorTimeout) {
+        loader_left.move(-127);
+        loader_right.move(-127);
+      } else  {
+        loader_left.move(0);
+        loader_right.move(0);
+        sensorOutakeBool = false;
+      }
+
+      if (sensorTimer > 25) {
+        sensorTimeout = true;
+      } else {
+        sensorTimeout = false;
+      }
+
+      pros::delay(20);
+    }
+    pros::delay(20);
+  }
+}
 // outtaking using the light sensor
 void sensor_outtake() {
-  double sensorValue = light_sensor_intake.get_value();
-  if (sensorValue > 1850) {
-    intakePIDFunc(-700, 127);
-	}
+  sensorTimer = 0;
+  sensorOutakeBool = true;
 }
 // globals for intake pid
 bool intakeTaskBool = false;
@@ -26,7 +55,6 @@ void intakePIDFunc(float target, float speed) {
 }
 
 // intake motor move relative pid
-// ENHANCE: Didn't have time to tune PID but make PID loop (if need be)
 void intakePID(void*ignore) {
   while(true) {
     while (intakeTaskBool) {
