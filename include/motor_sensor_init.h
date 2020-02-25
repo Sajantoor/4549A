@@ -7,11 +7,11 @@
 #define DRIVE_RIGHT 6
 #define DRIVE_RIGHT_B 4
 
-#define LOADER_RIGHT 18
-#define LOADER_LEFT 12
+#define LOADER_RIGHT 16
+#define LOADER_LEFT 13
 #define ANGLER 10
 #define ARM 5
-#define VISION_PORT 15
+#define VISION_PORT 17
 
 extern pros::Motor drive_left;
 extern pros::Motor drive_left_b;

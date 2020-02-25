@@ -18,12 +18,10 @@ void opcontrol() {
 	int stickArray[4];
 	int power[4];
 	bool intakeUsed = false;
-	bool miniLift = false;
-	float miniLiftTimer;
+	bool miniAnglerVal;
 
 	while (true) {
 		float armPosition = arm.get_position();
-
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 			stickArray[0] = 127;
 			stickArray[2] = 127;
@@ -98,7 +96,7 @@ void opcontrol() {
 			if (!anglerVal) {
 				anglerHold = false;
 				pros::delay(20);
-				angler_pid(-4500, true, 127, true);
+				angler_pid(-4500, true, 127, false);
 			} else if (anglerVal) { // go backward
 				anglerHold = false;
 				pros::delay(20);
@@ -108,17 +106,18 @@ void opcontrol() {
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) || miniLift) {
-			if (!miniLift) {
-				lift(700, 1000);
-				miniLift = true;
-			} else if (miniLiftTimer > 25) { // 500 milis / delay (20 millis)
-				lift(0, 500);
-				miniLiftTimer = 0;
-				miniLift = false;
-			} else if (miniLift) {
-				miniLiftTimer++;
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+			if (!miniAnglerVal) {
+				anglerHold = false;
+				pros::delay(20);
+				angler_pid(-2200, true, 127, true);
+			} else if (miniAnglerVal) { // go backward
+				anglerHold = false;
+				pros::delay(20);
+				angler_pid(0, true, 127, false, 2000);
 			}
+			// same button to return
+			miniAnglerVal ? miniAnglerVal = false : miniAnglerVal = true;
 		}
 
 		// lift high scoring value
@@ -174,7 +173,9 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-			autoIntakeFunc(127);
+			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
+				lift(LIFT_HIGH, 20000);
+			}
 		}
 
 		pros::delay(20);

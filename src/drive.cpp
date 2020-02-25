@@ -63,7 +63,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(2000000000); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(2); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.40779081;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 2.5;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -102,7 +102,7 @@ void tracking_update(void*ignore) {
     //Returns how much it has rotated from its previous point in radians
     float change_in_angle = new_absolute_orientation - orientation;
 
-    if (gyro_threshold < change_in_gyro_odom && !gyroNotTuned) {
+    if (gyro_threshold < change_in_gyro_odom) {
       // printf("using gyro \n \n");
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
 
@@ -139,6 +139,8 @@ void tracking_update(void*ignore) {
     //updates the position.x and position.y
     position.x += global_offset.x;
     position.y += global_offset.y;
+
+    printf("gyro value: %f \n \n", gyro_radian);
 
     //updates orienation values and the inches traveled by the tracking wheels
     orientation = new_absolute_orientation; //gives back value in radians
@@ -756,7 +758,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 7 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
           if (currentCube.x > CENTER_X) {

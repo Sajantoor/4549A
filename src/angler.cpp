@@ -67,7 +67,7 @@ void angler_pid_task(void*ignore) {
         intakeThresholdTimer = pros::millis() + 1000;
       }
 
-      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL)) {
+      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL) || (currentTarget == -2200)) {
         // angler stack code
         anglerIntakeThreshold = true;
         if (anglerDelay && (pros::millis() > timeout)) {
@@ -80,24 +80,24 @@ void angler_pid_task(void*ignore) {
         }
 
         // 8 stack torque is faster than 7 stack
-        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1400)) {
-          if (angler_pid.max_power < currentSpeed * 0.5) {
-            angler_pid.max_power = currentSpeed * 0.5;
+        if (maxTorque > EIGHT_STACK_TORQUE && (fabs(angler_pid.error) < 1700)) {
+          if (angler_pid.max_power < currentSpeed * 0.55) {
+            angler_pid.max_power = currentSpeed * 0.55;
           } else {
             angler_pid.max_power = angler_pid.max_power - 15;
           }
         // 7 stack torque is slower
-        } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 1200)) {
-          if (angler_pid.max_power < currentSpeed * 0.4) {
-            angler_pid.max_power = currentSpeed * 0.4;
+        } else if (maxTorque > SEVEN_STACK_TORQUE && (fabs(angler_pid.error) < 1500)) {
+          if (angler_pid.max_power < currentSpeed * 0.55) {
+            angler_pid.max_power = currentSpeed * 0.55;
           } else {
             angler_pid.max_power = angler_pid.max_power - 25;
           }
         // slow down for all cubes
         } else {
-          if (fabs(angler_pid.error) < 1000) {
-            if (angler_pid.max_power < currentSpeed * 0.5) {
-              angler_pid.max_power = currentSpeed * 0.5;
+          if (fabs(angler_pid.error) < 1300 && !(currentTarget == -2200)) {
+            if (angler_pid.max_power < currentSpeed * 0.55) {
+              angler_pid.max_power = currentSpeed * 0.55;
             } else {
               angler_pid.max_power = angler_pid.max_power - 15;
             }
