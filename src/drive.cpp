@@ -63,9 +63,9 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(200000); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(0); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.40779081;//1.59437 // TUNE VALUE
-  const float distance_between_backwheel_center = 2.5;//4.913425
+  const float distance_between_backwheel_center = 3.0;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
   const float gyro_error = -3115.185059;
   bool gyroNotTuned = false;
@@ -103,9 +103,9 @@ void tracking_update(void*ignore) {
     float change_in_angle = new_absolute_orientation - orientation;
 
     if (gyro_threshold < change_in_gyro_odom) {
-      new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
+      // new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
       // FOR TESTING USE ONLY => FULL GYRO
-      // new_absolute_orientation = gyro_radian;
+      new_absolute_orientation = gyro_radian;
     } else {
       // odem only
        // printf("odem \n \n");
@@ -144,6 +144,9 @@ void tracking_update(void*ignore) {
     prev_inches_traveled_left = inches_traveled_left;
     prev_inches_traveled_right = inches_traveled_right;
     prev_inches_traveled_back = inches_traveled_back;
+    printf("orientation %f \n", radToDeg(orientation));
+    printf("position.x %f \n", position.x);
+    printf("position.y %f \n", position.y);
     pros::delay(10);
   }
 }
@@ -717,6 +720,10 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     float vision_power;
     float vision_val;
     int cubeCorrectionTimer;
+    float correctionVal = 7.5;
+    if(fabs(max_speed) < 70){
+      correctionVal = 11;
+    }
 
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
@@ -733,14 +740,11 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
       positionErr.x = position.x - ending_point_x;
       positionErr.y = position.y - ending_point_y;
-      // printf("positionErr.x %f \n \n", positionErr.x);
-      // printf("positionErr.y %f \n \n", positionErr.y);
       vectorToPolar(positionErr, positionErrPolar);
       positionErrPolar.theta += angle_main_line;
       polarToVector(positionErrPolar, positionErr);
 
       look_ahead_point.y = positionErr.y + look_ahead_distance;
-      // look_ahead_point.x = positionErr.x + look_ahead_distance;
       vectorToPolar(look_ahead_point, look_ahead_point_polar);
       look_ahead_point_polar.theta -= angle_main_line;
       polarToVector(look_ahead_point_polar, look_ahead_point);
@@ -750,13 +754,14 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
       // printf("ending_point_x %f \n \n", ending_point_x);
       // printf("angle_main_line %f \n \n", angle_main_line);
 
-      if (max_error && !vision || max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
+      if ((max_error && !vision) || (max_error && currentCube.size < CUBE_SIZE_THRESHOLD_MIN)) {
   			err_angle = orientation - line_angle;
   			err_x = positionErr.x + positionErr.y * tan(err_angle);
   			correctA = atan2(look_ahead_point.x - position.x, look_ahead_point.y - position.y);
   			if (max_speed < 0)
   				correctA += pi;
-  			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+          // printf("correcting \n");
+  			correction = fabs(err_x) > max_error ? 7 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
           if (currentCube.x > CENTER_X) {
@@ -779,7 +784,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
         }
       }
 
-      finalpower = round(-127.0 / 12 * positionErr.y) * sgn(max_speed); //17
+      finalpower = round(-127.0 / 15 * positionErr.y) * sgn(max_speed); //17
 
       limit_to_val_set(finalpower, abs(max_speed));
 			if (finalpower * sgn(max_speed) < 15) //30
@@ -787,6 +792,9 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 8);
 			finalpower = last += delta;
+      printf("orientation %f \n", orientation);
+      printf("position.x %f \n", position.x);
+      printf("position.y %f \n", position.y);
 
       if (!vision || cubeCorrection || currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
         switch (sgn(correction)) {

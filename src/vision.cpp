@@ -191,9 +191,9 @@ void vision_tracking(void*ignore) {
         cubeColor = 0;
         targetedCube = 0;
       } else {
-        printf("x: %i \n \n", currentCube.x);
-        printf("size: %i \n \n", currentCube.size);
-        printf("color: %i \n \n", cubeColor);
+        // printf("x: %i \n \n", currentCube.x);
+        // printf("size: %i \n \n", currentCube.size);
+        // printf("color: %i \n \n", cubeColor);
       }
     }
 
