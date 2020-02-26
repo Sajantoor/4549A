@@ -144,9 +144,6 @@ void tracking_update(void*ignore) {
     prev_inches_traveled_left = inches_traveled_left;
     prev_inches_traveled_right = inches_traveled_right;
     prev_inches_traveled_back = inches_traveled_back;
-    printf("orientation %f \n", radToDeg(orientation));
-    printf("position.x %f \n", position.x);
-    printf("position.y %f \n", position.y);
     pros::delay(10);
   }
 }
@@ -720,6 +717,9 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     float vision_power;
     float vision_val;
     int cubeCorrectionTimer;
+    int cubeChangeDirectionCount;
+    int lastDirection;
+
     float correctionVal = 7.5;
     if(fabs(max_speed) < 70){
       correctionVal = 11;
@@ -769,17 +769,34 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
           } else {
             cubeCorrectionDirection = -1;
           }
-            printf("center check: %f \n \n", fabs(currentCube.x + -CENTER_X));
-          if (fabs(currentCube.x + -CENTER_X) > 60 && cubeCorrectionTimer < 50) {
+
+          if (cubeCorrectionDirection != lastDirection) {
+            cubeChangeDirectionCount++;
+          }
+
+          lastDirection = cubeCorrectionDirection;
+          printf("change direction count! %i \n \n", cubeChangeDirectionCount);
+
+
+          if (fabs(currentCube.x + -CENTER_X) > 50 && (cubeCorrectionTimer < 10) && (cubeChangeDirectionCount <= 4)) {
             cubeCorrection = false;
-            turn_set(40 * cubeCorrectionDirection);
+            turn_set(30 * cubeCorrectionDirection);
             cubeCorrectionTimer++;
-          } else if (fabs(currentCube.x + -CENTER_X) > 60) {
+            printf("cube correction! %i \n \n", cubeCorrectionTimer);
+          } else if (fabs(currentCube.x + -CENTER_X) > 50 && (cubeCorrectionTimer > 10)) {
             cubeCorrectionTimer = 0;
-          } else {
+            cubeChangeDirectionCount = 0;
             cubeCorrection = true;
+            printf("timeout cube! \n \n");
+          } else {
+            printf("got corrected bro \n \n");
+            cubeCorrection = true;
+            cubeCorrectionTimer = 0;
+            cubeChangeDirectionCount = 0;
           }
         } else {
+          cubeCorrectionTimer = 0;
+          cubeChangeDirectionCount = 0;
           cubeCorrection = true;
         }
       }
@@ -792,9 +809,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 			int delta = finalpower - last;
 			limit_to_val_set(delta, 8);
 			finalpower = last += delta;
-      printf("orientation %f \n", orientation);
-      printf("position.x %f \n", position.x);
-      printf("position.y %f \n", position.y);
 
       if (!vision || cubeCorrection || currentCube.size < CUBE_SIZE_THRESHOLD_MIN) {
         switch (sgn(correction)) {

@@ -67,11 +67,16 @@ void angler_pid_task(void*ignore) {
         intakeThresholdTimer = pros::millis() + 1000;
       }
 
-      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL) || (currentTarget == -2200)) {
+      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL)) {
         // angler stack code
         anglerIntakeThreshold = true;
         if (anglerDelay && (pros::millis() > timeout)) {
           delayReached = true;
+        }
+
+        if ((maxTorque > TEN_STACK_TORQUE) && torqueCheck) {
+          currentTarget = currentTarget - 1000;
+          torqueCheck = false;
         }
 
         // max torque value is used to calculate how many cubes are in the angler
@@ -95,7 +100,7 @@ void angler_pid_task(void*ignore) {
           }
         // slow down for all cubes
         } else {
-          if (fabs(angler_pid.error) < 1300 && !(currentTarget == -2200)) {
+          if (fabs(angler_pid.error) < 1300) {
             if (angler_pid.max_power < currentSpeed * 0.55) {
               angler_pid.max_power = currentSpeed * 0.55;
             } else {

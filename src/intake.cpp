@@ -7,10 +7,9 @@
 
 bool sensorOutakeBool;
 int sensorTimer = 0;
+bool sensorTimeout;
 
 void sensor_outtake_task(void*ignore) {
-  bool sensorTimeout;
-
   while (true) {
     while (sensorOutakeBool) {
       double sensorValue = light_sensor_intake.get_value();
@@ -19,9 +18,11 @@ void sensor_outtake_task(void*ignore) {
       if (sensorValue > 1850 && !sensorTimeout) {
         loader_left.move(-127);
         loader_right.move(-127);
-      } else  {
+        printf("intake loop \n \n");
+      } else {
         loader_left.move(0);
         loader_right.move(0);
+        printf("exit the loop \n \n");
         sensorOutakeBool = false;
       }
 
@@ -39,6 +40,7 @@ void sensor_outtake_task(void*ignore) {
 // outtaking using the light sensor
 void sensor_outtake() {
   sensorTimer = 0;
+  sensorTimeout = false;
   sensorOutakeBool = true;
 }
 // globals for intake pid

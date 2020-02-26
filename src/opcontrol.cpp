@@ -119,17 +119,6 @@ void opcontrol() {
 		}
 
 		// lift high scoring value
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
-				lift(LIFT_LOW, 20000);
-
-				if (!liftBool) {
-					liftBool = true;
-					sensor_outtake();
-				}
-			}
-		}
-		// lift low scoring value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
 			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
 				lift(LIFT_HIGH, 20000);
@@ -143,8 +132,8 @@ void opcontrol() {
 
 		// lift descore value
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-			if (!(LIFT_DESCORE + 100 > armPosition && armPosition > LIFT_DESCORE - 100)) {
-				lift(LIFT_DESCORE, 20000);
+			if (!(LIFT_LOW + 100 > armPosition && armPosition > LIFT_LOW - 100)) {
+				lift(LIFT_LOW, 20000);
 
 				if (!liftBool) {
 					liftBool = true;
@@ -152,13 +141,13 @@ void opcontrol() {
 				}
 			}
 		}
-		// reset everything incase something goes wrong
+		// drop lift
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
 			lift(0, 1000);
 			liftBool = false;
 		}
 
-		// drop lift
+		// reset stuff
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
 			angler.move(80);
 			angler.tare_position();
