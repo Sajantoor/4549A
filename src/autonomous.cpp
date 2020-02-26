@@ -48,26 +48,23 @@ void autonomous() {
   // drive_line_up(50, 2000);
 
 
-  // FRONT AUTO: SEAQUAM EDITION
+//FRONT AUTO: SEAQUAM EDITION
   loader_left.move(127);
   loader_right.move(127);
-  position_drive2(0, 0, 0, 17, 0, 90, 0.1, 0, 2000, 50, 40, false);
-  position_turn(90, 2000, 127);
-  position_drive2(0, 17, 25, 17, 0, 90, 0.1, 0, 2000, 50, 40, false);
-  position_drive2(25, 17, 17, 15, 0, -90, 0.1, 0, 2000, 50, 40, false);
-  position_turn(115, 2000, 127);
-  position_drive2(17, 15, 35, 12, 0, 90, 0.1, 0, 2000, 50, 40, false);
-  position_drive2(32, 12, -3, 10, 0, -90, 0.1, 0, 2000, 50, 40, false);
-  position_turn(246, 2000, 127);
+  position_drive2(0, 0, 0, 17, 0, 90, 0.1, 0, 1100, 50, 40, false);
+  position_turn(90, 900 , 127);
+  position_drive2(0, 17, 25, 17, 0, 90, 0.1, 0, 1500, 50, 90, false);
+  position_drive2(25, 17, 17, 17, 0, -127, 0.1, 0, 1500, 50, 40, false);
+  position_turn(120, 1700, 127);
+  position_drive2(17, 17, 35, 12, 0, 90, 0.1, 0, 1500, 50, 90, false);
+  position_drive2(32, 12, -3, 10, 0, -100, 0.1, 0, 1500, 50, 40, false);
+  position_turn(250, 2000, 127);
   drive_line_up(50, 500);
   angler_pid(-4500, true, 127, false);
   pros::delay(3000);
-  drive_line_up(-127, 1200);
+  drive_line_up(-127, 600);
 
 // SKILLS -----------------
-// loader_right.move(127);
-// loader_left.move(127);
-// position_drive2(0, 0, 0, 45, 0, 40, 0.05, 0, 20000, 30, 40, false);
 // pros::delay(1000);
 // sensor_outtake();
 // lift(2500, 20000);
