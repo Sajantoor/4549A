@@ -177,7 +177,7 @@ void autonomous() {
   // pros::delay(2000);
   // drive_line_up(-100, 700);
 
-//RED FRONT AUTO, 5 POINTS FROM TOWER
+//RED FRONT AUTO
   if (switcher == 1) {
     initial_time = pros::millis();
     lift(2100, 20000);
@@ -193,8 +193,8 @@ void autonomous() {
     // position_turn(110, 1700, 127);
     // position_drive2(20, 20, 35, 12, 0, 90, 0.1, 0, 1500, 50, 90, false);
     position_drive2(25, 20, 0, 1, 0, -100, 0.1, 0, 1500, 50, 40, false);
-    position_turn(-135, 2000, 127);
-    drive_line_up(60, 700);
+    position_turn(-130, 2000, 127);
+    drive_line_up(60, 600);
     autoIntakeFunc(0);
     angler_pid(-4500, true, 127, false);
     pros::delay(3000);

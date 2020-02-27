@@ -74,11 +74,6 @@ void angler_pid_task(void*ignore) {
           delayReached = true;
         }
 
-        if ((maxTorque > TEN_STACK_TORQUE) && torqueCheck) {
-          currentTarget = currentTarget - 1000;
-          torqueCheck = false;
-        }
-
         // max torque value is used to calculate how many cubes are in the angler
         if (pros::c::motor_get_torque(ANGLER) > maxTorque) {
           maxTorque = pros::c::motor_get_torque(ANGLER);
