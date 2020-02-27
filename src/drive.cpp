@@ -298,7 +298,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(118, 80, 10, 30, 500, max_speed);
+    pid_values turn_pid(125, 80, 10, 30, 500, max_speed);
 
     if(abs((degToRad(target) - orientation)) < degToRad(30)) {
       printf("high kp");
@@ -718,10 +718,10 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     int cubeChangeDirectionCount;
     int lastDirection;
 
-    float correctionVal = 7.5;
-    if(fabs(max_speed) < 70){
-      correctionVal = 11;
-    }
+    // float correctionVal = 7.5;
+    // if(fabs(max_speed) < 70){
+    //   correctionVal = 11;
+    // }
 
     printf("Moving to %f %f from %f %f at %f \n", ending_point_x, ending_point_y, starting_point_x, starting_point_y, max_speed);
     delta_main_line.x = ending_point_x - starting_point_x;
@@ -759,7 +759,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			if (max_speed < 0)
   				correctA += pi;
           // printf("correcting \n");
-  			correction = fabs(err_x) > max_error ? 7 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 8.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
           if (currentCube.x > CENTER_X) {
