@@ -60,6 +60,7 @@ void lift_task(void*ignore) {
          arm.move(0);
          liftBool = false;
        }
+       pros::delay(20);
      }
      pros::delay(20);
   }
