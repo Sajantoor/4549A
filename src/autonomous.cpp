@@ -19,7 +19,46 @@ void autonomous() {
   float initial_time;
   gyro.reset();
 
-  initial_time = pros::millis();
+  // SEAQUM BEFORE SHITTYIFED AUTO
+  // lift(1950, 20000);
+  // pros::delay(1000);
+  // lift(0, 1000);
+  // pros::delay(1000);
+  // autoIntakeFunc(127);
+  // position_drive2(0, 0, 0, 20, 0, 90, 0.1, 0, 1100, 50, 40, false);
+  // position_turn(90, 900 , 127);
+  // position_drive2(0, 20, 25, 20, 0, 90, 0.1, 0, 1500, 50, 90, false);
+  // position_drive2(25, 20, 20, 20, 0, -127, 0.1, 0, 1500, 50, 40, false);
+  // position_turn(110, 1700, 127);
+  // position_drive2(20, 20, 35, 12, 0, 90, 0.1, 0, 1500, 50, 90, false);
+  // position_drive2(32, 12, -3, 5, 0, -100, 0.1, 0, 1500, 50, 40, false);
+  // position_turn(250, 2000, 127);
+  // drive_line_up(60, 800);
+  // autoIntakeFunc(0);
+  // angler_pid(-4500, true, 127, false);
+  // pros::delay(3000);
+  // drive_line_up(-127, 600);
+
+  // initial_time = pros::millis();
+  // lift(2100, 20000);
+  // pros::delay(1000);
+  // lift(0, 1000);
+  // pros::delay(1000);
+  // loader_right.move(127);
+  // loader_left.move(127);
+  // position_drive2(0, 0, 0, 22, 0, 90, 0.1, 0, 1100, 50, 40, false);
+  // position_turn(95, 900 , 127);
+  // position_drive2(0, 20, 25, 20, 0, 90, 0.1, 0, 1500, 50, 90, false);
+  // position_drive2(25, 20, 20, 20, 0, -127, 0.1, 0, 1500, 50, 40, false);
+  // // position_turn(110, 1700, 127);
+  // // position_drive2(20, 20, 35, 12, 0, 90, 0.1, 0, 1500, 50, 90, false);
+  // position_drive2(25, 20, 0, 3, 0, -100, 0.1, 0, 1500, 50, 40, false);
+  // position_turn(-120, 2000, 127);
+  // drive_line_up(60, 700);
+  // autoIntakeFunc(0);
+  // angler_pid(-4500, true, 127, false);
+  // pros::delay(3000);
+  // drive_line_up(-127, 600);
 
   // FRONT AUTO: TOWER EDITION: DONE
   // loader_left.move(127);
@@ -49,20 +88,7 @@ void autonomous() {
 
 
 //FRONT AUTO: SEAQUAM EDITION
-  loader_left.move(127);
-  loader_right.move(127);
-  position_drive2(0, 0, 0, 17, 0, 90, 0.1, 0, 1100, 50, 40, false);
-  position_turn(90, 900 , 127);
-  position_drive2(0, 17, 25, 17, 0, 90, 0.1, 0, 1500, 50, 90, false);
-  position_drive2(25, 17, 17, 17, 0, -127, 0.1, 0, 1500, 50, 40, false);
-  position_turn(120, 1700, 127);
-  position_drive2(17, 17, 35, 12, 0, 90, 0.1, 0, 1500, 50, 90, false);
-  position_drive2(32, 12, -3, 10, 0, -100, 0.1, 0, 1500, 50, 40, false);
-  position_turn(250, 2000, 127);
-  drive_line_up(50, 500);
-  angler_pid(-4500, true, 127, false);
-  pros::delay(3000);
-  drive_line_up(-127, 600);
+
 
 // SKILLS -----------------
 // pros::delay(1000);
@@ -151,56 +177,31 @@ void autonomous() {
   // pros::delay(2000);
   // drive_line_up(-100, 700);
 
-  // // FRONT AUTO SAJAN
-  // loader_right.move(127);
-  // loader_left.move(127);
-  // position_drive2(0, 0, 0, 10, 0, 90, 0.1, 0, 3000, 50,40);
-  // pros::delay(1000);
-  // loader_right.move(-60);
-  // loader_left.move(-60);
-  // pros::delay(500);
-  // loader_right.move(0);
-  // loader_left.move(0);
-  // lift(2500, 20000);
-  // position_drive2(0, 10, 0, 28, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
-  // loader_left.move(-80);
-  // loader_right.move(-80);
-  // pros::delay(1000);
-  // loader_right.move(127);
-  // loader_left.move(127);
-  // position_drive2(0, 10, 0, 30, 0, 60, 0.1, 0, 3000, 50,40);// pick up cubes
-  // lift(0, 2000);
-
-
-//RED FRONT AUTO
-  if(switcher == 1){
+//RED FRONT AUTO, 5 POINTS FROM TOWER
+  if (switcher == 1) {
     initial_time = pros::millis();
-    lift(1950, 20000);
+    lift(2100, 20000);
     pros::delay(1000);
-    lift(0, 0);
+    lift(0, 1000);
     pros::delay(1000);
-    position_drive(0,15,0,false,127,1100, 0, 127, 10);//pick up first set of cubes
-    position_turn(90,400,100);
-    position_drive(8,15,90,false,70,1300,80,80,5);//pick up first set of cubes
-    position_turn(35,600,100);
-    // angler_pid(1100, 20000);
-    position_drive(28,38,35,false,80,2500, 0, 100, 20);//pick up first set of cubes
-    // angler_pid(870, 500, 127, false);
-    position_drive(0,40,-90,false,100,3500, 0, 100, 25);//pick up first set of cubes
-    //angler_pid(1000, 3000);
-    angler_pid(2500, true, 100, false, 2000);
-    pros::delay(1000);
-    position_drive(-22,3,-150,false,127,2500, 0, 100, 26);//pick up first set of cubes
-    loader_left.move(0);
-    loader_right.move(0);
-    angler_pid(1189, true, 127, true);
-    pros::delay(2300);
-    position_drive(-16,14,-150,false,127,3800);//pick up first set of cube
-    timerAuto = pros::millis() - initial_time;
-    controller.print(0, 0, "Timer Auto: %f", timerAuto);
+    loader_right.move(127);
+    loader_left.move(127);
+    position_drive2(0, 0, 0, 22, 0, 90, 0.1, 0, 1100, 50, 40, false);
+    position_turn(95, 900 , 127);
+    position_drive2(0, 20, 25, 20, 0, 90, 0.1, 0, 1500, 50, 90, false);
+    position_drive2(25, 20, 20, 20, 0, -127, 0.1, 0, 1500, 50, 40, false);
+    // position_turn(110, 1700, 127);
+    // position_drive2(20, 20, 35, 12, 0, 90, 0.1, 0, 1500, 50, 90, false);
+    position_drive2(25, 20, 0, 1, 0, -100, 0.1, 0, 1500, 50, 40, false);
+    position_turn(-135, 2000, 127);
+    drive_line_up(60, 700);
+    autoIntakeFunc(0);
+    angler_pid(-4500, true, 127, false);
+    pros::delay(3000);
+    drive_line_up(-127, 600);
   }
 
-//RED BACK AUTO
+  //RED BACK AUTO
   if(switcher == 2){
     initial_time = pros::millis();
     pros::delay(2000);
@@ -294,29 +295,25 @@ void autonomous() {
   //BLUE FRONT AUTO
   if(switcher == 5){
     initial_time = pros::millis();
-    lift(1950, 20000);
+    lift(2100, 20000);
     pros::delay(1000);
-    lift(0, 0);
-    pros::delay(600);
-    position_drive(0,15,0,false,127,1100, 0, 127, 10);//pick up first set of cubes
-    position_turn(-45,400,100);
-    // position_drive(-7,15,-90,false,60,1300,80,80,5);//pick up first set of cubes
-    // position_turn(-40,600,100);
-    // angler_pid(1100, 20000);
-    position_drive(-30,40,-45,false,80,2500, 0, 100, 20);//pick up first set of cubes
-    // angler_pid(870, 500, 127, false);
-    position_drive(0,40,90,false,100,3000, 0, 110, 25);//pick up first set of cubes
-    //angler_pid(1000, 3000);
-    angler_pid(2500, true, 100, false, 2000);
+    lift(0, 1000);
     pros::delay(1000);
-    position_drive(21,0,150,false,127,3000, 0, 100, 26);//pick up first set of cubes
-    loader_left.move(0);
-    loader_right.move(0);
-    angler_pid(1189, true, 127, true);
-    pros::delay(2300);
-    position_drive(16,14,-150,false,127,3800);//pick up first set of cube
-    timerAuto = pros::millis() - initial_time;
-    controller.print(0, 0, "Timer Auto: %f", timerAuto);
+    loader_right.move(127);
+    loader_left.move(127);
+    position_drive2(0, 0, 0, 22, 0, 90, 0.1, 0, 1100, 50, 40, false);
+    position_turn(-95, 900 , 127);
+    position_drive2(0, 22, -25, 22, 0, 90, 0.1, 0, 1500, 50, 90, false);
+    position_drive2(-25, 20, -20, 20, 0, -127, 0.1, 0, 1500, 50, 40, false);
+    // position_turn(110, 1700, 127);
+    // position_drive2(20, 20, 35, 12, 0, 90, 0.1, 0, 1500, 50, 90, false);
+    position_drive2(-25, 20, 0, -3, 0, -100, 0.1, 0, 1500, 50, 40, false);
+    position_turn(120, 2000, 127);
+    drive_line_up(60, 700);
+    autoIntakeFunc(0);
+    angler_pid(-4500, true, 127, false);
+    pros::delay(3000);
+    drive_line_up(-127, 600);
   }
 
   //BLUE BACK AUTO

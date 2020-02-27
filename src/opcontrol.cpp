@@ -8,18 +8,17 @@
 #include "intake.h"
 
 const int LIFT_HIGH = 2500;
-const int LIFT_LOW = 1950;
+const int LIFT_LOW = 1800;
 const int LIFT_DESCORE = 1700;
 
 void opcontrol() {
 	// global variables
+	int stickArray[4]; // temporary power until limited
+	int power[4]; // power to the array
+	bool intakeUsed = false;
+	bool driveBackToggle = false;
 	bool anglerVal = false; // manage angler's states on one button
 	bool liftBool = false; // used to check first lift
-	int stickArray[4];
-	int power[4];
-	bool intakeUsed = false;
-	bool miniAnglerVal;
-	bool driveBackToggle = false;
 
 	while (true) {
 		float armPosition = arm.get_position();
@@ -67,6 +66,7 @@ void opcontrol() {
 				}
 			}
 		}
+		// enabling the drive back stack toggle
 		if (!driveBackToggle) {
 			// sets drive to power
 			drive_left = power[0];
@@ -74,10 +74,13 @@ void opcontrol() {
 			drive_right = power[2];
 			drive_right_b = power[3];
 		} else {
+			std::uint32_t now = pros::millis();
 			loader_left.move_voltage(-12000);
 			loader_right.move_voltage(-12000);
 			angler_pid(0, true, 127, false, 2000);
 			drive_set(-90);
+			pros::Task::delay_until(&now, 1000);
+			driveBackToggle = false;
 		}
 
 		// check if intake is used in any task, letting driver use it.
@@ -114,6 +117,7 @@ void opcontrol() {
 			anglerVal ? anglerVal = false : anglerVal = true;
 		}
 
+		// toggle to drive back
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
 			driveBackToggle ? driveBackToggle = false : driveBackToggle = true;
 		}
@@ -141,6 +145,7 @@ void opcontrol() {
 				}
 			}
 		}
+
 		// drop lift
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
 			lift(0, 1000);
@@ -157,12 +162,6 @@ void opcontrol() {
 			anglerIntakeThreshold = true;
 		} else if (!anglerBool) {
 			angler.move(0);
-		}
-
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-			if (!(LIFT_HIGH + 100 > armPosition && armPosition > LIFT_HIGH - 100)) {
-				lift(LIFT_HIGH, 20000);
-			}
 		}
 
 		pros::delay(20);

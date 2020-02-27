@@ -63,7 +63,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(0); // threshold to switch to gyro, incase of systematic error with odometry
+  const float gyro_threshold = degToRad(1); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.40779081;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 3.0;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -103,9 +103,9 @@ void tracking_update(void*ignore) {
     float change_in_angle = new_absolute_orientation - orientation;
 
     if (gyro_threshold < change_in_gyro_odom) {
-      // new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
+      new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
       // FOR TESTING USE ONLY => FULL GYRO
-      new_absolute_orientation = gyro_radian;
+      // new_absolute_orientation = gyro_radian;
     } else {
       // odem only
        // printf("odem \n \n");
@@ -714,8 +714,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
     float velocity_line;
     bool cubeCorrection = false;
     float cubeCorrectionDirection;
-    float vision_power;
-    float vision_val;
     int cubeCorrectionTimer;
     int cubeChangeDirectionCount;
     int lastDirection;
@@ -776,7 +774,6 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
           lastDirection = cubeCorrectionDirection;
           printf("change direction count! %i \n \n", cubeChangeDirectionCount);
-
 
           if (fabs(currentCube.x + -CENTER_X) > 50 && (cubeCorrectionTimer < 10) && (cubeChangeDirectionCount <= 4)) {
             cubeCorrection = false;

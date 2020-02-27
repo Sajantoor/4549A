@@ -8,24 +8,24 @@
 bool sensorOutakeBool;
 int sensorTimer = 0;
 bool sensorTimeout;
-
+// outakes to the light sensor making sure the cube is in the intakes
 void sensor_outtake_task(void*ignore) {
   while (true) {
     while (sensorOutakeBool) {
       double sensorValue = light_sensor_intake.get_value();
       sensorTimer++;
-      printf("timer value %i: \n \n", sensorTimer);
+
       if (sensorValue > 1850 && !sensorTimeout) {
+        // outtakes to the sensor value
         loader_left.move(-127);
         loader_right.move(-127);
-        printf("intake loop \n \n");
       } else {
+        // stop the intakes and exit loop
         loader_left.move(0);
         loader_right.move(0);
-        printf("exit the loop \n \n");
         sensorOutakeBool = false;
       }
-
+      // timeout value
       if (sensorTimer > 25) {
         sensorTimeout = true;
       } else {

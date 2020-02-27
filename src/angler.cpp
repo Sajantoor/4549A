@@ -64,7 +64,7 @@ void angler_pid_task(void*ignore) {
         timerAng = false;
 
         !applyTorque ? torqueCheck = false : torqueCheck = true;
-        intakeThresholdTimer = pros::millis() + 1000;
+        intakeThresholdTimer = pros::millis() + 200;
       }
 
       if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL)) {
