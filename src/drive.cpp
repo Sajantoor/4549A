@@ -298,11 +298,11 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(135, 80, 10, 30, 500, max_speed);
+    pid_values turn_pid(140, 80, 10, 30, 500, max_speed);
 
     if(abs((degToRad(target) - orientation)) < degToRad(30)) {
       printf("high kp");
-      turn_pid.Kp = 220;
+      turn_pid.Kp = 230;
       turn_pid.Kd = 70;
       turn_pid.Ki = 0;
     }

@@ -421,10 +421,10 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
       lv_obj_align(timer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);
 
       std::ostringstream anglerV;
-      timerV << "Angler Val: " << std::setprecision(3) << angler.get_position();
+      anglerV << "Angler Val: " << std::setprecision(3) << angler.get_position();
       auto av = anglerV.str();
       lv_label_set_text(angler_label, av.c_str());
-      lv_obj_align(angler_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);
+      lv_obj_align(angler_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 44);
 
       lv_obj_set_size(reset, 75, 75);
       lv_obj_align(reset, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -13, -85);
