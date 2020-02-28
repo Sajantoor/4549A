@@ -298,12 +298,12 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(130, 80, 10, 30, 500, max_speed);
+    pid_values turn_pid(135, 80, 10, 30, 500, max_speed);
 
     if(abs((degToRad(target) - orientation)) < degToRad(30)) {
       printf("high kp");
-      turn_pid.Kp = 210;
-      turn_pid.Kd = 90;
+      turn_pid.Kp = 220;
+      turn_pid.Kd = 70;
       turn_pid.Ki = 0;
     }
 
@@ -759,7 +759,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
   			if (max_speed < 0)
   				correctA += pi;
           // printf("correcting \n");
-  			correction = fabs(err_x) > max_error ? 8.5 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
+  			correction = fabs(err_x) > max_error ? 8 * (nearestangle(correctA, orientation) - orientation) * sgn(max_speed) : 0; //5.7
       } else if (vision) {
         if (currentCube.size > CUBE_SIZE_THRESHOLD_MIN) {
           if (currentCube.x > CENTER_X) {
