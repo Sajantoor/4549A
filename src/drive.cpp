@@ -298,11 +298,11 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(125, 80, 10, 30, 500, max_speed);
+    pid_values turn_pid(130, 80, 10, 30, 500, max_speed);
 
     if(abs((degToRad(target) - orientation)) < degToRad(30)) {
       printf("high kp");
-      turn_pid.Kp = 200;
+      turn_pid.Kp = 210;
       turn_pid.Kd = 90;
       turn_pid.Ki = 0;
     }
@@ -960,4 +960,22 @@ void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir tu
       break;
     }
     set_drive(0,0);
+}
+
+void strafe_pid(int speed, int x_pos, int delay) {
+  float currentTime = pros::millis();
+  float timeout = pros::millis() + delay;
+  // motor move relative stuff
+  drive_left.move_relative(-x_pos, speed);
+  drive_left_b.move_relative(x_pos, speed);
+  drive_right.move_relative(x_pos, speed);
+  drive_right_b.move_relative(-x_pos, speed);
+
+  while (!((position.x < (x_pos + 1)) && (position.x > (x_pos - 1))) || (currentTime > timeout)) {
+    currentTime = pros::millis();
+    printf("in loop bro \n \n");
+    pros::delay(2);
+  }
+
+  printf("exit loop \n \n");
 }

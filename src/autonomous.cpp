@@ -89,21 +89,22 @@ void autonomous() {
 
 //FRONT AUTO: SEAQUAM EDITION
 
+// strafe_pid(80, 10, 5000);
 
 // SKILLS -----------------
 loader_right.move(127);
 loader_left.move(127);
-position_drive2(0, 0, 0, 45, 0, 60, 0.1, 0, 20000, 50, 40, false);
+position_drive2(0, 0, 0, 45, 0, 75, 0.1, 0, 20000, 50, 40, false);
 pros::delay(1000);
 sensor_outtake();
 lift(2500, 20000);
 pros::delay(1500);
 position_turn(-25, 1500, 100);
-position_drive2(0, 45, -5, 55, 0, 127, 0.1, 0, 2500, 30, 40, false);
-loader_right.move(-80);
-loader_left.move(-80);
+position_drive2(0, 45, -5, 55, 0, 127, 0.05, 70, 2500, 30, 40, false);
+loader_right.move(-100);
+loader_left.move(-100);
 pros::delay(1500);
-position_drive2(-5, 55, 0, 50, 0, -127, 0.05, 0, 50000, 60, 40, false);
+position_drive2(-5, 55, 0, 45, 0, -127, 0.05, 0, 50000, 60, 40, false);
 position_turn(0, 5000, 127);
 loader_right.move(0);
 loader_left.move(0);
@@ -113,16 +114,16 @@ loader_right.move(127);
 loader_left.move(127);
 // position_drive(0, 117, 0,false, 60, 20000);
 // reset_position_full(0, 52, 0);
-position_drive2(0, 50, 0, 117, 0, 40, 0.05, 0, 200000, 200, 40, false);
+position_drive2(0, 45, 0, 117, 0, 65, 0.05, 0, 200000, 200, 40, false);
 pros::delay(3000);
 position_turn(60, 2000, 127);
 loader_left.move(0);
 loader_right.move(0);
 position_drive2(0, 117, 9, 122, 0, 100, 0.1, 0, 2500, 60, 40, false);
-angler_pid(-4550, true, 127, true);
-pros::delay(2500);
-angler_pid(0, true, 127, false, 5000);
-drive_line_up(-90,550);
+angler_pid(-4500, true, 127, false);
+pros::delay(4000);
+angler_pid(0, true, 127, false, 2000);
+drive_line_up(-90,500);
 pros::delay(5000);
 position_turn(0, 1000, 100);
 pros::delay(1000);
@@ -135,25 +136,25 @@ position_turn(-90, 1000, 100);
 lift(0, 4000);
 loader_right.move(127);
 loader_left.move(127);
-position_drive2(0, -10, -27, -10, 0, 100, 0.1, 0, 2500, 50, 40, false);
-position_drive2(-26, -10, -20, -10, 0, -127, 0.1, 0, 2500, 50, 40, false);
+position_drive2(0, -10, -22, -10, 0, 100, 0.1, 0, 2500, 50, 40, false);
+position_drive2(-22, -10, -16, -10, 0, -127, 0.1, 0, 2500, 50, 40, false);
 loader_left.move(0);
 loader_right.move(0);
 sensor_outtake();
 lift(2800, 20000);
 pros::delay(2000);
-position_drive2(-24, -10, -28, -10, 0, 100, 0.1, 0, 2500, 50, 40, false);
-loader_right.move(-80);
-loader_left.move(-80);
+position_drive2(-18, -10, -25, -10, 0, 100, 0.1, 0, 2500, 50, 40, false);
+loader_right.move(-90);
+loader_left.move(-90);
 pros::delay(2000);
-position_drive2(-34, -10, -27, -10, 0, -100, 0.1, 0, 2500, 50, 40, false);
+position_drive2(-25, -10, -20, -10, 0, -127, 0.1, 0, 2500, 50, 40, false);
 position_turn(-180, 1000, 100);
 lift(0, 4000);
 drive_line_up(-50,2000);
 reset_position_full(0, 0, 0);
 loader_right.move(127);
 loader_left.move(127);
-position_drive2(0, 0, 1.5, 120, 0, 60, 0.05, 0, 7000, 200, 40, false);
+position_drive2(0, 0, 1.5, 120, 0, 60, 0.05, 0, 9000, 200, 40, false);
 loader_left.move(0);
 loader_right.move(0);
 sensor_outtake();
@@ -161,8 +162,8 @@ lift(2800, 20000);
 pros::delay(2000);
 position_turn(90, 1000, 100);
 position_drive2(0, 120, 15, 120, 0, 60, 0.05, 0, 7000, 200, 40, false);
-loader_right.move(-80);
-loader_left.move(-80);
+loader_right.move(-90);
+loader_left.move(-90);
 // SKILLS --------------
 
 
