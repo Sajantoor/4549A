@@ -67,7 +67,7 @@ void angler_pid_task(void*ignore) {
         intakeThresholdTimer = pros::millis() + 200;
       }
 
-      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL)) {
+      if (anglerIntakeThreshold || (currentTarget == TRAY_BACKWARD_VAL) || (currentTarget == -2200)) {
         // angler stack code
         anglerIntakeThreshold = true;
         if (anglerDelay && (pros::millis() > timeout)) {

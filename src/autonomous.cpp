@@ -61,30 +61,30 @@ void autonomous() {
   // drive_line_up(-127, 600);
 
   // FRONT AUTO: TOWER EDITION: DONE
-  loader_left.move(127);
-  loader_right.move(127);
-  position_drive2(0, 0, 0, 10, 0, 90, 0.1, 0, 2000, 50, 90, false);
-  sensor_outtake();
-  lift(2500, 20000);
-  position_drive2(0, 10, 0, 25, 0, 60, 0.1, 0, 3000, 50, 40, false);
-  loader_left.move(-127);
-  loader_right.move(-127);
-  pros::delay(500);
-  loader_right.move(127);
-  loader_left.move(127);
-  position_drive2(0, 28, 0, 30, 0, 60, 0.1, 0, 3000, 50, 40, false);
-  lift(0, 2000);
-  pros::delay(1000);
-  position_drive2(0, 30, 0, 55, 0, 90, 0.1, 0, 3000, 50, 40, true);
-  position_drive2(0, 50, 0, 40, 0, -90, 0.1, 0, 3000, 50, 40, false);
-  position_turn(-25, 2000, 127);
-  position_drive2(0, 40, -9, 52, 0, 90, 0.1, 0, 3000, 50, 40, false);
-  position_drive2(-9, 52, -7, 40, 0, -90, 0.1, 0, 3000, 50, 40, false);
-  position_turn(-135, 2000, 127);
-  position_drive2(-7, 40, -33, 20, 0, 90, 0.1, 0, 3000, 50, 40, true);
-  angler_pid(-4500, true, 127, false);
-  pros::delay(3000);
-  drive_line_up(50, 2000);
+  // loader_left.move(127);
+  // loader_right.move(127);
+  // position_drive2(0, 0, 0, 10, 0, 90, 0.1, 0, 2000, 50, 90, false);
+  // sensor_outtake();
+  // lift(2500, 20000);
+  // position_drive2(0, 10, 0, 25, 0, 60, 0.1, 0, 3000, 50, 40, false);
+  // loader_left.move(-127);
+  // loader_right.move(-127);
+  // pros::delay(500);
+  // loader_right.move(127);
+  // loader_left.move(127);
+  // position_drive2(0, 28, 0, 30, 0, 60, 0.1, 0, 3000, 50, 40, false);
+  // lift(0, 2000);
+  // pros::delay(1000);
+  // position_drive2(0, 30, 0, 55, 0, 90, 0.1, 0, 3000, 50, 40, true);
+  // position_drive2(0, 50, 0, 40, 0, -90, 0.1, 0, 3000, 50, 40, false);
+  // position_turn(-25, 2000, 127);
+  // position_drive2(0, 40, -9, 52, 0, 90, 0.1, 0, 3000, 50, 40, false);
+  // position_drive2(-9, 52, -7, 40, 0, -90, 0.1, 0, 3000, 50, 40, false);
+  // position_turn(-135, 2000, 127);
+  // position_drive2(-7, 40, -33, 20, 0, 90, 0.1, 0, 3000, 50, 40, true);
+  // angler_pid(-4500, true, 127, false);
+  // pros::delay(3000);
+  // drive_line_up(50, 2000);
 
 
 // SKILLS -----------------
@@ -174,8 +174,11 @@ void autonomous() {
 // SKILLS --------------
 
   // BACK AUTO V1 => Needs time cutting
-  // autoIntakeFunc(127);
-  // position_drive2(0, 0, 0, 20, 0, 80, 0.1, 0, 800, 50, 90, false);
+  lift(2100, 20000);
+  pros::delay(1000);
+  lift(0, 1000);
+  autoIntakeFunc(127);
+  position_drive2(0, 0, 0, 27, 0, 127, 0.1, 0, 1300, 50, 90, false);
   // position_drive2(0, 20, 0, 25, 0, 50, 0.1, 0, 1000, 50, 90, false);
   // autoIntakeFunc(0);
   // loader_right.move(127);
@@ -186,18 +189,25 @@ void autonomous() {
   // lift(0, 1000);
   // pros::delay(1000);
   // autoIntakeFunc(127);
-  // position_drive2(0, 42, 22, 11, 0, -90, 0.1, 0, 2000, 50, 127, false); // go back
-  // position_turn(0, 800, 127);
-  // position_drive2(25, 0, 25, 50, 0, 90, 0.1, 0, 3000, 50, 90, false); // pick up line of cubes
-  // position_drive2(25, 48, 25, 20, 0, -90, 0.1, 0, 3000, 50, 127, false); // go back
   // autoIntakeFunc(0);
   // loader_right.move(0);
   // loader_left.move(0);
-  // position_turn(120, 1000, 90); // turn to stack
-  // position_drive2(25, 20, 34, 11, 0, 127, 0.05, 0, 800, 127, 80, false); // go back
-  // angler_pid(-4500, true, 127, true);
-  // pros::delay(2500);
-  // drive_line_up(-100, 700);
+  // autoIntakeFunc(0);
+  position_drive2(0, 25, 25.5, 11, 0, -127, 0.1, 0, 1800, 50, 127, false); // go back
+  angler_pid(-2200, true, 127, true);
+  position_turn(0, 900, 127);
+  loader_right.move(127);
+  loader_left.move(127);
+  position_drive2(25, 0, 25, 50, 0, 80, 0.05, 0, 3000, 50, 90, false); // pick up line of cubes
+  position_drive2(25, 48, 25, 20, 0, -127, 0.1, 0, 3000, 50, 127, false); // go back
+  autoIntakeFunc(0);
+  loader_right.move(0);
+  loader_left.move(0);
+  position_turn(120, 1000, 110); // turn to stack
+  position_drive2(25, 20, 34, 11, 0, 127, 0.05, 0, 1000, 50, 80, false); // go back
+  angler_pid(-4500, true, 127, true);
+  pros::delay(2800);
+  drive_line_up(-100, 700);
 
   // // BACk AUTO SAJAN v2
 
