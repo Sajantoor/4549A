@@ -79,11 +79,6 @@ void angler_pid_task(void*ignore) {
           maxTorque = pros::c::motor_get_torque(ANGLER);
         }
 
-        if ((maxTorque > SEVEN_STACK_TORQUE) && torqueCheck) {
-         currentTarget = currentTarget + 3000;
-         torqueCheck = false;
-       }
-
         if ((maxTorque > TEN_STACK_TORQUE) && (fabs(angler_pid.error) < 1700)) {
           if (angler_pid.max_power < currentSpeed * 0.4) {
             angler_pid.max_power = currentSpeed * 0.4;
