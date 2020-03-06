@@ -4,11 +4,9 @@
 // checks allowed speed vs actual speed and returns as float
 float power_limit(float allowed_speed, float actual_speed) {
    if (actual_speed > allowed_speed) {
-       actual_speed = allowed_speed;
-   }
-
-   else if (actual_speed < -allowed_speed) {
-       actual_speed = -allowed_speed;
+     actual_speed = allowed_speed;
+   } else if (actual_speed < -allowed_speed) {
+     actual_speed = -allowed_speed;
    }
 
    return actual_speed;

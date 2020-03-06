@@ -12,7 +12,7 @@ bool sensorTimeout;
 void sensor_outtake_task(void*ignore) {
   while (true) {
     while (sensorOutakeBool) {
-      double sensorValue = light_sensor_intake.get_value();
+      double sensorValue = light_sensor.get_value();
       sensorTimer++;
 
       if (sensorValue > 1850 && !sensorTimeout) {
