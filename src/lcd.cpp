@@ -445,7 +445,7 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
       lv_btn_set_action(home_button_values, LV_BTN_ACTION_CLICK, home_screen);
 
       lv_btn_set_action(reset, LV_BTN_ACTION_CLICK, reset_values);
-      pros::delay(5);
+      pros::delay(16);
     }
   },
   nullptr,"VALUES FOREVER");
@@ -512,5 +512,5 @@ void auto_selecter (void*ignore) {
   lv_btn_set_action(skills, LV_BTN_ACTION_CLICK, skills_auto);
   lv_btn_set_action(testing, LV_BTN_ACTION_CLICK, testing_auto);
 
-  pros::delay(10);
+  pros::delay(16);
 }

@@ -26,7 +26,7 @@ void opcontrol() {
 			stickArray[0] = 0;
 			stickArray[2] = 0;
 		}
-
+		// drive with slew rate
 		stickArray[1] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), 3) / powf(DRIVE_POWER_LIMIT, 2);
 		stickArray[3] = powf(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y), 3) / powf(DRIVE_POWER_LIMIT, 2);
 

@@ -5,17 +5,17 @@
 #include "pid.h"
 
 //global variables
-int height;
+int target;
 bool liftBool = false;
 bool timer = true;
 int hold = 0;
 
 // takes variables to the task
-void lift(int moveVal, int holdVal) {
-  height = moveVal;
+void lift(int targetVal, int holdVal) {
+  target = targetVal;
   hold = holdVal;
   liftBool = true;
-  timer = true;
+  liftTimer = true;
 }
 
 // lift task which controls lift with PID and motor encoders
@@ -28,7 +28,7 @@ void lift_task(void*ignore) {
   while (true) {
     while(liftBool) {
       // calculates time for timeout
-      if (timer) {
+      if (liftTimer) {
         failsafe = pros::millis() + timeout + hold;
         delayTime = pros::millis() + hold;
         timer = false;
@@ -36,30 +36,40 @@ void lift_task(void*ignore) {
 
        float currentTime = pros::millis();
        float position = arm.get_position(); // mtr encoders
-       float final_power = pid_calc(&lift_pid, height, position); // final power is calculated using pid
+       float final_power = pid_calc(&lift_pid, target, position); // final power is calculated using pid
        arm.move(final_power);
-       // slew rate to slow down the motor based on the error value
+
+       // slew rate to slow down the motor based on the position
+       // POSSIBLY NOT NEEDED
        if (position > 1980) {
-         lift_pid.max_power = lift_pid.max_power - 5; // slew rate
-         if (lift_pid.max_power < 60) lift_pid.max_power = 60; // capping lowest possible speed
+         // capping lowest possible speed
+         if (lift_pid.max_power <= 60) {
+           lift_pid.max_power = 60;
+         } else {
+          lift_pid.max_power = lift_pid.max_power - 5;
+         }
        } else {
-         lift_pid.max_power = lift_pid.max_power + 25; // positive slew rate
-         if (lift_pid.max_power > 127) lift_pid.max_power = 127; // motor cap
+         if (lift_pid.max_power > 127) {
+           lift_pid.max_power = 127;
+         } else {
+           lift_pid.max_power = lift_pid.max_power + 25
+         }
        }
 
        // exit out of the loop
-       if ((fabs(lift_pid.error) < 10) && (currentTime > delayTime)) {
+       if ((fabs(lift_pid.error) <= 10) && (currentTime >= delayTime)) {
          lift_pid.max_power = 127;
          hold = 0;
          arm.move(0);
          liftBool = false;
        // exit out based off the failsafe
-       } else if (failsafe < currentTime) {
+      } else if (failsafe <= currentTime) {
          lift_pid.max_power = 127;
          hold = 0;
          arm.move(0);
          liftBool = false;
        }
+
        pros::delay(20);
      }
      pros::delay(20);
