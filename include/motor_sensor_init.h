@@ -2,15 +2,15 @@
 #define MOTOR_SETUP_INIT_H
 #include "main.h"
 
-#define DRIVE_LEFT 9
-#define DRIVE_LEFT_B 3
-#define DRIVE_RIGHT 6
+#define DRIVE_LEFT 11
+#define DRIVE_LEFT_B 18
+#define DRIVE_RIGHT 12
 #define DRIVE_RIGHT_B 4
 
-#define LOADER_RIGHT 16
-#define LOADER_LEFT 13
-#define ANGLER 10
-#define ARM 5
+#define LOADER_RIGHT 9
+#define LOADER_LEFT 6
+#define ANGLER 7
+#define ARM 10
 #define VISION_PORT 17
 
 extern pros::Motor drive_left;
