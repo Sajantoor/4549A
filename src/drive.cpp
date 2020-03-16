@@ -63,12 +63,10 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float gyro_threshold = degToRad(300000000000000000); // threshold to switch to gyro, incase of systematic error with odometry
+  const float inertial_threshold = degToRad(1); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.26597529;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 3.0;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
-  const float gyro_error = -3115.185059;
-  bool gyroNotTuned = false;
 
   while(true) {
     //gets the ticks from the each of encoders
@@ -86,31 +84,28 @@ void tracking_update(void*ignore) {
     float inches_traveled_right = degrees_to_rad_right * wheel_radius; //gives back values in inches
     float inches_traveled_back = degrees_to_rad_back * wheel_radius; //gives back values in inches
 
-    float gyro_value = gyro.get_value() / 10;
+    float gyro_value = inertial.get_rotation();
     float gyro_radian = degToRad(gyro_value);
     float delta_gyro = gyro_radian - prev_gyro_radian;
-
-    // if (pros::competition::is_autonomous() && (gyro_value == gyro_error) || !gyroNotTuned) {
-    //   gyroNotTuned = true;
-    // }
 
     //Returns the orientation of the bot in radians
     float new_absolute_orientation; // orientation of the bot using odem or gyro
     float odem_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right) / (2 * distance_between_centre));
     // used to calculate if the difference between gyro and odem is big enough to switch to gyro
     float change_in_gyro_odom = fabs(gyro_radian - odem_orientation);
-    //Returns how much it has rotated from its previous point in radians
-    float change_in_angle = new_absolute_orientation - orientation;
 
-    if (gyro_threshold < change_in_gyro_odom) {
+    if ((inertial_threshold < change_in_gyro_odom) && !inertial.is_calibrating()) {
       new_absolute_orientation = orientation + delta_gyro; // use gyro + odem
       // FOR TESTING USE ONLY => FULL GYRO
+      // printf("inertialll \n\n");
       // new_absolute_orientation = gyro_radian;
     } else {
       // odem only
        // printf("odem \n \n");
       new_absolute_orientation = beginning_orientation + ((inches_traveled_left - inches_traveled_right)/ (2 * distance_between_centre));
     }
+    //Returns how much it has rotated from its previous point in radians
+    float change_in_angle = new_absolute_orientation - orientation;
 
     // The change in position from previous reset
     vector local_offset;
@@ -137,6 +132,9 @@ void tracking_update(void*ignore) {
     //updates the position.x and position.y
     position.x += global_offset.x;
     position.y += global_offset.y;
+
+    // printf("position.x: [%f], position.y: [%f], inertial Radians: [%f], inertial Degrees: [%f] \n\n", position.x, position.y, gyro_radian, gyro_value);
+    // printf("global_offset.x: [%f], global_offset.y: [%f] \n\n", global_offset.x, global_offset.y);
     //updates orienation values and the inches traveled by the tracking wheels
     orientation = new_absolute_orientation; //gives back value in radians
     prev_gyro_radian = gyro_radian;
@@ -147,7 +145,6 @@ void tracking_update(void*ignore) {
     pros::delay(10);
   }
 }
-
 //tracks the current velocity of the bot
 void tracking_velocity(void*ignore) {
   while(true) {
@@ -298,7 +295,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(10, 0, 0, 30, 500, max_speed);
+    pid_values turn_pid(2.8, 2, 1, 30, 500, max_speed);
 
     // if(abs((degToRad(target) - orientation)) < degToRad(30)) {
     //   printf("high kp");
@@ -320,10 +317,12 @@ void position_turn(float target, int timeout, int max_speed) {
 
 
     do {
-      float final_power = pid_calc(&turn_pid, target, inertial.get_heading());
+      float final_power = pid_calc(&turn_pid, target, radToDeg(orientation));
       turn_set(final_power);
-      printf("abs((degToRad(target) - inertial)) %f \n ", target - inertial.get_heading());
-
+      printf("target - inertial %f \n ", target - radToDeg(orientation));
+      printf("target %f \n\n", target);
+      printf("inertial %f \n\n", radToDeg(orientation));
+      printf("finalpower %f \n\n", final_power);
       if (timer_turn == true && !timerCheck) {
         net_timer = pros::millis() + timeout;
       }

@@ -30,9 +30,9 @@ void autonomous() {
   inertial.reset();
   pros::delay(2000);
   position_turn(90, 20000, 127); // turn
-  if(switcher == 0){
-    unlock();
-  }
+  // if(switcher == 0){
+  //   unlock();
+  // }
 
 //RED FRONT AUTO
   if (switcher == 1) {

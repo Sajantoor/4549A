@@ -21,7 +21,7 @@ void opcontrol() {
 	bool liftBool = false; // used to check first lift
 
 	while (true) {
-		printf("inertial orienation %f \n\n", inertial.get_heading());
+		printf("inertial orienation %f \n\n", inertial.get_rotation());
 		printf("odom orienation %f \n\n", radToDeg(orientation));
 		float armPosition = arm.get_position();
 		if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {

@@ -409,16 +409,16 @@ static lv_res_t values_screen(lv_obj_t * btn3) {
       lv_obj_align(arm_potentiometer_label, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 220);
 
       std::ostringstream inertialVal;
-      inertialVal << "Inertial Value: " << std::setprecision(3) << inertial.get_heading();
+      inertialVal << "Inertial Value: " << std::setprecision(3) << inertial.get_rotation();
       auto anpv = inertialVal.str();
       lv_label_set_text(angler_potentiometer_label, anpv.c_str());
       lv_obj_align(angler_potentiometer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 0);
 
-      std::ostringstream timerV;
-      timerV << "Auto Time: " << std::setprecision(3) << timerAuto;
-      auto tv = timerV.str();
-      lv_label_set_text(timer_label, tv.c_str());
-      lv_obj_align(timer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);
+      // std::ostringstream timerV;
+      // timerV << "Auto Time: " << std::setprecision(3) << timerAuto;
+      // auto tv = timerV.str();
+      // lv_label_set_text(timer_label, tv.c_str());
+      // lv_obj_align(timer_label, NULL, LV_ALIGN_IN_TOP_MID, 45, 22);
 
       std::ostringstream anglerV;
       anglerV << "Angler Val: " << std::setprecision(3) << angler.get_position();
