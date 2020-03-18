@@ -28,7 +28,6 @@ void autonomous() {
   int initial_time = pros::millis();
   gyro.reset();
   inertial.reset();
-  pros::delay(2000);
   position_turn(90, 20000, 80); // turn
   // if(switcher == 0){
   //   unlock();

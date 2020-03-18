@@ -63,7 +63,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float inertial_threshold = degToRad(30000000000); // threshold to switch to gyro, incase of systematic error with odometry
+  const float inertial_threshold = degToRad(2); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.26597529;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 3.0;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -295,7 +295,7 @@ void drive_pid_encoder(float target, unsigned int timeout, int max_speed) {
 
 
 void position_turn(float target, int timeout, int max_speed) {
-    pid_values turn_pid(2.8, 2, 1, 30, 500, max_speed);
+    pid_values turn_pid(2.5, 2, 1, 30, 500, max_speed);
 
     // if(abs((degToRad(target) - orientation)) < degToRad(30)) {
     //   printf("high kp");
@@ -322,7 +322,6 @@ void position_turn(float target, int timeout, int max_speed) {
       // printf("error %f \n ", turn_pid.error);
       // printf("target %f \n\n", target);
       // printf("orientation %f \n\n", radToDeg(orientation));
-      // printf("finalpower %f \n\n", final_power);
       printf("Target: [%f], Orientation: [%f], Error: [%f], Final Power: [%f] \n\n", target, radToDeg(orientation), turn_pid.error, final_power);
       if (timer_turn == true && !timerCheck) {
         net_timer = pros::millis() + timeout;
@@ -334,7 +333,7 @@ void position_turn(float target, int timeout, int max_speed) {
       }
 
       pros::delay(10);
-    } while(abs(radToDeg(turn_pid.error)) > 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+    } while(abs(turn_pid.error) > 1 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
 
     HarshStop();
 
