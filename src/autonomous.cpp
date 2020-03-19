@@ -28,11 +28,12 @@ void autonomous() {
   int initial_time = pros::millis();
   gyro.reset();
   inertial.reset();
-  position_turn(90, 20000, 80); // turn
+  //position_turn(90, 20000, 80); // turn
   // if(switcher == 0){
   //   unlock();
   // }
-
+//strafe_pid(127, 20000, 20000);
+position_drive(-20, 0, 0, false, 127, 20000);
 //RED FRONT AUTO
   if (switcher == 1) {
     unlock();

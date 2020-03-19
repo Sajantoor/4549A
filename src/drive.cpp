@@ -545,7 +545,7 @@ void position_face_point(float target_x, float target_y,int timeout) {
     printf("Degrees Turned from:%f to %f\n", radToDeg(error_p), radToDeg(orientation));
 }
 
-void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout, float initial_intake, float final_intake, float transition_point, float end_speed_transition, float end_speed, bool pickUp_cube) {
+void position_drive(float ending_point_x, float ending_point_y, float target_angle, bool cool_turn, float max_power, unsigned int timeout) {
     vector positionErr;
     vector rotated_motorPower;
     vector rotation_vector;
@@ -553,9 +553,9 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(350, 200, 0, 30, 500, 127);//300
-    pid_values xDir_pid(31, 25, 0, 30, 500, 127);//28
-    pid_values yDir_pid(10.5, 4, 0, 30, 500, 127);//12,8
+    pid_values turn_pid(350, 0, 0, 30, 500, 127);//300
+    pid_values xDir_pid(31, 0, 0, 30, 500, 127);//28
+    pid_values yDir_pid(10.5, 0, 0, 30, 500, 127);//12,8
 
     if(cool_turn) {
       turn_pid.Kp = 100;
@@ -579,7 +579,6 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     float drive_right_power;
     float drive_right_b_power;
     float largestVal = 0;
-    float intakeSpeed = initial_intake;
     printf("Moving to %f %f \n", ending_point_x, ending_point_y);
 
     do {
@@ -587,9 +586,6 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       largestVal = 0;
       // intake speed transition
       // transition point is the magnitude x, y error away intakes transition speeds
-      if ((magnitude_of_X_Y < transition_point) && (transition_point != 0)) {
-        intakeSpeed = final_intake;
-      }
       //runs pid loops on the position.x and position.y and orienation
       float final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
       float final_power_xDir = pid_calc(&xDir_pid, ending_point_x, position.x);
@@ -603,38 +599,6 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
       rotated_motorPowerPolar.theta += orientation;
       polarToVector(rotated_motorPowerPolar, rotated_motorPower);
-
-
-      if (pickUp_cube && light_sensor_intake.get_value() < 1900){
-        pros::delay(900);
-        loader_left.move(0);
-        loader_right.move(0);
-        transition_point = 0;
-        intakeSpeed = 0;
-        final_intake = 0;
-      }
-      //applying slew rate on the motors so they dont burn out and there arent sudden movements
-      if ((magnitude_of_X_Y < end_speed_transition) && (end_speed_transition != 0)) {
-        limit_to_val_set(rotated_motorPower.y, abs(end_speed));
-        int delta_y = rotated_motorPower.y - last_y;
-        limit_to_val_set(delta_y, 3);
-        rotated_motorPower.y = last_y += delta_y;
-
-        limit_to_val_set(rotated_motorPower.x, abs(end_speed));
-        int delta_x = rotated_motorPower.x - last_x;
-        limit_to_val_set(delta_x, 5);
-        rotated_motorPower.x = last_x += delta_x;
-      } else {
-        limit_to_val_set(rotated_motorPower.y, abs(max_power));
-        int delta_y = rotated_motorPower.y - last_y;
-        limit_to_val_set(delta_y, 3);
-        rotated_motorPower.y = last_y += delta_y;
-
-        limit_to_val_set(rotated_motorPower.x, abs(max_power));
-        int delta_x = rotated_motorPower.x - last_x;
-        limit_to_val_set(delta_x, 5);
-        rotated_motorPower.x = last_x += delta_x;
-      }
 
       drive_left_power = rotated_motorPower.y + final_power_turn + rotated_motorPower.x;
       drive_left_b_power = rotated_motorPower.y + final_power_turn - rotated_motorPower.x;
@@ -664,8 +628,6 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       drive_left_b.move(motor_power_array [1]);
       drive_right.move(motor_power_array [2]);
       drive_right_b.move(motor_power_array [3]);
-      loader_right.move(intakeSpeed);
-      loader_left.move(intakeSpeed);
 
       //this gets the magnitude of the error using the error from throttle and strafe
       powf_of_X_Y = powf(yDir_pid.error, 2) + powf(xDir_pid.error, 2);
