@@ -85,7 +85,7 @@ void position_drive2(float starting_point_x, float starting_point_y, float endin
 
 void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir turnDir, float max_speed);
 
-void strafe_pid(int speed, int x_pos, int delay);
+void strafe_pid(float x_pos, float y_pos, float final_turn, float speed, float timeout);
 
 extern pros::task_t tracking_task;
 extern pros::task_t velocity_task;

@@ -553,9 +553,9 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(350, 0, 0, 30, 500, 127);//300
-    pid_values xDir_pid(31, 0, 0, 30, 500, 127);//28
-    pid_values yDir_pid(10.5, 0, 0, 30, 500, 127);//12,8
+    pid_values turn_pid(150, 0, 0, 30, 500, 127);//300
+    pid_values xDir_pid(28, 0, 5, 30, 500, 127);//28
+    pid_values yDir_pid(8, 0, 0, 30, 500, 127);//12,8
 
     if(cool_turn) {
       turn_pid.Kp = 100;
@@ -579,26 +579,27 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     float drive_right_power;
     float drive_right_b_power;
     float largestVal = 0;
+    float last = 0;
     printf("Moving to %f %f \n", ending_point_x, ending_point_y);
 
     do {
-      // printf("intake light sensor %d \n", light_sensor_intake.get_value());
       largestVal = 0;
-      // intake speed transition
-      // transition point is the magnitude x, y error away intakes transition speeds
-      //runs pid loops on the position.x and position.y and orienation
+
       float final_power_turn = pid_calc(&turn_pid, degToRad(target_angle), orientation);
       float final_power_xDir = pid_calc(&xDir_pid, ending_point_x, position.x);
       float final_power_yDir = pid_calc(&yDir_pid, ending_point_y, position.y);
 
-      //assigns the final_power_strafe and throttle to a vector
+      limit_to_val_set(final_power_xDir, abs(max_power));
+      int delta = final_power_xDir - last;
+      limit_to_val_set(delta, 6);
+      final_power_xDir = last += delta;
+
       rotated_motorPower.y = final_power_yDir;
       rotated_motorPower.x = final_power_xDir;
 
-      //The vector then is rotated so the frame of reference is robot centric besides field centric
-      vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
-      rotated_motorPowerPolar.theta += orientation;
-      polarToVector(rotated_motorPowerPolar, rotated_motorPower);
+      // vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
+      // rotated_motorPowerPolar.theta += orientation;
+      // polarToVector(rotated_motorPowerPolar, rotated_motorPower);
 
       drive_left_power = rotated_motorPower.y + final_power_turn + rotated_motorPower.x;
       drive_left_b_power = rotated_motorPower.y + final_power_turn - rotated_motorPower.x;
@@ -633,10 +634,10 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       powf_of_X_Y = powf(yDir_pid.error, 2) + powf(xDir_pid.error, 2);
       magnitude_of_X_Y = sqrtf(powf_of_X_Y);
 
-			// printf("magnitude_of_X_Y %f \n", magnitude_of_X_Y);
+			printf("magnitude_of_X_Y %f \n", magnitude_of_X_Y);
       pros::delay(10);
 
-    } while ((magnitude_of_X_Y > 1 || abs(radToDeg(turn_pid.error)) > 0.7) && (pros::millis() < net_timer));
+    } while (magnitude_of_X_Y > 1 && (abs(radToDeg(turn_pid.error)) > 1 || (pros::millis() < net_timer)));
 
     //applies harsh stop depending on how fast the robot was moving
     HarshStop();
@@ -923,20 +924,40 @@ void sweep_turn(float x, float y, float end_angle, float arc_radius, tTurnDir tu
     set_drive(0,0);
 }
 
-void strafe_pid(int speed, int x_pos, int delay) {
-  float currentTime = pros::millis();
-  float timeout = pros::millis() + delay;
-  // motor move relative stuff
-  drive_left.move_relative(-x_pos, speed);
-  drive_left_b.move_relative(x_pos, speed);
-  drive_right.move_relative(x_pos, speed);
-  drive_right_b.move_relative(-x_pos, speed);
+void strafe_pid(float x_pos, float y_pos, float final_turn, float speed, float timeout) {
 
-  while (!((position.x < (x_pos + 1)) && (position.x > (x_pos - 1))) || (currentTime > timeout)) {
-    currentTime = pros::millis();
-    printf("in loop bro \n \n");
-    pros::delay(2);
-  }
+  unsigned int net_timer;
+  int initial_millis = pros::millis();
+  net_timer = initial_millis + timeout; //just to initialize net_timer at first
+  float failsafe = 15000;
 
+  pid_values x_pid(30, 0, 0, 30, 500, 127);//28
+  pid_values y_pid(20, 0, 0, 30, 500, 127);//
+  pid_values theta_pid(70, 0, 0, 30, 500, 127);//28
+  int last = 0;
+
+  do {
+    float final_power_xDir = pid_calc(&x_pid, x_pos, position.x);
+    float final_power_yDir = pid_calc(&y_pid, y_pos, position.y);
+    float final_power_turn = pid_calc(&theta_pid, final_turn, orientation);
+    printf("position.x %f \n\n", position.x);
+    printf("position.y %f \n\n", position.y);
+    printf("orienation %f \n\n", orientation);
+
+    limit_to_val_set(final_power_xDir, abs(speed));
+    if (final_power_xDir * sgn(speed) < 25) //30
+    final_power_xDir = 25 * sgn(speed);
+    int delta = final_power_xDir - last;
+    limit_to_val_set(delta, 6);
+    final_power_xDir = last += delta;
+
+    drive_left.move(final_power_yDir + final_power_turn + final_power_xDir);
+    drive_left_b.move(final_power_yDir + final_power_turn - final_power_xDir);
+    drive_right.move(final_power_yDir - final_power_turn - final_power_xDir);
+    drive_right_b.move(final_power_yDir - final_power_turn + final_power_xDir);
+
+    pros::delay(10);
+  } while(abs(x_pid.error) > 0.5 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+  HarshStop();
   printf("exit loop \n \n");
 }
