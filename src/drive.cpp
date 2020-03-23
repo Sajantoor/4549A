@@ -553,14 +553,14 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
     polar positionErrPolar;
     polar rotated_motorPowerPolar;
 
-    pid_values turn_pid(150, 0, 0, 30, 500, 127);//300
+    pid_values turn_pid(175, 0, 0, 30, 500, 127);//300
     pid_values xDir_pid(28, 0, 5, 30, 500, 127);//28
-    pid_values yDir_pid(8, 0, 0, 30, 500, 127);//12,8
+    pid_values yDir_pid(6, 0, 0, 30, 500, 127);//12,8
 
     if(cool_turn) {
       turn_pid.Kp = 100;
-      xDir_pid.Kp = 40;
-      yDir_pid.Kp = 19;
+      xDir_pid.Kp = 35;
+      yDir_pid.Kp = 11;
     }
 
     //timeout on the code so that if it ever gets stuck in the while loop it exits after a certain amount of time
@@ -597,9 +597,9 @@ void position_drive(float ending_point_x, float ending_point_y, float target_ang
       rotated_motorPower.y = final_power_yDir;
       rotated_motorPower.x = final_power_xDir;
 
-      // vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
-      // rotated_motorPowerPolar.theta += orientation;
-      // polarToVector(rotated_motorPowerPolar, rotated_motorPower);
+      vectorToPolar(rotated_motorPower, rotated_motorPowerPolar);
+      rotated_motorPowerPolar.theta += orientation;
+      polarToVector(rotated_motorPowerPolar, rotated_motorPower);
 
       drive_left_power = rotated_motorPower.y + final_power_turn + rotated_motorPower.x;
       drive_left_b_power = rotated_motorPower.y + final_power_turn - rotated_motorPower.x;
