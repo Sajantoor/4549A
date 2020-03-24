@@ -69,9 +69,11 @@ void tracking_update(void*ignore) {
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
 
   while(true) {
+    float averageLeft = (drive_left.get_position() + drive_left_b.get_position())/2;
+    float averageRight = (drive_right.get_position() + drive_right_b.get_position())/2;
     //gets the ticks from the each of encoders
-    float degrees_encoder_left = (left_encoder.get_value());
-    float degrees_encoder_right = (right_encoder.get_value());
+    float degrees_encoder_left = (averageLeft);
+    float degrees_encoder_right = (averageRight);
     float degrees_encoder_back = (back_encoder.get_value());
 
     //converts each of the encoders ticks to degrees and returns value in radians
