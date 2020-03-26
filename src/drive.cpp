@@ -931,8 +931,8 @@ void strafe_pid(float x_pos, float y_pos, float final_turn, float speed, float t
   net_timer = initial_millis + timeout; //just to initialize net_timer at first
   float failsafe = 15000;
 
-  pid_values magnitude_pid(30, 0, 0, 30, 500, 127);//28
-  pid_values theta_pid(70, 0, 0, 30, 500, 127);//28
+  pid_values magnitude_pid(29, 0, 0, 30, 500, speed);//28
+  pid_values theta_pid(80, 0, 0, 30, 500, speed);//28
   int last = 0;
   float x_pos_error;
   float y_pos_error;
@@ -957,17 +957,19 @@ void strafe_pid(float x_pos, float y_pos, float final_turn, float speed, float t
     opp_leftPower = sin(direction + (1/4*pi)) * magnitudePower + turnPower;
     printf("magPower [%f], turnPower [%f], opp_leftPower [%f], opp_rightPower [%f] \n \n", magnitudePower, turnPower, opp_leftPower, opp_rightPower);
 
-    // if (opp_rightPower > opp_leftPower){
-    //   largestVal = opp_rightPower;
-    // } else {
-    //   largestVal = opp_leftPower;
-    // }
-    //
-    // //Scales down all the motor_power if the largestVal is over 127, this is to make sure the motors arent getting power over 127
-    // if (largestVal > 127) {
-    //   opp_leftPower = (opp_leftPower * 127) / abs(largestVal);
-    //   opp_rightPower = (opp_rightPower * 127) / abs(largestVal);
-    // }
+    if (opp_rightPower > opp_leftPower){
+      largestVal = opp_rightPower;
+    } else {
+      largestVal = opp_leftPower;
+    }
+
+    //Scales down all the motor_power if the largestVal is over 127, this is to make sure the motors arent getting power over 127
+    if (largestVal > 127) {
+      opp_leftPower = (opp_leftPower * 127) / abs(largestVal);
+      opp_rightPower = (opp_rightPower * 127) / abs(largestVal);
+    }
+
+    printf("magPower [%f], turnPower [%f], opp_leftPower [%f], opp_rightPower [%f] \n \n", magnitudePower, turnPower, opp_leftPower, opp_rightPower);
 
     drive_left.move(opp_leftPower);
     drive_left_b.move(opp_rightPower);
@@ -975,7 +977,7 @@ void strafe_pid(float x_pos, float y_pos, float final_turn, float speed, float t
     drive_right_b.move(opp_leftPower);
 
     pros::delay(10);
-  } while(magnitudeErr > 2);
+  } while(magnitudeErr > 1 &&  pros::millis() < net_timer);
   HarshStop();
   printf("exit loop \n \n");
 }
