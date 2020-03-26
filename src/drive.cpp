@@ -931,33 +931,51 @@ void strafe_pid(float x_pos, float y_pos, float final_turn, float speed, float t
   net_timer = initial_millis + timeout; //just to initialize net_timer at first
   float failsafe = 15000;
 
-  pid_values x_pid(30, 0, 0, 30, 500, 127);//28
-  pid_values y_pid(20, 0, 0, 30, 500, 127);//
+  pid_values magnitude_pid(30, 0, 0, 30, 500, 127);//28
   pid_values theta_pid(70, 0, 0, 30, 500, 127);//28
   int last = 0;
-
+  float x_pos_error;
+  float y_pos_error;
+  float pow_error;
+  float magnitudeErr;
+  float direction;
+  float opp_rightPower;
+  float opp_leftPower;
+  float largestVal;
   do {
-    float final_power_xDir = pid_calc(&x_pid, x_pos, position.x);
-    float final_power_yDir = pid_calc(&y_pid, y_pos, position.y);
-    float final_power_turn = pid_calc(&theta_pid, final_turn, orientation);
-    printf("position.x %f \n\n", position.x);
-    printf("position.y %f \n\n", position.y);
-    printf("orienation %f \n\n", orientation);
+    x_pos_error = x_pos - position.x;
+    y_pos_error = y_pos - position.y;
+    pow_error = pow(x_pos_error, 2) + pow(y_pos_error, 2);
+    magnitudeErr = sqrt(pow_error);
+    float magnitudePower = pid_calc(&magnitude_pid, magnitudeErr, 0);
+    float turnPower = pid_calc(&theta_pid, final_turn, orientation);
 
-    limit_to_val_set(final_power_xDir, abs(speed));
-    if (final_power_xDir * sgn(speed) < 25) //30
-    final_power_xDir = 25 * sgn(speed);
-    int delta = final_power_xDir - last;
-    limit_to_val_set(delta, 6);
-    final_power_xDir = last += delta;
+    direction = atan2(x_pos_error, y_pos_error);
+    printf("x_pos_error [%f], y_pos_error [%f] magnitudeErr [%f] \n \n", x_pos_error, y_pos_error, magnitudeErr);
+    printf("Calc 1 [%f], direction [%f] \n \n",(sin(direction - (1/4*pi))),  direction);
+    opp_rightPower = -sin(direction - (1/4*pi)) * magnitudePower + turnPower;
+    opp_leftPower = sin(direction + (1/4*pi)) * magnitudePower + turnPower;
+    printf("magPower [%f], turnPower [%f], opp_leftPower [%f], opp_rightPower [%f] \n \n", magnitudePower, turnPower, opp_leftPower, opp_rightPower);
 
-    drive_left.move(final_power_yDir + final_power_turn + final_power_xDir);
-    drive_left_b.move(final_power_yDir + final_power_turn - final_power_xDir);
-    drive_right.move(final_power_yDir - final_power_turn - final_power_xDir);
-    drive_right_b.move(final_power_yDir - final_power_turn + final_power_xDir);
+    // if (opp_rightPower > opp_leftPower){
+    //   largestVal = opp_rightPower;
+    // } else {
+    //   largestVal = opp_leftPower;
+    // }
+    //
+    // //Scales down all the motor_power if the largestVal is over 127, this is to make sure the motors arent getting power over 127
+    // if (largestVal > 127) {
+    //   opp_leftPower = (opp_leftPower * 127) / abs(largestVal);
+    //   opp_rightPower = (opp_rightPower * 127) / abs(largestVal);
+    // }
+
+    drive_left.move(opp_leftPower);
+    drive_left_b.move(opp_rightPower);
+    drive_right.move(opp_rightPower);
+    drive_right_b.move(opp_leftPower);
 
     pros::delay(10);
-  } while(abs(x_pid.error) > 0.5 && (pros::millis() < net_timer) && ((initial_millis + failsafe) > pros::millis()));
+  } while(magnitudeErr > 2);
   HarshStop();
   printf("exit loop \n \n");
 }

@@ -35,8 +35,10 @@ void autonomous() {
 // strafe_pid(-20, 0, 0, -100, 20000);
 // strafe_pid(0, 0, 0, 127, 20000);
 pros::delay(3000);
-position_drive(-20, 0, 0, false, -127, 20000);
-position_drive(0, 0, 90, false, 127, 20000);
+// position_drive(-20, 0, 0, false, -127, 20000);
+// position_drive(0, 0, 90, false, 127, 20000);
+strafe_pid(-20, 0, 0, 127, 20000);
+strafe_pid(0, 0, 0, 127, 20000);
 //RED FRONT AUTO
   if (switcher == 1) {
     unlock();
