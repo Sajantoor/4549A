@@ -32,13 +32,16 @@ void autonomous() {
   // if(switcher == 0){
   //   unlock();
   // }
+// position_drive2(0, 0, 0, 22, 0, 90, 0.1, 0, 200000, 50, 40, false); // go straight
+// strafe_pid(0, 0, 90, 127, 20000);
+// position_drive2(0, 22, 0, 0, 0, 90, 0.1, 0, 200000, 50, 40, false); // go straight
 // strafe_pid(-20, 0, 0, -100, 20000);
 // strafe_pid(0, 0, 0, 127, 20000);
 pros::delay(3000);
 // position_drive(-20, 0, 0, false, -127, 20000);
-strafe_pid(-20, 0, 0, 90, 20000);
-strafe_pid(0, 0, 0, 90, 20000);
- //position_drive(0, 0, 0, false, 127, 20000);
+strafe_pid(-20, 0, 0, 127, 20000);
+strafe_pid(0, 0, 90, 90, 20000);
+// position_drive(0, 0, 0, false, 127, 20000);
 //RED FRONT AUTO
   if (switcher == 1) {
     unlock();

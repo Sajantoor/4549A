@@ -63,7 +63,7 @@ void polarToVector(polar& polar, vector& vector) {
 }
 
 void tracking_update(void*ignore) {
-  const float inertial_threshold = degToRad(2); // threshold to switch to gyro, incase of systematic error with odometry
+  const float inertial_threshold = degToRad(1); // threshold to switch to gyro, incase of systematic error with odometry
   const float distance_between_centre = 4.26597529;//1.59437 // TUNE VALUE
   const float distance_between_backwheel_center = 3.0;//4.913425
   const float wheel_radius = 1.3845055; //the radius of the tracking wheels
@@ -931,53 +931,59 @@ void strafe_pid(float x_pos, float y_pos, float final_turn, float speed, float t
   net_timer = initial_millis + timeout; //just to initialize net_timer at first
   float failsafe = 15000;
 
-  pid_values magnitude_pid(29, 0, 0, 30, 500, speed);//28
-  pid_values theta_pid(80, 0, 0, 30, 500, speed);//28
+  pid_values magnitude_pid(27, 0, 0, 30, 500, fabs(speed));//28
+  pid_values theta_pid(0.5, 0, 0, 30, 500, fabs(speed));//28
   int last = 0;
   float x_pos_error;
   float y_pos_error;
   float pow_error;
   float magnitudeErr;
   float direction;
-  float opp_rightPower;
-  float opp_leftPower;
+  float FrontRightPower, BackRightPower;
+  float FrontLeftPower, BackLeftPower;
   float largestVal;
   do {
+    largestVal = 0;
     x_pos_error = x_pos - position.x;
     y_pos_error = y_pos - position.y;
     pow_error = pow(x_pos_error, 2) + pow(y_pos_error, 2);
     magnitudeErr = sqrt(pow_error);
     float magnitudePower = pid_calc(&magnitude_pid, magnitudeErr, 0);
-    float turnPower = pid_calc(&theta_pid, final_turn, orientation);
+    float turnPower = pid_calc(&theta_pid, final_turn, radToDeg(orientation));
 
     direction = atan2(x_pos_error, y_pos_error);
-    printf("x_pos_error [%f], y_pos_error [%f] magnitudeErr [%f] \n \n", x_pos_error, y_pos_error, magnitudeErr);
-    printf("Calc 1 [%f], direction [%f] \n \n",(sin(direction - (1/4*pi))),  direction);
-    opp_rightPower = -sin(direction - (1/4*pi)) * magnitudePower + turnPower;
-    opp_leftPower = sin(direction + (1/4*pi)) * magnitudePower + turnPower;
-    printf("magPower [%f], turnPower [%f], opp_leftPower [%f], opp_rightPower [%f] \n \n", magnitudePower, turnPower, opp_leftPower, opp_rightPower);
+    printf("x_pos_error [%f], y_pos_error [%f], turn_err [%f], magnitudeErr [%f] \n \n", x_pos_error, y_pos_error, theta_pid.error, magnitudeErr);
+    printf("Calc 1 [%f], Calc 2 [%f], direction [%f] \n \n",(sin(direction - ((float)1/4 * (float)pi))), ((float)1/4 * (float)pi), direction);
 
-    if (opp_rightPower > opp_leftPower){
-      largestVal = opp_rightPower;
-    } else {
-      largestVal = opp_leftPower;
+    FrontRightPower = BackLeftPower = -sin(direction - ((float)1/4 * (float)pi)) * magnitudePower;
+    FrontLeftPower = BackRightPower = sin(direction + ((float)1/4 * (float)pi)) * magnitudePower;
+    FrontLeftPower += turnPower;
+    BackLeftPower += turnPower;
+    FrontRightPower -= turnPower;
+    BackRightPower -= turnPower;
+
+    float motor_power_array [4] = {FrontLeftPower, BackLeftPower, FrontRightPower, BackRightPower};
+    for (size_t i = 0; i < 4; i++) {
+      if (fabs(motor_power_array[i]) > largestVal) {
+        largestVal = fabs(motor_power_array[i]);
+      }
     }
+      if (largestVal > 127) {
+        motor_power_array[0] = (motor_power_array[0] * 127) / fabs(largestVal);
+        motor_power_array[1] = (motor_power_array[1] * 127) / fabs(largestVal);
+        motor_power_array[2] = (motor_power_array[2] * 127) / fabs(largestVal);
+        motor_power_array[3] = (motor_power_array[3] * 127) / fabs(largestVal);
+      }
 
-    //Scales down all the motor_power if the largestVal is over 127, this is to make sure the motors arent getting power over 127
-    if (largestVal > 127) {
-      opp_leftPower = (opp_leftPower * 127) / abs(largestVal);
-      opp_rightPower = (opp_rightPower * 127) / abs(largestVal);
-    }
+    printf("magPower [%f], turnPower [%f], opp_leftPower [%f], opp_rightPower [%f], largestVal [%f] \n \n", magnitudePower, turnPower, FrontLeftPower, FrontRightPower, largestVal);
 
-    printf("magPower [%f], turnPower [%f], opp_leftPower [%f], opp_rightPower [%f] \n \n", magnitudePower, turnPower, opp_leftPower, opp_rightPower);
-
-    drive_left.move(opp_leftPower);
-    drive_left_b.move(opp_rightPower);
-    drive_right.move(opp_rightPower);
-    drive_right_b.move(opp_leftPower);
+    drive_left.move(motor_power_array[0]);
+    drive_left_b.move(motor_power_array[1]);
+    drive_right.move(motor_power_array[2]);
+    drive_right_b.move(motor_power_array[3]);
 
     pros::delay(10);
-  } while(magnitudeErr > 1 &&  pros::millis() < net_timer);
+  } while(magnitudeErr > 1 /*&&  pros::millis() < net_timer*/);
   HarshStop();
   printf("exit loop \n \n");
 }
